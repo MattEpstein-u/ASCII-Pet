@@ -35,6 +35,8 @@ class ASCIIUnderwaterKraken:
         self.kraken_total_height = self.kraken_sprite_lines * self.kraken_line_height
         self.kraken_radius = self.kraken_total_height // 2
         
+        print(f"🐙 Kraken dimensions: line_height={self.kraken_line_height}, total_height={self.kraken_total_height}, radius={self.kraken_radius}")
+        
         # Mouth offset (where kraken eats) - mouth is on line 6 (0-indexed line 5)
         self.mouth_offset_x = 0  # Centered horizontally
         self.mouth_offset_y = 5 * self.kraken_line_height  # 5 lines down from top
@@ -209,13 +211,16 @@ class ASCIIUnderwaterKraken:
         
         # Clamp to underwater area (below surface, above floor)
         # Allow kraken's head (top) to reach the water_level (top of surface)
-        # Since y is the center point, and the kraken extends kraken_radius above center:
-        # TOP position = y - kraken_radius
+        # The render_ascii_art function renders line 0 at y, so y IS the top of the sprite!
         # We want: TOP >= water_level (head can touch the surface top)
-        # So: y - kraken_radius >= water_level
-        # Therefore: y >= water_level + kraken_radius
-        min_y = self.water_level + self.kraken_radius
+        # So: y >= water_level
+        min_y = self.water_level
         max_y = self.container_height - margin  # Don't cross ocean floor
+        
+        # Debug: show what min_y is being calculated
+        if y < min_y:
+            print(f"🐙 Clamping y from {y} to min_y {min_y} (water_level={self.water_level})")
+        
         y = max(min_y, min(y, max_y))
         
         # Render kraken at validated position
@@ -300,10 +305,10 @@ class ASCIIUnderwaterKraken:
             min_x = margin
             max_x = self.container_width - margin
             
-            # Calculate minimum y: kraken's head can reach water_level (top of surface)
-            # TOP = y - kraken_radius, and TOP >= water_level
-            # Therefore: y >= water_level + kraken_radius
-            min_y = self.water_level + self.kraken_radius
+            # Calculate minimum y: kraken's top line can reach water_level
+            # Since render_ascii_art draws line 0 at y, y IS the top position
+            # Therefore: y >= water_level
+            min_y = self.water_level
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds
