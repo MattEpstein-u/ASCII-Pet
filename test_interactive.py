@@ -16,9 +16,9 @@ class TestASCIIUnderwaterKraken:
     def __init__(self):
         self.root = tk.Tk()
         
-        # Set container dimensions first (larger for underwater environment)
+        # Set container dimensions first (800x800 underwater world)
         self.container_width = 800
-        self.container_height = 600
+        self.container_height = 800
         
         self.setup_test_window()
         self.setup_kraken()
@@ -59,8 +59,8 @@ class TestASCIIUnderwaterKraken:
     def setup_test_window(self):
         """Configure the test window"""
         self.root.title("ASCII Underwater Kraken Test - Interactive Mode")
-        self.root.geometry("850x700+100+100")  # Larger for underwater environment
-        self.root.configure(bg='#0F1419')  # Dark ocean background
+        self.root.geometry("850x900+100+100")  # 800x800 world plus controls
+        self.root.configure(bg='#2C3E50')  # Neutral background
         
         # Add control panel at top
         control_frame = tk.Frame(self.root, bg='#1E3A5F', height=60)
@@ -85,11 +85,11 @@ class TestASCIIUnderwaterKraken:
     
     def setup_kraken(self):
         """Create the underwater kraken display"""
-        # Create canvas for the underwater area
+        # Create canvas for the ocean cross-section
         self.canvas = tk.Canvas(self.root, width=self.container_width, 
                                height=self.container_height, 
-                               bg='#0F1419', highlightthickness=1,
-                               highlightcolor='#4A90E2')
+                               bg='#ECF0F1', highlightthickness=1,
+                               highlightcolor='#34495E')
         self.canvas.pack(padx=5, pady=5)
         
         # Render the underwater environment
@@ -97,8 +97,8 @@ class TestASCIIUnderwaterKraken:
         
         # Add environment info
         self.canvas.create_text(20, 20, 
-                              text=f'🌊 Underwater World {self.container_width}x{self.container_height}',
-                              font=('Arial', 8), anchor='nw', fill='#87CEEB')
+                              text=f'🌊 Ocean Cross-Section {self.container_width}x{self.container_height}',
+                              font=('Arial', 8), anchor='nw', fill='#34495E')
         
         # Store kraken starting position (in underwater area)
         self.kraken_start_x = self.container_width // 2

@@ -167,64 +167,85 @@ ASCII_ANIMATIONS = {
     'happy': ['happy1', 'happy2', 'happy1']
 }
 
-# Underwater environment ASCII art
+# Ocean Cross-Section Environment ASCII Art
 UNDERWATER_ENVIRONMENT = {
-    # Water surface (top 1/3 of screen)
-    'water_surface': [
-        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    # Ocean surface line (separates air from water at 1/5 from top)
+    'ocean_surface': [
+        "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈"
     ],
     
-    # Underwater decorations - more visible
-    'seaweed_left': [
-        "  #",
-        " /#",
-        "/ #",
-        "  #",
-        " /#",
-        "/ #",
-        "  #",
-        " /#",
-        "/ #"
+    # Better seaweed designs using various ASCII techniques
+    'kelp_forest_tall': [
+        "    |    ",
+        "   /|\\   ",
+        "  / | \\  ",
+        "    |    ",
+        "   /|\\   ",
+        "  / | \\  ",
+        "    |    ",
+        "   /|\\   ",
+        "  / | \\  ",
+        "    |    ",
+        "   /|\\   ",
+        "  / | \\  "
     ],
     
-    'seaweed_right': [
-        "#  ",
-        "#\\ ",
-        "# \\",
-        "#  ",
-        "#\\ ",
-        "# \\",
-        "#  ",
-        "#\\ ",
-        "# \\"
+    'kelp_forest_medium': [
+        "  | |  ",
+        " /| |\\ ",
+        "/ | | \\",
+        "  | |  ",
+        " /| |\\ ",
+        "/ | | \\",
+        "  | |  ",
+        " /| |\\ "
     ],
     
-    'seaweed_center': [
-        " # ",
-        "/#\\",
-        " # ",
-        "\\#/",
-        " # ",
-        "/#\\",
-        " # ",
-        "\\#/",
-        " # "
+    'sea_grass': [
+        " | | | ",
+        "|| | ||",
+        " | | | ",
+        "|| | ||",
+        " | | | ",
+        "|| | ||"
     ],
     
-    # Ocean floor - more visible
-    'ocean_floor': [
-        "████████████████████████████████████████████████████████████████",
-        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-        "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
+    'coral_formation': [
+        " ∩∩∩ ",
+        "∩   ∩",
+        " ∩ ∩ ",
+        "  |  ",
+        "  |  ",
+        " _|_ "
+    ],
+    
+    # Ocean floor with texture and depth
+    'ocean_floor_layers': [
+        "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
+        "████████████████████████████████████████████████████████████████████████████████",
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+        "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
+    ],
+    
+    # Rocks and underwater features
+    'rock_formations': [
+        "  ▲   ▲     ▲▲    ▲   ▲▲▲   ▲    ▲▲     ▲   ▲▲▲    ▲     ▲▲   ▲▲    ▲▲▲  ",
+        " ▲▲▲ ▲▲▲   ▲▲▲▲  ▲▲▲ ▲▲▲▲  ▲▲▲  ▲▲▲▲   ▲▲▲ ▲▲▲▲   ▲▲▲   ▲▲▲▲ ▲▲▲▲  ▲▲▲▲ "
+    ],
+    
+    # Surface area for future boat (top 1/5 of screen)
+    'surface_area': [
+        "                                                                                 ",
+        "                     [ BOAT WILL SAIL HERE ]                                   ",
+        "                                                                                 "
     ],
     
     # Bubbles for atmosphere
-    'bubbles_small': ["o", "°", "·"],
-    'bubbles_medium': ["O", "o"],
-    'bubbles_large': ["●", "○"]
+    'bubbles_small': ["○", "∘", "·", "°"],
+    'bubbles_medium': ["●", "○", "◯"],
+    'bubbles_large': ["⬤", "⭕", "◯"]
 }
 
 def get_ascii_pet(sprite_name):
@@ -251,65 +272,106 @@ def render_ascii_art(lines, x, y, canvas, tag="pet", color="#333333", font_size=
         )
 
 def render_underwater_environment(canvas, width, height):
-    """Render the complete underwater environment"""
+    """Render ocean cross-section: top 1/5 surface area, bottom 4/5 underwater"""
     canvas.delete("environment")  # Clear previous environment
     
-    # Calculate water level (top 1/3 is surface, bottom 2/3 is underwater)
-    water_level = height // 3
+    # Calculate water level (top 1/5 is surface, bottom 4/5 is underwater)
+    water_level = height // 5
     underwater_height = height - water_level
     
-    # Draw water surface
-    surface_lines = UNDERWATER_ENVIRONMENT['water_surface']
-    for i, line in enumerate(surface_lines):
-        if i * 8 < water_level:
-            # Repeat the line to fill width
-            full_line = (line * (width // len(line) + 1))[:width//6]
-            canvas.create_text(
-                width // 2, i * 8,
-                text=full_line,
-                font=('Courier', 6),
-                fill='#4A90E2',
-                anchor='center',
-                tags="environment"
-            )
-    
-    # Draw underwater background (blue tint)
+    # ===== SURFACE AREA (Top 1/5) =====
+    # Draw surface area background (light for air/sky)
     canvas.create_rectangle(
-        0, water_level, width, height,
-        fill='#1E3A5F', outline='',
+        0, 0, width, water_level,
+        fill='#E8F4FD', outline='',
         tags="environment"
     )
     
-    # Draw seaweed
-    seaweed_positions = [
-        (width * 0.1, height - 80, 'seaweed_left'),
-        (width * 0.2, height - 70, 'seaweed_center'),
-        (width * 0.8, height - 75, 'seaweed_right'),
-        (width * 0.9, height - 85, 'seaweed_left')
+    # Add surface area label for future boat
+    surface_text = "[ SURFACE - BOAT AREA ]"
+    canvas.create_text(
+        width // 2, water_level // 2,
+        text=surface_text,
+        font=('Courier', 12, 'bold'),
+        fill='#7FB3D3',
+        anchor='center',
+        tags="environment"
+    )
+    
+    # ===== OCEAN SURFACE LINE =====
+    # Draw the water surface line that separates air from water
+    surface_lines = UNDERWATER_ENVIRONMENT['ocean_surface']
+    for i, line in enumerate(surface_lines):
+        # Create full-width surface line
+        chars_needed = width // 10  # Adjust character density
+        full_line = (line * (chars_needed // len(line) + 1))[:chars_needed]
+        canvas.create_text(
+            width // 2, water_level + (i * 5),
+            text=full_line,
+            font=('Courier', 8, 'bold'),
+            fill='#2980B9',
+            anchor='center',
+            tags="environment"
+        )
+    
+    # ===== UNDERWATER AREA (Bottom 4/5) =====
+    # Draw underwater background (neutral - no blue tint)
+    canvas.create_rectangle(
+        0, water_level + 15, width, height,
+        fill='#F8F9FA', outline='',
+        tags="environment"
+    )
+    
+    # ===== KELP FORESTS AND SEAWEED =====
+    # Position various types of underwater vegetation
+    vegetation_positions = [
+        (width * 0.15, height - 120, 'kelp_forest_tall'),
+        (width * 0.25, height - 90, 'kelp_forest_medium'),
+        (width * 0.4, height - 70, 'sea_grass'),
+        (width * 0.6, height - 85, 'coral_formation'),
+        (width * 0.75, height - 110, 'kelp_forest_tall'),
+        (width * 0.85, height - 80, 'kelp_forest_medium')
     ]
     
-    for x_pos, y_pos, seaweed_type in seaweed_positions:
-        seaweed_lines = UNDERWATER_ENVIRONMENT[seaweed_type]
-        for i, line in enumerate(seaweed_lines):
+    for x_pos, y_pos, vegetation_type in vegetation_positions:
+        vegetation_lines = UNDERWATER_ENVIRONMENT[vegetation_type]
+        for i, line in enumerate(vegetation_lines):
             canvas.create_text(
                 x_pos, y_pos + (i * 8),
                 text=line,
-                font=('Courier', 10),
-                fill='#32CD32',
+                font=('Courier', 9),
+                fill='#27AE60',  # Sea green
                 anchor='center',
                 tags="environment"
             )
     
-    # Draw ocean floor
-    floor_lines = UNDERWATER_ENVIRONMENT['ocean_floor']
-    floor_start = height - len(floor_lines) * 8
+    # ===== OCEAN FLOOR =====
+    # Draw layered ocean floor
+    floor_lines = UNDERWATER_ENVIRONMENT['ocean_floor_layers']
+    floor_start = height - (len(floor_lines) * 10)
     for i, line in enumerate(floor_lines):
-        full_line = (line * (width // len(line) + 1))[:width//6]
+        chars_needed = width // 8
+        full_line = (line * (chars_needed // len(line) + 1))[:chars_needed]
         canvas.create_text(
-            width // 2, floor_start + (i * 8),
+            width // 2, floor_start + (i * 10),
             text=full_line,
-            font=('Courier', 10),
-            fill='#A0522D',
+            font=('Courier', 8),
+            fill='#8B4513',  # Saddle brown
+            anchor='center',
+            tags="environment"
+        )
+    
+    # ===== ROCK FORMATIONS =====
+    # Add scattered rock formations
+    rock_lines = UNDERWATER_ENVIRONMENT['rock_formations']
+    for i, line in enumerate(rock_lines):
+        chars_needed = width // 8
+        full_line = (line * (chars_needed // len(line) + 1))[:chars_needed]
+        canvas.create_text(
+            width // 2, height - 40 + (i * 8),
+            text=full_line,
+            font=('Courier', 7),
+            fill='#5D6D7E',  # Gray rock color
             anchor='center',
             tags="environment"
         )
@@ -317,26 +379,36 @@ def render_underwater_environment(canvas, width, height):
     return water_level  # Return water level for movement constraints
 
 def is_in_water(x, y, water_level, canvas_height):
-    """Check if coordinates are in the underwater area"""
-    return y >= water_level and y <= (canvas_height - 30)  # Leave space above ocean floor
+    """Check if coordinates are in the underwater area (bottom 4/5 of canvas)"""
+    # Water starts after the surface line (water_level + surface line height)
+    underwater_start = water_level + 15
+    # Leave space above ocean floor
+    underwater_end = canvas_height - 50
+    return y >= underwater_start and y <= underwater_end
 
 def add_floating_bubbles(canvas, width, water_level, height):
-    """Add floating bubble effects in the underwater area (bubbles don't rise past water surface)"""
+    """Add floating bubble effects in the underwater area (below ocean surface line)"""
     import random
     
     # Clear existing bubbles
     canvas.delete("bubbles")
     
+    # Add bubbles in underwater area only (below 1/5 surface + surface line)
+    underwater_start = water_level + 20  # Below surface line
+    underwater_end = height - 60  # Above ocean floor
+    
     # Add several bubbles at random underwater positions
-    for _ in range(random.randint(12, 20)):
-        x = random.randint(50, width - 50)
-        # Ensure bubbles stay underwater - don't rise past water surface
-        y = random.randint(water_level + 30, height - 50)
+    for _ in range(random.randint(15, 25)):  # More bubbles for larger 800x800 space
+        x = random.randint(80, width - 80)
+        y = random.randint(underwater_start, underwater_end)
         
-        # Different bubble characters for variety
-        bubble_char = random.choice(['○', '∘', '◦', '•', '◯'])
-        bubble_size = random.choice([8, 10, 12, 14])
-        bubble_color = random.choice(['#87CEEB', '#ADD8E6', '#B0E0E6', '#E0F6FF', '#F0F8FF'])
+        # Enhanced bubble variety for better underwater atmosphere
+        bubble_char = random.choice(UNDERWATER_ENVIRONMENT['bubbles_small'] + 
+                                  UNDERWATER_ENVIRONMENT['bubbles_medium'] + 
+                                  UNDERWATER_ENVIRONMENT['bubbles_large'])
+        bubble_size = random.choice([10, 12, 14, 16])
+        # Neutral bubble colors that work with light background
+        bubble_color = random.choice(['#5DADE2', '#85C1E9', '#AED6F1', '#D6EAF8', '#EBF5FB'])
         
         canvas.create_text(x, y, text=bubble_char, font=('Arial', bubble_size),
                           fill=bubble_color, tags="bubbles")

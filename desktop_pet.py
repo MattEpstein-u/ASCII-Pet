@@ -31,9 +31,9 @@ class ASCIIUnderwaterKraken:
         
         # Kraken state
         self.target_x = self.container_width // 2
-        self.target_y = (self.container_height * 2) // 3  # Start in underwater area
+        self.target_y = (self.container_height * 3) // 5  # Start in underwater area (below 1/5 surface)
         self.current_x = self.container_width // 2
-        self.current_y = (self.container_height * 2) // 3
+        self.current_y = (self.container_height * 3) // 5
         self.is_dragging = False
         self.drag_start_x = 0
         self.drag_start_y = 0
@@ -55,29 +55,9 @@ class ASCIIUnderwaterKraken:
         self.update_behavior()
     
     def calculate_container_size(self):
-        """Calculate container size as 1/8 of screen area"""
-        # Get screen dimensions
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        
-        # Calculate 1/8 of screen area (approximately square container)
-        total_area = screen_width * screen_height
-        container_area = total_area // 8
-        
-        # Make container roughly square, but constrain to reasonable dimensions
-        container_side = int(container_area ** 0.5)
-        
-        # Constrain to reasonable limits (larger for underwater environment)
-        self.container_width = max(400, min(container_side, 800))
-        self.container_height = max(350, min(container_side, 600))
-        
-        # Position container in bottom-right corner with some margin
-        margin = 50
-        self.container_x = screen_width - self.container_width - margin
-        self.container_y = screen_height - self.container_height - margin
-        
-        print(f"Screen: {screen_width}x{screen_height}")
-        print(f"Container: {self.container_width}x{self.container_height} at ({self.container_x}, {self.container_y})")
+        """Calculate container dimensions for ocean cross-section (800x800)"""
+        # Fixed size for optimal ocean cross-section view
+        return 800, 800
     
     def setup_window(self):
         """Configure the main window"""
