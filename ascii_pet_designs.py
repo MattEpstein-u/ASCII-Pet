@@ -9,182 +9,184 @@ Collection of ASCII art for underwater sraken animations
 # Using smaller characters for more detail
 
 ASCII_PET_SPRITES = {
-    # Idle colossal octopus - menacing eyes, 8 tentacles with suction cups
+    # Idle - flowing curved tentacles like the hand-drawn sketch
+    # Organic shapes with suction cups radiating outward
     'idle1': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (@)        (@)       |",
-        "     |                           |",
-        "      \\          ___           /",
-        "       \\________/   \\________/",
-        "         /  |  |  |  |  \\",
-        "   .oOo.  .oOo. | .oOo.  .oOo.",
-        "  /    | /    | | |    \\ |    \\",
-        " O  o  |O  o  | | |  o  O|  o  O",
-        " |  O  ||  O  | | |  O  ||  O  |",
-        "  \\ o /  \\ o /  |  \\ o /  \\ o /",
-        "   \\|/    \\|/   |   \\|/    \\|/",
-        "    |      |    |    |      |",
-        "   oOo    oOo   |   oOo    oOo",
-        "   | |    | |   |   | |    | |",
-        "  o   o  o   o  |  o   o  o   o",
-        "  |   |  |   |  |  |   |  |   |",
+        "   ~\\_/~     ~\\_/~",
+        "    ) (       ) (",
+        "   (   )     (   )",
+        "    ) (   _   ) (",
+        "     (_/‾ ‾\\_)",
+        "    /  o   o  \\",
+        "   |     <     |",
+        "    \\   \\_/   /",
+        "     \\_______/",
+        "   /    |    \\",
+        "  (oOo  |  oOo)",
+        " (  o   |   o  )",
+        "  )oOo     oOo(",
+        "   \\  \\   /  /",
+        "    )  ) (  (",
+        "   (  (   )  )",
+        "    \\ oOo oO/",
+        "     )  o  (",
+        "    (  oOo  )",
     ],
     
     'idle2': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (O)        (O)       |",
-        "     |                           |",
-        "      \\          ___           /",
-        "       \\________/   \\________/",
-        "         /  |  |  |  |  \\",
-        "   .oOo.  .oOo. | .oOo.  .oOo.",
-        "  /    | /    | | |    \\ |    \\",
-        " O  O  |O  O  | | |  O  O|  O  O",
-        " |  o  ||  o  | | |  o  ||  o  |",
-        "  \\ O /  \\ O /  |  \\ O /  \\ O /",
-        "   \\|/    \\|/   |   \\|/    \\|/",
-        "    |      |    |    |      |",
-        "   oOo    oOo   |   oOo    oOo",
-        "   | |    | |   |   | |    | |",
-        "  O   O  O   O  |  O   O  O   O",
-        "  |   |  |   |  |  |   |  |   |",
+        "   ~\\_/~     ~\\_/~",
+        "    ( )       ( )",
+        "   )   (     )   (",
+        "    ( )   _   ( )",
+        "     (_/‾ ‾\\_)",
+        "    /  O   O  \\",
+        "   |     =     |",
+        "    \\   \\_/   /",
+        "     \\_______/",
+        "   /    |    \\",
+        "  (O o  |  o O)",
+        " (  oOo |oOo  )",
+        "  )o O     O o(",
+        "   \\  \\   /  /",
+        "    )  ) (  (",
+        "   (  (   )  )",
+        "    \\ O o oO/",
+        "     )  oOo (",
+        "    (  o O  )",
     ],
     
-    # Swimming octopus - tentacles in motion, propelling
+    # Swimming - flowing tentacles propelling through water
     'swim1': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (@)        (@)       |",
-        "     |                           |",
-        "      \\          ___           /",
-        "       \\________/   \\________/",
-        "        \\   |  |  |  |   /",
-        "  .oOo.  \\ .oOo. .oOo. /  .oOo.",
-        " |    \\   \\    | |    /   /    |",
-        " O  o  \\   O o | | o O   /  o  O",
-        " |  O  |   | O | | O |   |  O  |",
-        "  \\ o  |    \\ o| |o /    |  o /",
-        "   \\| /      \\|||/      \\ |/",
-        "    |/        |||        \\|",
-        "   oOo        |||        oOo",
-        "   | |        | |        | |",
-        "  o   o       o o       o   o",
-        "  |   |       | |       |   |",
+        "    \\_/~     ~\\_/",
+        "     ) (       ) (",
+        "    (   )     (   )",
+        "     ) (   _   ) (",
+        "      (_/‾ ‾\\_)",
+        "     /  @   @  \\",
+        "    |     >     |",
+        "     \\   \\_/   /",
+        "      \\_______/",
+        "    /    |    \\",
+        "   /oOo  |  oOo\\",
+        "  / o    |    o \\",
+        "   \\oOo     oOo/",
+        "    \\  \\   /  /",
+        "     )  ) (  (",
+        "    (  (   )  )",
+        "     \\ oOo oO/",
+        "      )  O  (",
+        "     (  oOo  )",
     ],
     
     'swim2': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (O)        (O)       |",
-        "     |                           |",
-        "      \\          ___           /",
-        "       \\________/   \\________/",
-        "          |  |  |  |  |",
-        "     .oOo.  .oOo.  .oOo.  .oOo.",
-        "    /    | /    | |    \\ |    \\",
-        "   O  o  |O  o  | |  o  O|  o  O",
-        "   |  O  ||  O  | |  O  ||  O  |",
-        "    \\ o /  \\ o /  \\ o /  \\ o /",
-        "     \\|/    \\|/    \\|/    \\|/",
-        "      |      |      |      |",
-        "     oOo    oOo    oOo    oOo",
-        "     | |    | |    | |    | |",
-        "    o   o  o   o  o   o  o   o",
+        "    ~\\_/       \\_/~",
+        "     ) (       ) (",
+        "    )   (     )   (",
+        "     ( )   _   ( )",
+        "      (_/‾ ‾\\_)",
+        "     /  O   O  \\",
+        "    |     ^     |",
+        "     \\   \\_/   /",
+        "      \\_______/",
+        "   /     |     \\",
+        "  /oOo   |   oOo\\",
+        " ( o     |     o )",
+        "  \\oOo       oOo/",
+        "   \\   \\   /   /",
+        "    )   ) (   (",
+        "   (   (   )   )",
+        "    \\  oOo  oO/",
+        "     )   o   (",
+        "    (   oOo   )",
     ],
     
     'swim3': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (@)        (@)       |",
-        "     |                           |",
-        "      \\          ___           /",
-        "       \\________/   \\________/",
-        "         \\  |  |  |  |  /",
-        "   .oOo.  \\ | .oOo. | /  .oOo.",
-        "  /    \\   \\| |    | |/   /    \\",
-        " O  o   \\   O o  o O   /   o  O",
-        " |  O    \\  | O  O |  /    O  |",
-        "  \\ o     \\  \\ o o /  /     o /",
-        "   \\|      \\ \\|||/ /      |/",
-        "    |       \\ ||| /       |",
-        "   oOo       \\|||/       oOo",
-        "   | |        |||        | |",
-        "  o   o       | |       o   o",
-        "  |   |       | |       |   |",
+        "   ~\\_/~       ~\\_/~",
+        "    ) (         ) (",
+        "   (   )       (   )",
+        "    ) (    _    ) (",
+        "     (_/‾‾ ‾‾\\_)",
+        "    /   @   @   \\",
+        "   |      >      |",
+        "    \\    \\_/    /",
+        "     \\_________/",
+        "   /     |     \\",
+        "  (oOo   |   oOo)",
+        " (  o    |    o  )",
+        "  )oOo       oOo(",
+        "   \\   \\   /   /",
+        "    )   ) (   (",
+        "   (   (   )   )",
+        "    \\  oOo oO/",
+        "     )   O   (",
+        "    (   oOo   )",
     ],
     
-    # Eating octopus - aggressive, tentacles grabbing, mouth visible
+    # Eating - curved tentacles wrapping around prey
     'eat1': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (X)        (X)       |",
-        "     |                           |",
-        "      \\          VVV           /",
-        "       \\________/^^^\\________/",
-        "        ((  |  |W|  |  ))",
-        "   .oOo(( .oOo.|.oOo. )).oOo.",
-        "  ((   | ((   | | |   )) |   ))",
-        " ((O o  |((O o | | | o O))|  o O))",
-        " ((| O  ||((O  | | |  O))||  O |))",
-        "  ((\\ o/  ((\\ o| |o /)  \\ o /))",
-        "   ((\\|/   ((\\|||/)   \\|/))",
-        "    ((|     (( || ))    |))",
-        "   ((oOo    ((oOo))   oOo))",
-        "   ((| |    ((| |))   | |))",
-        "  ((o  o   ((o o))   o  o))",
-        "  ((|  |   ((| |))   |  |))",
+        "    ~\\_/~     ~\\_/~",
+        "     ) (       ) (",
+        "    (   )     (   )",
+        "     (_)   _   (_)",
+        "       (_/‾ ‾\\_)",
+        "      / X   X \\",
+        "     |    v    |",
+        "      \\ /VVV\\ /",
+        "       \\____/",
+        "     ((  |  ))",
+        "    ((oOo|oOo))",
+        "   (( o  |  o ))",
+        "    ((oOo oOo))",
+        "     ((  |  ))",
+        "      (( | ))",
+        "       ((|))",
+        "        (oOo)",
+        "        ( O )",
+        "        (oOo)",
     ],
     
     'eat2': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (>)        (<)       |",
-        "     |                           |",
-        "      \\          WWW           /",
-        "       \\________/~~~\\________/",
-        "        ))  |  |M|  |  ((",
-        "   .oOo)) .oOo.|.oOo. ((.oOo.",
-        "  ))   | ))   | | |   (( |   ((",
-        " ))O O  |))O O | | | O O((|  O O((",
-        " ))| o  ||))o  | | |  o((||  o |))",
-        "  ))\\ O/  ))\\ O| |O ((  \\ O /((",
-        "   ))\\|/   ))\\|||((   \\|/((",
-        "    ))|     )) || ((    |((",
-        "   ))oOo    ))oOo((   oOo((",
-        "   ))| |    ))| |((   | |((",
-        "  ))O  O   ))O O((   O  O((",
-        "  ))|  |   ))| |((   |  |((",
+        "     ~\\_/~   ~\\_/~",
+        "      ) (     ) (",
+        "     (   )   (   )",
+        "      (_)  _  (_)",
+        "        (_/ \\_)",
+        "       / *   * \\",
+        "      |    <    |",
+        "       \\ /WWW\\ /",
+        "        \\____/",
+        "      ))  |  ((",
+        "     ))oOo oOo((",
+        "    )) o   o ((",
+        "     ))oOo oOo((",
+        "      )) | ((",
+        "       ))|((",
+        "        )|(",
+        "        (oOo)",
+        "        ( o )",
+        "        (oOo)",
     ],
     
     'eat3': [
-        "          ____________________",
-        "        /                      \\",
-        "      /      _          _       \\",
-        "     |      (X)        (X)       |",
-        "     |                           |",
-        "      \\          ^^^           /",
-        "       \\________/VVV\\________/",
-        "        ((  |  |#|  |  ))",
-        "   .oOo(( .oOo.|.oOo. )).oOo.",
-        "  ((   |\\((   | | |   ))/ |   ))",
-        " ((O o | ((O o | | | o O)) | o O))",
-        " ((| O | ((| O | | | O |)) | O |))",
-        "  ((\\ o|  ((\\ o| |o /)  |o /))",
-        "   ((\\|\\   ((\\|||/)   /|/))",
-        "    ((|\\    (( || ))   /|))",
-        "   ((oOo\\   ((oOo))  /oOo))",
-        "   ((| | \\  ((| |)) / | |))",
-        "  ((o  o \\ ((o o)) / o  o))",
-        "  ((|  |  \\((| |))/  |  |))",
+        "      \\_/~   ~\\_/",
+        "       ) (   ) (",
+        "      (   ) (   )",
+        "       (_) _ (_)",
+        "         (_\\_/)",
+        "        / ^  ^ \\",
+        "       |   v   |",
+        "        \\ |^| /",
+        "         \\__/",
+        "       )) | ((",
+        "      ))oOo oOo((",
+        "     )) o | o ((",
+        "      ))oOo oOo((",
+        "       )) | ((",
+        "        ))|((",
+        "         )|(",
+        "         (oOo)",
+        "         ( O )",
+        "         (oOo)",
     ],
 }
 
@@ -414,32 +416,84 @@ def is_in_water(x, y, water_level, canvas_height):
     underwater_end = canvas_height - 50
     return y >= underwater_start and y <= underwater_end
 
-def add_floating_bubbles(canvas, width, water_level, height):
-    """Add floating bubble effects in the underwater area (below ocean surface line)"""
+def spawn_bubble(bubble_list, width, water_level, height):
+    """Spawn a new bubble at a random underwater position"""
     import random
     
-    # Clear existing bubbles
-    canvas.delete("bubbles")
-    
-    # Add bubbles in underwater area only (below 1/5 surface + surface line)
+    # Spawn in underwater area only (below surface line, above ocean floor)
     underwater_start = water_level + 20  # Below surface line
     underwater_end = height - 60  # Above ocean floor
     
-    # Add several bubbles at random underwater positions
-    for _ in range(random.randint(15, 25)):  # More bubbles for larger 800x800 space
-        x = random.randint(80, width - 80)
-        y = random.randint(underwater_start, underwater_end)
+    x = random.randint(80, width - 80)
+    y = random.randint(underwater_start, underwater_end)
+    
+    # Bubble appearance
+    bubble_char = random.choice(UNDERWATER_ENVIRONMENT['bubbles_small'] + 
+                              UNDERWATER_ENVIRONMENT['bubbles_medium'] + 
+                              UNDERWATER_ENVIRONMENT['bubbles_large'])
+    bubble_size = random.choice([10, 12, 14, 16])
+    bubble_color = random.choice(['#FFFFFF', '#F8F8FF', '#F0F8FF', '#E6E6FA', '#FFFAFA'])
+    
+    # Add to bubble list with all needed info
+    bubble_list.append({
+        'x': x,
+        'y': y,
+        'char': bubble_char,
+        'size': bubble_size,
+        'color': bubble_color,
+        'canvas_id': None  # Will be set when rendered
+    })
+
+
+def update_bubbles(bubble_list, canvas, width, water_level, height, spawn_chance=0.05):
+    """Update bubble physics: spawn new bubbles randomly, move existing bubbles upward, remove at surface
+    
+    Args:
+        bubble_list: List of bubble dictionaries to update
+        canvas: Tkinter canvas to render on
+        width: Canvas width
+        water_level: Y-coordinate of ocean surface
+        height: Canvas height
+        spawn_chance: Probability (0.0-1.0) of spawning a bubble each frame
+    """
+    import random
+    
+    # Randomly spawn new bubble
+    if random.random() < spawn_chance:
+        spawn_bubble(bubble_list, width, water_level, height)
+    
+    # Update existing bubbles
+    bubbles_to_remove = []
+    for i, bubble in enumerate(bubble_list):
+        # Move bubble upward (rising physics)
+        bubble['y'] -= 2  # Rise speed: 2 pixels per frame
         
-        # Enhanced bubble variety for better underwater atmosphere
-        bubble_char = random.choice(UNDERWATER_ENVIRONMENT['bubbles_small'] + 
-                                  UNDERWATER_ENVIRONMENT['bubbles_medium'] + 
-                                  UNDERWATER_ENVIRONMENT['bubbles_large'])
-        bubble_size = random.choice([10, 12, 14, 16])
-        # White bubbles for deep ocean atmosphere
-        bubble_color = random.choice(['#FFFFFF', '#F8F8FF', '#F0F8FF', '#E6E6FA', '#FFFAFA'])
-        
-        canvas.create_text(x, y, text=bubble_char, font=('Arial', bubble_size),
-                          fill=bubble_color, tags="bubbles")
+        # Mark for removal if reached surface
+        if bubble['y'] <= water_level:
+            bubbles_to_remove.append(i)
+    
+    # Remove bubbles that reached surface (reverse order to preserve indices)
+    for i in reversed(bubbles_to_remove):
+        bubble_list.pop(i)
+    
+    # Render all bubbles
+    render_bubbles(bubble_list, canvas)
+
+
+def render_bubbles(bubble_list, canvas):
+    """Render all bubbles on canvas"""
+    # Clear existing bubble graphics
+    canvas.delete("bubbles")
+    
+    # Render each bubble at its current position
+    for bubble in bubble_list:
+        canvas.create_text(
+            bubble['x'], bubble['y'],
+            text=bubble['char'],
+            font=('Arial', bubble['size']),
+            fill=bubble['color'],
+            tags="bubbles"
+        )
 
 def demo_ascii_art():
     """Demo function to preview all kraken ASCII art"""

@@ -10,7 +10,7 @@ import math
 import platform
 import sys
 from ascii_pet_designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
-                              render_underwater_environment, is_in_water, add_floating_bubbles)
+                              render_underwater_environment, is_in_water, update_bubbles)
 
 class ASCIIUnderwaterKraken:
     def __init__(self):
@@ -35,8 +35,8 @@ class ASCIIUnderwaterKraken:
         self.mouth_offset_x = 0  # Centered horizontally
         self.mouth_offset_y = 7  # Bottom of head (line 7 of sprite)
         
-        # Bubble effects
-        self.bubble_timer = 0
+        # Bubble physics system
+        self.bubble_list = []  # List of active bubbles with positions
         
         # Shrimp feeding system
         self.shrimp_queue = []
@@ -152,8 +152,8 @@ class ASCIIUnderwaterKraken:
         self.current_sprite = 'idle1'
         self.render_kraken()
         
-        # Add initial bubbles
-        add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
+        # Bubble system initialized (bubbles will spawn over time)
+        # No initial bubbles needed - they'll appear naturally
         
         # Bind mouse click to drop shrimp
         self.canvas.bind('<Button-1>', self.on_click)
@@ -301,11 +301,9 @@ class ASCIIUnderwaterKraken:
     
     def update_behavior(self):
         """Update kraken behavior and state"""
-        self.bubble_timer += 1
-        
-        # Add floating bubbles periodically
-        if self.bubble_timer % 5 == 0:  # Every 0.5 seconds
-            add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
+        # Update bubble physics every frame (spawn, rise, remove at surface)
+        update_bubbles(self.bubble_list, self.canvas, self.container_width, 
+                      self.water_level, self.container_height, spawn_chance=0.05)
         
         # Update position (shrimp hunting)
         self.update_position()

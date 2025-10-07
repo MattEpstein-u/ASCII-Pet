@@ -8,7 +8,7 @@ import tkinter as tk
 import math
 import sys
 from ascii_pet_designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
-                              render_underwater_environment, is_in_water, add_floating_bubbles)
+                              render_underwater_environment, is_in_water, update_bubbles)
 
 class QuickTest:
     def __init__(self):
@@ -71,8 +71,8 @@ class QuickTest:
         self.current_shrimp_target = None
         self.eating_shrimp = False
         
-        # Effects
-        self.bubble_timer = 0
+        # Bubble physics system
+        self.bubble_list = []  # List of active bubbles
         
         # Render initial kraken
         self.render_kraken()
@@ -224,11 +224,9 @@ class QuickTest:
     
     def update_behavior(self):
         """Update behaviors and bubble effects"""
-        self.bubble_timer += 1
-        
-        # Add bubbles periodically
-        if self.bubble_timer % 5 == 0:  # Every 0.5 seconds
-            add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
+        # Update bubble physics every frame (spawn, rise, remove at surface)
+        update_bubbles(self.bubble_list, self.canvas, self.container_width,
+                      self.water_level, self.container_height, spawn_chance=0.05)
         
         # Update position (shrimp hunting)
         self.update_position()
