@@ -254,17 +254,6 @@ def render_underwater_environment(canvas, width, height):
         tags="environment"
     )
     
-    # Add surface area label for future boat
-    surface_text = "[ SURFACE - BOAT AREA ]"
-    canvas.create_text(
-        width // 2, water_level // 2,
-        text=surface_text,
-        font=('Courier', 12, 'bold'),
-        fill='#FFFFFF',
-        anchor='center',
-        tags="environment"
-    )
-    
     # ===== OCEAN SURFACE LINE =====
     # Draw the water surface line that separates air from water
     surface_lines = UNDERWATER_ENVIRONMENT['ocean_surface']
@@ -288,60 +277,6 @@ def render_underwater_environment(canvas, width, height):
         fill='#0A0F1C', outline='',
         tags="environment"
     )
-    
-    # ===== KELP FORESTS AND SEAWEED =====
-    # Position various types of underwater vegetation
-    vegetation_positions = [
-        (width * 0.15, height - 120, 'kelp_forest_tall'),
-        (width * 0.25, height - 90, 'kelp_forest_medium'),
-        (width * 0.4, height - 70, 'sea_grass'),
-        (width * 0.6, height - 85, 'coral_formation'),
-        (width * 0.75, height - 110, 'kelp_forest_tall'),
-        (width * 0.85, height - 80, 'kelp_forest_medium')
-    ]
-    
-    for x_pos, y_pos, vegetation_type in vegetation_positions:
-        vegetation_lines = UNDERWATER_ENVIRONMENT[vegetation_type]
-        for i, line in enumerate(vegetation_lines):
-            canvas.create_text(
-                x_pos, y_pos + (i * 8),
-                text=line,
-                font=('Courier', 9),
-                fill='#98FB98',  # Light green
-                anchor='center',
-                tags="environment"
-            )
-    
-    # ===== OCEAN FLOOR =====
-    # Draw layered ocean floor
-    floor_lines = UNDERWATER_ENVIRONMENT['ocean_floor_layers']
-    floor_start = height - (len(floor_lines) * 10)
-    for i, line in enumerate(floor_lines):
-        chars_needed = width // 8
-        full_line = (line * (chars_needed // len(line) + 1))[:chars_needed]
-        canvas.create_text(
-            width // 2, floor_start + (i * 10),
-            text=full_line,
-            font=('Courier', 8),
-            fill='#D2B48C',  # Tan for visibility on dark background
-            anchor='center',
-            tags="environment"
-        )
-    
-    # ===== ROCK FORMATIONS =====
-    # Add scattered rock formations
-    rock_lines = UNDERWATER_ENVIRONMENT['rock_formations']
-    for i, line in enumerate(rock_lines):
-        chars_needed = width // 8
-        full_line = (line * (chars_needed // len(line) + 1))[:chars_needed]
-        canvas.create_text(
-            width // 2, height - 40 + (i * 8),
-            text=full_line,
-            font=('Courier', 7),
-            fill='#C0C0C0',  # Light gray for visibility
-            anchor='center',
-            tags="environment"
-        )
     
     return water_level  # Return water level for movement constraints
 

@@ -14,9 +14,9 @@ class Test:
     def __init__(self):
         self.root = tk.Tk()
         
-        # Container dimensions for testing (800x800 for visibility)
-        self.container_width = 800
-        self.container_height = 800
+        # Container dimensions matching desktop_pet.py proportions (wider, less tall)
+        self.container_width = 600
+        self.container_height = 500
         
         self.setup_window()
         self.setup_canvas()
