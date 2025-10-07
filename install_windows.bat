@@ -8,8 +8,8 @@ REM Get current directory
 set CURRENT_DIR=%cd%
 
 REM Check if we're in the right directory
-if not exist "desktop_pet.py" (
-    echo Error: Please run this script from the directory containing desktop_pet.py
+if not exist "pet.py" (
+    echo Error: Please run this script from the directory containing pet.py
     pause
     exit /b 1
 )

@@ -4,6 +4,33 @@ ASCII Underwater Kraken Environment
 Collection of ASCII art for underwater kraken animations
 """
 
+# ===== CONFIGURATION =====
+# Master density control - adjust this to change overall ASCII character density
+# Higher values = more characters visible, smaller individual characters
+# Lower values = fewer characters visible, larger individual characters
+ASCII_DENSITY_CONFIG = {
+    'font_size': 10,  # Base font size (lower = more density, higher = less density)
+    'line_spacing': 2,  # Spacing between lines (lower = more density)
+    'char_spacing': 1.0,  # Character width multiplier (affects horizontal density)
+}
+
+# Debug grid overlay configuration
+DEBUG_CONFIG = {
+    'show_grid': False,  # Set to True to show debugging grid
+    'grid_size': 50,     # Size of grid cells in pixels
+    'grid_color': '#444444',  # Grid line color (dark gray)
+    'show_coordinates': True,  # Show coordinate labels
+    'show_boundaries': True,   # Show water level and boundaries
+}
+
+def get_density_font_size():
+    """Get the configured font size for ASCII density"""
+    return ASCII_DENSITY_CONFIG['font_size']
+
+def get_density_line_height():
+    """Get the calculated line height based on density config"""
+    return ASCII_DENSITY_CONFIG['font_size'] + ASCII_DENSITY_CONFIG['line_spacing']
+
 # ASCII art for the kraken in different states
 # Each state has multiple frames for animation
 # All sprites are 11 lines tall and 23 characters wide (rectangular)
@@ -231,7 +258,137 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
     # CRITICAL: Lower environment to bottom of z-order so it doesn't cover kraken/shrimp/bubbles
     canvas.lower("environment")
     
+    # Draw debug grid if enabled
+    if DEBUG_CONFIG['show_grid']:
+        render_debug_grid(canvas, width, height, water_level)
+    
     return water_level  # Return water level for movement constraints
+
+def render_debug_grid(canvas, width, height, water_level):
+    """Render a debugging grid overlay to help with positioning and boundaries
+    
+    Args:
+        canvas: Tkinter canvas
+        width: Canvas width
+        height: Canvas height
+        water_level: Y-coordinate of water surface
+    """
+    grid_size = DEBUG_CONFIG['grid_size']
+    grid_color = DEBUG_CONFIG['grid_color']
+    
+    # Clear previous debug elements
+    canvas.delete("debug_grid")
+    
+    # Draw vertical grid lines
+    for x in range(0, width, grid_size):
+        canvas.create_line(
+            x, 0, x, height,
+            fill=grid_color,
+            tags="debug_grid",
+            dash=(2, 4)  # Dashed line
+        )
+        # Add x-coordinate labels
+        if DEBUG_CONFIG['show_coordinates'] and x > 0:
+            canvas.create_text(
+                x, 10,
+                text=str(x),
+                fill='#888888',
+                font=('Arial', 8),
+                tags="debug_grid"
+            )
+    
+    # Draw horizontal grid lines
+    for y in range(0, height, grid_size):
+        canvas.create_line(
+            0, y, width, y,
+            fill=grid_color,
+            tags="debug_grid",
+            dash=(2, 4)  # Dashed line
+        )
+        # Add y-coordinate labels
+        if DEBUG_CONFIG['show_coordinates'] and y > 0:
+            canvas.create_text(
+                10, y,
+                text=str(y),
+                fill='#888888',
+                font=('Arial', 8),
+                tags="debug_grid"
+            )
+    
+    # Show boundaries if enabled
+    if DEBUG_CONFIG['show_boundaries']:
+        # Calculate wave surface height
+        wave_font_size = max(6, get_density_font_size() - 2)
+        wave_line_height = wave_font_size + 2
+        surface_height = wave_line_height * 2
+        
+        # Water level line (top of waves)
+        canvas.create_line(
+            0, water_level, width, water_level,
+            fill='#00FFFF',  # Cyan
+            width=2,
+            tags="debug_grid"
+        )
+        canvas.create_text(
+            width - 80, water_level - 10,
+            text=f"Water Level: {water_level}",
+            fill='#00FFFF',
+            font=('Arial', 9, 'bold'),
+            tags="debug_grid"
+        )
+        
+        # Underwater start (below waves)
+        underwater_start = water_level + surface_height + 5
+        canvas.create_line(
+            0, underwater_start, width, underwater_start,
+            fill='#00FF00',  # Green
+            width=2,
+            tags="debug_grid"
+        )
+        canvas.create_text(
+            width - 120, underwater_start + 15,
+            text=f"Underwater Start: {underwater_start}",
+            fill='#00FF00',
+            font=('Arial', 9, 'bold'),
+            tags="debug_grid"
+        )
+        
+        # Ocean floor boundary
+        ocean_floor = height - 50
+        canvas.create_line(
+            0, ocean_floor, width, ocean_floor,
+            fill='#FF8800',  # Orange
+            width=2,
+            tags="debug_grid"
+        )
+        canvas.create_text(
+            width - 100, ocean_floor - 15,
+            text=f"Ocean Floor: {ocean_floor}",
+            fill='#FF8800',
+            font=('Arial', 9, 'bold'),
+            tags="debug_grid"
+        )
+        
+        # Kraken top boundary (where top of kraken can reach)
+        kraken_half_height = (11 * get_density_line_height()) // 2
+        kraken_min_y = water_level + kraken_half_height + surface_height + 10
+        canvas.create_line(
+            0, kraken_min_y, width, kraken_min_y,
+            fill='#FF00FF',  # Magenta
+            width=2,
+            dash=(5, 3),
+            tags="debug_grid"
+        )
+        canvas.create_text(
+            width - 120, kraken_min_y - 15,
+            text=f"Kraken Top Limit: {kraken_min_y}",
+            fill='#FF00FF',
+            font=('Arial', 9, 'bold'),
+            tags="debug_grid"
+        )
+    
+    # Keep grid below other elements but above environment
+    canvas.tag_lower("debug_grid", "bubbles")
 
 def is_in_water(x, y, water_level, canvas_height):
     """Check if coordinates are in the underwater area (bottom 4/5 of canvas)"""
@@ -323,6 +480,12 @@ def render_bubbles(bubble_list, canvas):
 def demo_ascii_art():
     """Demo function to preview all kraken ASCII art"""
     print("=== ASCII Underwater Kraken Art Demo ===\n")
+    print(f"Current Density Config: Font Size={get_density_font_size()}, Line Height={get_density_line_height()}\n")
+    print(f"Debug Grid: {'ENABLED' if DEBUG_CONFIG['show_grid'] else 'DISABLED'}")
+    if DEBUG_CONFIG['show_grid']:
+        print(f"  Grid Size: {DEBUG_CONFIG['grid_size']}px")
+        print(f"  Show Coordinates: {DEBUG_CONFIG['show_coordinates']}")
+        print(f"  Show Boundaries: {DEBUG_CONFIG['show_boundaries']}\n")
     
     for state, frames in ASCII_ANIMATIONS.items():
         print(f"--- {state.upper()} Animation Frames ---")
@@ -335,20 +498,16 @@ def demo_ascii_art():
     
     print("=== Underwater Environment Elements ===\n")
     
-    print("Water Surface:")
-    for line in UNDERWATER_ENVIRONMENT['ocean_surface'][:2]:
-        print(f"  {line[:50]}...")
-    
-    print("\nKelp Forest:")
-    for line in UNDERWATER_ENVIRONMENT['kelp_forest_tall'][:5]:
-        print(f"  {line}")
-    
-    print("\nOcean Floor:")
-    for line in UNDERWATER_ENVIRONMENT['ocean_floor_layers'][:1]:
+    print("Water Surface (2 lines - animated):")
+    for line in UNDERWATER_ENVIRONMENT['ocean_surface_frame1']:
         print(f"  {line[:50]}...")
     
     print(f"\nBubbles: {', '.join(UNDERWATER_ENVIRONMENT['bubbles_small'] + UNDERWATER_ENVIRONMENT['bubbles_medium'])}")
     print("\nYour kraken will swim in this underwater world! 🐙")
+    print(f"\n💡 Tip: Adjust ASCII_DENSITY_CONFIG at the top of this file to change character density:")
+    print(f"   - Lower font_size = MORE density (more chars visible)")
+    print(f"   - Higher font_size = LESS density (fewer chars visible)")
+    print(f"\n🐛 Debug Grid: Set DEBUG_CONFIG['show_grid'] = True to enable grid overlay")
 
 if __name__ == "__main__":
     demo_ascii_art()

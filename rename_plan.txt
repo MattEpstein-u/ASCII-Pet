@@ -1,0 +1,18 @@
+Current Files → New Names:
+
+Python Files:
+  desktop_pet.py → pet.py (main program)
+  ascii_pet_designs.py → designs.py (sprites & environment)
+
+Documentation:
+  README.md → readme.md (lowercase)
+  CONFIGURATION_GUIDE.md → config.md
+  DEBUG_GUIDE.md → debug.md
+
+Scripts (keep as-is - these are standard):
+  install.sh
+  uninstall.sh
+  start_pet.sh
+  install_windows.bat
+  uninstall_windows.bat
+  start_pet.bat

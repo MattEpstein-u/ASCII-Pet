@@ -24,8 +24,14 @@ if not exist "%PET_SCRIPT%" (
 
 REM Run the ASCII desktop pet
 echo Starting ASCII Desktop Pet...
-cd /d "%SCRIPT_DIR%"
-start /min python "%PET_SCRIPT%"
+@echo off
+REM Start the ASCII Kraken Desktop Pet
+
+REM Change to the directory where this script is located
+cd /d "%~dp0"
+
+REM Run the desktop pet
+start pythonw pet.py
 
 echo ASCII Desktop Pet started! Check your desktop corner.
 timeout /t 3 /nobreak >nul

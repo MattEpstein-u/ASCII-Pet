@@ -121,12 +121,12 @@ python3 test.py
 ## Manual Usage
 
 ### macOS/Linux
-- **Start**: `python3 desktop_pet.py`
+- **Start**: `python3 pet.py`
 - **Stop**: Close window or `killall Python`
 - **Uninstall**: `./uninstall.sh`
 
 ### Windows
-- **Start**: `python desktop_pet.py`
+- **Start**: `python pet.py`
 - **Stop**: Close window or Task Manager
 - **Uninstall**: `uninstall_windows.bat`
 
@@ -160,14 +160,17 @@ python3 test.py
 
 ```
 ASCII-Pet/
-├── ascii_pet_designs.py    # Sprites, animations, and environment
-├── desktop_pet.py          # Main desktop pet application
-├── test.py                 # Test window (try before installing)
+├── pet.py                  # Main desktop pet application
+├── designs.py              # Sprite art and animations
 ├── install.sh              # macOS/Linux installer
 ├── install_windows.bat     # Windows installer
 ├── uninstall.sh            # macOS/Linux uninstaller
 ├── uninstall_windows.bat   # Windows uninstaller
-└── README.md               # This file
+├── start_pet.sh            # macOS/Linux startup script
+├── start_pet.bat           # Windows startup script
+├── readme.md               # This file
+├── config.md               # Configuration guide
+└── debug.md                # Debug guide
 ```
 
 ---

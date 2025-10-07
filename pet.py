@@ -9,8 +9,9 @@ import tkinter as tk
 import math
 import platform
 import sys
-from ascii_pet_designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
-                              render_underwater_environment, is_in_water, update_bubbles)
+from designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
+                    render_underwater_environment, is_in_water, update_bubbles,
+                    get_density_font_size, get_density_line_height, DEBUG_CONFIG)
 
 class ASCIIUnderwaterKraken:
     def __init__(self):
@@ -25,18 +26,17 @@ class ASCIIUnderwaterKraken:
         self.state = "idle"
         self.wave_animation_frame = 0  # For ocean surface animation
         
+        # Mouth offset (where kraken eats) - calculated based on density
+        self.mouth_offset_x = 0  # Centered horizontally
+        # Mouth is at line 5 of sprite, calculate pixel offset based on density
+        self.mouth_offset_y = 5 * get_density_line_height()
+        
         self.setup_pet()
         self.setup_animations()
         
         # Kraken properties
         self.kraken_radius = 30
         self.water_level = 0
-        
-        # Mouth offset from sprite anchor (center bottom of head)
-        # The octopus head is ~7 lines tall, mouth is at bottom center
-        # Line 5 of sprite × 14 pixels per line = 70 pixels
-        self.mouth_offset_x = 0  # Centered horizontally
-        self.mouth_offset_y = 70  # Mouth is at line 5: 5 × (font_size + 2) = 5 × 14 = 70 pixels
         
         # Bubble physics system
         self.bubble_list = []  # List of active bubbles with positions
@@ -197,9 +197,14 @@ class ASCIIUnderwaterKraken:
         x = max(margin, min(x, self.container_width - margin))
         
         # Clamp to underwater area (below surface, above floor)
-        # Sprite is 11 lines × 14px/line = 154px tall, anchor at center (77px from top)
-        # Allow top of kraken to reach water surface
-        min_y = self.water_level + 77  # Top of sprite can reach water_level
+        # Calculate based on density: sprite is 11 lines tall
+        kraken_half_height = (11 * get_density_line_height()) // 2
+        wave_font_size = max(6, get_density_font_size() - 2)
+        wave_line_height = wave_font_size + 2
+        surface_height = wave_line_height * 2
+        
+        # Allow top of kraken to reach just below the wave surface
+        min_y = self.water_level + kraken_half_height + surface_height + 10
         max_y = self.container_height - margin  # Don't cross ocean floor
         y = max(min_y, min(y, max_y))
         
@@ -217,8 +222,9 @@ class ASCIIUnderwaterKraken:
             self.shrimp_counter += 1
             shrimp_tag = f"shrimp_{self.shrimp_counter}"
             self.shrimp_queue.append((x, y, shrimp_tag))
-            # Render shrimp on canvas
-            self.canvas.create_text(x, y, text=",", font=("Courier", 16, "bold"),
+            # Render shrimp on canvas with density-based font size
+            shrimp_size = int(get_density_font_size() * 1.4)  # Slightly larger than kraken
+            self.canvas.create_text(x, y, text=",", font=("Courier", shrimp_size, "bold"),
                                    fill="#FFB6C1", tags=shrimp_tag)
             print(f"🦐 Shrimp dropped at ({x}, {y}). Queue size: {len(self.shrimp_queue)}")
     
@@ -266,7 +272,13 @@ class ASCIIUnderwaterKraken:
             margin = self.kraken_radius + 10
             min_x = margin
             max_x = self.container_width - margin
-            min_y = self.water_level + 77  # Top of sprite can reach water_level
+            
+            # Calculate minimum y based on density
+            kraken_half_height = (11 * get_density_line_height()) // 2
+            wave_font_size = max(6, get_density_font_size() - 2)
+            wave_line_height = wave_font_size + 2
+            surface_height = wave_line_height * 2
+            min_y = self.water_level + kraken_half_height + surface_height + 10
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds
@@ -375,6 +387,13 @@ class ASCIIUnderwaterKraken:
 
 if __name__ == "__main__":
     try:
+        print("🐙 Starting ASCII Underwater Kraken...")
+        print(f"📏 Density: Font Size={get_density_font_size()}, Line Height={get_density_line_height()}")
+        if DEBUG_CONFIG['show_grid']:
+            print(f"🐛 Debug Grid: ENABLED (Grid Size: {DEBUG_CONFIG['grid_size']}px)")
+        print("🦐 Click underwater to drop shrimp and feed your kraken!")
+        print()
+        
         kraken = ASCIIUnderwaterKraken()
         kraken.run()
     except Exception as e:

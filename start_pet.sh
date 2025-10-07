@@ -5,7 +5,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 # Path to the desktop pet Python script
-PET_SCRIPT="$SCRIPT_DIR/desktop_pet.py"
+PET_SCRIPT="$SCRIPT_DIR/pet.py"
 
 # Check if Python 3 is available
 if command -v python3 &> /dev/null; then
@@ -19,7 +19,7 @@ fi
 
 # Check if the pet script exists
 if [ ! -f "$PET_SCRIPT" ]; then
-    echo "Error: desktop_pet.py not found in $SCRIPT_DIR"
+    echo "Error: pet.py not found in $SCRIPT_DIR"
     exit 1
 fi
 

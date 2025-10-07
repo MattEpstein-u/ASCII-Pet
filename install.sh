@@ -9,8 +9,8 @@ CURRENT_DIR="$(pwd)"
 LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
 
 # Check if we're in the right directory
-if [ ! -f "desktop_pet.py" ]; then
-    echo "Error: Please run this script from the directory containing desktop_pet.py"
+if [ ! -f "pet.py" ]; then
+    echo "Error: Please run this script from the directory containing pet.py"
     exit 1
 fi
 
