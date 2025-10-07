@@ -261,9 +261,9 @@ class ASCIIUnderwaterKraken:
         self.shrimp_counter += 1
         shrimp_tag = f"shrimp_{self.shrimp_counter}"
         self.shrimp_queue.append((x, y, shrimp_tag))
-        # Render shrimp on canvas with density-based font size
+        # Render shrimp on canvas with fixed font size
         # Use Georgia font for a more curved, shrimp-like comma appearance
-        shrimp_size = int(get_density_font_size() * 1.4)  # Slightly larger than kraken
+        shrimp_size = 6  # Fixed small size for shrimp
         self.canvas.create_text(x, y, text=",", font=("Georgia", shrimp_size, "bold"),
                                fill="#FFB6C1", tags=shrimp_tag)
         print(f"🦐 Shrimp dropped at ({x}, {y}). Queue size: {len(self.shrimp_queue)}")

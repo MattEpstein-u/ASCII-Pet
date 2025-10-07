@@ -406,7 +406,8 @@ def spawn_bubble(bubble_list, width, water_level, height):
     underwater_start = water_level + surface_height + 10  # Below surface
     underwater_end = height - 60  # Above ocean floor
     
-    x = random.randint(80, width - 80)
+    # Spawn across entire width (with small margin)
+    x = random.randint(20, width - 20)
     y = random.randint(underwater_start, underwater_end)
     
     # Bubble appearance
