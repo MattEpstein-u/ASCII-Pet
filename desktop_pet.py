@@ -197,8 +197,9 @@ class ASCIIUnderwaterKraken:
         x = max(margin, min(x, self.container_width - margin))
         
         # Clamp to underwater area (below surface, above floor)
-        # Add extra margin to keep kraken well below surface
-        min_y = self.water_level + margin + 50  # Extra buffer to stay below surface
+        # Sprite is 11 lines × 14px/line = 154px tall, anchor at center (77px from top)
+        # Allow top of kraken to reach water surface
+        min_y = self.water_level + 77  # Top of sprite can reach water_level
         max_y = self.container_height - margin  # Don't cross ocean floor
         y = max(min_y, min(y, max_y))
         
@@ -265,7 +266,7 @@ class ASCIIUnderwaterKraken:
             margin = self.kraken_radius + 10
             min_x = margin
             max_x = self.container_width - margin
-            min_y = self.water_level + margin + 50  # Extra buffer to stay below surface
+            min_y = self.water_level + 77  # Top of sprite can reach water_level
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds

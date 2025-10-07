@@ -99,7 +99,9 @@ class Test:
         
         # Clamp to boundaries
         x = max(margin, min(x, self.container_width - margin))
-        min_y = self.water_level + margin
+        # Sprite is 11 lines × 14px/line = 154px tall, anchor at center (77px from top)
+        # Allow top of kraken to reach water surface
+        min_y = self.water_level + 77  # Top of sprite can reach water_level
         max_y = self.container_height - margin
         y = max(min_y, min(y, max_y))
         
@@ -172,7 +174,7 @@ class Test:
             margin = self.kraken_radius + 10
             min_x = margin
             max_x = self.container_width - margin
-            min_y = self.water_level + margin
+            min_y = self.water_level + 77  # Top of sprite can reach water_level
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds
