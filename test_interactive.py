@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Interactive ASCII Desktop Pet Test - Play with the pet in a regular window!
-This allows you to test all pet behaviors without desktop-level positioning.
+Interactive ASCII Underwater Kraken Test - Play with the kraken in a regular window!
+This allows you to test all kraken behaviors without desktop-level positioning.
 """
 
 import tkinter as tk
@@ -9,153 +9,164 @@ import random
 import math
 import platform
 import sys
-from ascii_pet_designs import ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art
+from ascii_pet_designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
+                              render_underwater_environment, is_in_water, add_floating_bubbles)
 
-class TestASCIIDesktopPet:
+class TestASCIIUnderwaterKraken:
     def __init__(self):
         self.root = tk.Tk()
         
-        # Set container dimensions first
-        self.container_width = 700
-        self.container_height = 500
+        # Set container dimensions first (larger for underwater environment)
+        self.container_width = 800
+        self.container_height = 600
         
         self.setup_test_window()
-        self.setup_pet()
+        self.setup_kraken()
         self.setup_animations()
         
-        # Pet state
+        # Kraken state
         self.target_x = self.container_width // 2
-        self.target_y = self.container_height // 2
+        self.target_y = (self.container_height * 2) // 3  # Start in underwater area
         self.current_x = self.container_width // 2
-        self.current_y = self.container_height // 2
+        self.current_y = (self.container_height * 2) // 3
         self.is_dragging = False
         self.drag_start_x = 0
         self.drag_start_y = 0
         self.animation_frame = 0
         self.idle_counter = 0
-        self.state = "idle"  # idle, walking, sleeping, playing
+        self.state = "idle"  # idle, swimming, sleeping, attack
         
-        # ASCII pet properties
-        self.pet_width = 80
-        self.pet_height = 40
-        self.pet_radius = 40
+        # Kraken properties
+        self.kraken_width = 60
+        self.kraken_height = 50
+        self.kraken_radius = 30
+        self.water_level = 0  # Will be set when environment is rendered
         
-        # Test mode variables
+        # Bubble effects
+        self.bubble_timer = 0
+        
+        # Mouse tracking
         self.mouse_in_window = False
         self.last_cursor_x = 0
         self.last_cursor_y = 0
         
-        # Start the main loops
-        self.animate()
-        self.update_behavior()
-    
+        # Status display
+        self.create_status_display()
+        
+        # Start animation loops
+        self.update_animation()
+        
     def setup_test_window(self):
         """Configure the test window"""
-        self.root.title("ASCII Desktop Pet Test - Interactive Mode")
-        self.root.geometry("750x600+100+100")  # Slightly larger for controls
-        self.root.configure(bg='#f0f0f0')
+        self.root.title("ASCII Underwater Kraken Test - Interactive Mode")
+        self.root.geometry("850x700+100+100")  # Larger for underwater environment
+        self.root.configure(bg='#0F1419')  # Dark ocean background
         
         # Add control panel at top
-        control_frame = tk.Frame(self.root, bg='#e0e0e0', height=60)
+        control_frame = tk.Frame(self.root, bg='#1E3A5F', height=60)
         control_frame.pack(fill='x', padx=5, pady=5)
         control_frame.pack_propagate(False)
         
         # Control buttons
-        tk.Label(control_frame, text="🎮 ASCII Pet Controls:", bg='#e0e0e0', 
+        tk.Label(control_frame, text="🐙 Kraken Controls:", bg='#1E3A5F', fg='white',
                 font=('Arial', 10, 'bold')).pack(side='left', padx=5)
         
-        tk.Button(control_frame, text="😸 Play", command=self.trigger_play,
-                 bg='#ffeb3b', font=('Arial', 9)).pack(side='left', padx=2)
-        
         tk.Button(control_frame, text="😴 Sleep", command=self.trigger_sleep,
-                 bg='#e1f5fe', font=('Arial', 9)).pack(side='left', padx=2)
+                 bg='#87CEEB', font=('Arial', 9)).pack(side='left', padx=2)
         
-        tk.Button(control_frame, text="🐾 Walk", command=self.trigger_walk,
-                 bg='#c8e6c9', font=('Arial', 9)).pack(side='left', padx=2)
+        tk.Button(control_frame, text="⚡ Attack", command=self.trigger_attack,
+                 bg='#FF6B35', font=('Arial', 9)).pack(side='left', padx=2)
         
-        tk.Button(control_frame, text="🎯 Random Spot", command=self.random_target,
-                 bg='#f8bbd9', font=('Arial', 9)).pack(side='left', padx=2)
+        tk.Button(control_frame, text="🌊 Swim", command=self.trigger_swim,
+                 bg='#4A90E2', font=('Arial', 9)).pack(side='left', padx=2)
         
-        # Status label
-        self.status_label = tk.Label(control_frame, text="State: idle", 
-                                   bg='#e0e0e0', font=('Arial', 9))
-        self.status_label.pack(side='right', padx=5)
+        tk.Button(control_frame, text="🎯 Random Swim", command=self.random_target,
+                 bg='#2D5016', font=('Arial', 9)).pack(side='left', padx=2)
     
-    def setup_pet(self):
-        """Create the pet display"""
-        # Create canvas for the pet area
+    def setup_kraken(self):
+        """Create the underwater kraken display"""
+        # Create canvas for the underwater area
         self.canvas = tk.Canvas(self.root, width=self.container_width, 
                                height=self.container_height, 
-                               bg='#f8f8f8', highlightthickness=1,
-                               highlightcolor='#d0d0d0')
+                               bg='#0F1419', highlightthickness=1,
+                               highlightcolor='#4A90E2')
         self.canvas.pack(padx=5, pady=5)
         
-        # Add container background with rounded corners effect
-        self.canvas.create_rectangle(5, 5, self.container_width-5, 
-                                   self.container_height-5,
-                                   fill='#fcfcfc', outline='#e0e0e0', width=2)
+        # Render the underwater environment
+        self.water_level = render_underwater_environment(self.canvas, self.container_width, self.container_height)
         
-        # Add corner decorations
-        self.canvas.create_text(self.container_width-20, 20, text='🏠', 
-                              font=('Arial', 12), anchor='ne', fill='#c0c0c0')
+        # Add environment info
+        self.canvas.create_text(20, 20, 
+                              text=f'🌊 Underwater World {self.container_width}x{self.container_height}',
+                              font=('Arial', 8), anchor='nw', fill='#87CEEB')
         
-        self.canvas.create_text(20, self.container_height-20, 
-                              text=f'{self.container_width}x{self.container_height}',
-                              font=('Arial', 8), anchor='sw', fill='#999')
+        # Store kraken starting position (in underwater area)
+        self.kraken_start_x = self.container_width // 2
+        self.kraken_start_y = self.water_level + 100
         
-        # Store pet starting position (center of container)
-        self.pet_start_x = self.container_width // 2
-        self.pet_start_y = self.container_height // 2
+        # Ensure starting position is in water
+        if not is_in_water(self.kraken_start_x, self.kraken_start_y, self.water_level, self.container_height):
+            self.kraken_start_y = self.water_level + 50
         
-        # Create the initial ASCII pet art
+        # Create the initial ASCII kraken art
         self.current_sprite = 'idle1'
-        self.render_pet()
+        self.render_kraken()
         
-        # Bind mouse events
-        self.canvas.bind('<Button-1>', self.start_drag)
-        self.canvas.bind('<B1-Motion>', self.drag_pet)
-        self.canvas.bind('<ButtonRelease-1>', self.end_drag)
-        self.canvas.bind('<Double-Button-1>', self.pet_interaction)
+        # Add initial bubbles
+        add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
         
-        # Track mouse movement for following behavior
-        self.canvas.bind('<Motion>', self.track_mouse)
-        self.canvas.bind('<Enter>', self.mouse_enter)
-        self.canvas.bind('<Leave>', self.mouse_leave)
+        # Mouse events for interaction
+        self.canvas.tag_bind("kraken", "<Button-1>", self.on_kraken_click)
+        self.canvas.tag_bind("kraken", "<Double-Button-1>", self.on_kraken_double_click)
+        self.canvas.tag_bind("kraken", "<ButtonPress-1>", self.start_drag)
+        self.canvas.tag_bind("kraken", "<B1-Motion>", self.do_drag)
+        self.canvas.tag_bind("kraken", "<ButtonRelease-1>", self.end_drag)
         
-        # Add instructions
-        instructions = """
-🎮 How to interact with your ASCII pet:
-• Click and drag the pet around the container
-• Double-click the pet to make it play and get excited
-• Move mouse near pet to make it follow your cursor
-• Use buttons above for direct state control
-• Pet will wander randomly when idle and bored
-• ASCII art changes based on pet's current mood and activity
-        """
-        
-        instruction_label = tk.Label(self.root, text=instructions, 
-                                   justify='left', bg='#f0f0f0', 
-                                   font=('Arial', 9), fg='#666')
-        instruction_label.pack(pady=5)
+        # Track mouse for following behavior
+        self.canvas.bind("<Motion>", self.track_mouse)
+        self.canvas.bind("<Enter>", self.mouse_enter)
+        self.canvas.bind("<Leave>", self.mouse_leave)
     
-    def render_pet(self):
-        """Render the current ASCII pet sprite"""
+    def create_status_display(self):
+        """Create status information display"""
+        status_frame = tk.Frame(self.root, bg='#1E3A5F', height=40)
+        status_frame.pack(fill='x', padx=5, pady=(0, 5))
+        status_frame.pack_propagate(False)
+        
+        self.status_label = tk.Label(status_frame, text=f"State: {self.state}", 
+                                   bg='#1E3A5F', fg='white', font=('Arial', 9))
+        self.status_label.pack(side='left', padx=10, pady=8)
+        
+        coords_text = f"Position: ({int(self.current_x)}, {int(self.current_y)})"
+        self.coords_label = tk.Label(status_frame, text=coords_text, 
+                                   bg='#1E3A5F', fg='#87CEEB', font=('Arial', 9))
+        self.coords_label.pack(side='left', padx=10, pady=8)
+    
+    def render_kraken(self):
+        """Render the current ASCII kraken sprite"""
         sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
         
-        # Get current pet position or use default
-        coords = self.canvas.coords("pet")
+        # Get current kraken position or use default
+        coords = self.canvas.coords("kraken")
         if coords:
             x, y = coords[0], coords[1]
         else:
-            x, y = self.pet_start_x, self.pet_start_y
+            x, y = self.kraken_start_x, self.kraken_start_y
         
-        # Render the ASCII art
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="pet", color="#2c3e50")
+        # Render the ASCII art with underwater coloring
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FF6B35", font_size=6)
     
-    def move_pet_to(self, x, y):
-        """Move pet to specific coordinates"""
-        sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="pet", color="#2c3e50")
+    def move_kraken_to(self, x, y):
+        """Move kraken to specific coordinates (only in water)"""
+        if is_in_water(x, y, self.water_level, self.container_height):
+            sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
+            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FF6B35", font_size=6)
+            self.current_x = x
+            self.current_y = y
+            # Update status display
+            self.coords_label.config(text=f"Position: ({int(x)}, {int(y)})")
+            return True
+        return False
     
     def setup_animations(self):
         """Setup animation sequences"""
@@ -175,199 +186,243 @@ class TestASCIIDesktopPet:
         """Mouse left the canvas"""
         self.mouse_in_window = False
     
-    def start_drag(self, event):
-        """Start dragging the pet"""
-        pet_coords = self.canvas.coords("pet")
-        if pet_coords:
-            pet_x, pet_y = pet_coords[0], pet_coords[1]
-            distance = ((event.x - pet_x)**2 + (event.y - pet_y)**2)**0.5
-            
-            if distance <= self.pet_radius + 15:
-                self.is_dragging = True
-                self.drag_start_x = event.x
-                self.drag_start_y = event.y
-                self.state = "idle"  # Stop other behaviors while dragging
-    
-    def drag_pet(self, event):
-        """Handle pet dragging"""
-        if self.is_dragging:
-            dx = event.x - self.drag_start_x
-            dy = event.y - self.drag_start_y
-            
-            pet_coords = self.canvas.coords("pet")
-            if pet_coords:
-                new_x = pet_coords[0] + dx
-                new_y = pet_coords[1] + dy
-                
-                # Keep pet within container bounds
-                margin = self.pet_radius + 10
-                new_x = max(margin, min(new_x, self.container_width - margin))
-                new_y = max(margin, min(new_y, self.container_height - margin))
-                
-                # Move the pet
-                self.move_pet_to(new_x, new_y)
-                
-                # Update drag start position for smooth dragging
-                self.drag_start_x = event.x
-                self.drag_start_y = event.y
-                
-    def end_drag(self, event):
-        """End dragging"""
-        self.is_dragging = False
-    
-    def pet_interaction(self, event):
-        """Handle double-click interaction"""
-        pet_coords = self.canvas.coords("pet")
-        if pet_coords:
-            pet_x, pet_y = pet_coords[0], pet_coords[1]
-            distance = ((event.x - pet_x)**2 + (event.y - pet_y)**2)**0.5
-            
-            if distance <= self.pet_radius + 20:
-                self.trigger_play()
-                
-    def trigger_play(self):
-        """Trigger play state"""
-        self.state = "play"
+    def trigger_attack(self):
+        """Trigger attack behavior"""
+        self.state = "attack"
+        self.animation_frame = 0
         self.idle_counter = 0
-        
+        print("⚡ Kraken is attacking!")
+    
     def trigger_sleep(self):
-        """Trigger sleep state"""
-        self.state = "sleep"
+        """Trigger sleep behavior"""
+        self.state = "sleeping"
+        self.animation_frame = 0
         self.idle_counter = 0
-        
-    def trigger_walk(self):
-        """Trigger walking to cursor or random spot"""
-        if self.mouse_in_window:
-            self.set_target(self.last_cursor_x, self.last_cursor_y)
-        else:
-            self.random_target()
+        print("😴 Kraken is resting on the ocean floor...")
     
+    def trigger_swim(self):
+        """Trigger swimming behavior"""
+        self.state = "swimming"
+        self.animation_frame = 0
+        self.idle_counter = 0
+        print("🌊 Kraken is swimming!")
+
     def random_target(self):
-        """Set random target within container"""
-        margin = self.pet_radius + 25
-        self.target_x = random.randint(margin, self.container_width - margin)
-        self.target_y = random.randint(margin, self.container_height - margin)
-        self.state = "walking"
-        
-    def set_target(self, x, y):
-        """Set specific target coordinates"""
-        margin = self.pet_radius + 15
-        self.target_x = max(margin, min(x, self.container_width - margin))
-        self.target_y = max(margin, min(y, self.container_height - margin))
-        self.state = "walking"
-    
-    def follow_cursor(self):
-        """Make pet follow cursor when idle"""
-        if (self.is_dragging or self.state not in ["idle", "walking"] or 
-            not self.mouse_in_window):
-            return
+        """Set a random target location in water"""
+        # Keep trying until we find a water location
+        max_attempts = 20
+        for _ in range(max_attempts):
+            padding = self.kraken_radius
+            test_x = random.randint(padding, self.container_width - padding)
+            test_y = random.randint(self.water_level + padding, self.container_height - padding)
             
-        pet_coords = self.canvas.coords("pet")
-        if pet_coords:
-            pet_x, pet_y = pet_coords[0], pet_coords[1]
-            cursor_x, cursor_y = self.last_cursor_x, self.last_cursor_y
-            
-            # Calculate distance to cursor
-            distance = math.sqrt((cursor_x - pet_x)**2 + (cursor_y - pet_y)**2)
-            
-            # Follow if cursor is close but not too close
-            if 40 < distance < 120:
-                self.set_target(cursor_x, cursor_y)
-    
-    def update_position(self):
-        """Smoothly move pet towards target"""
-        if self.state == "walking" and not self.is_dragging:
-            pet_coords = self.canvas.coords("pet")
-            if pet_coords:
-                current_pet_x, current_pet_y = pet_coords[0], pet_coords[1]
-                
-                # Move towards target
-                dx = self.target_x - current_pet_x
-                dy = self.target_y - current_pet_y
-                distance = math.sqrt(dx**2 + dy**2)
-                
-                if distance > 5:
-                    # Move step by step
-                    step_size = min(2.5, distance / 6)
-                    new_x = current_pet_x + (dx / distance) * step_size
-                    new_y = current_pet_y + (dy / distance) * step_size
-                    
-                    # Keep within container bounds
-                    margin = self.pet_radius + 10
-                    new_x = max(margin, min(new_x, self.container_width - margin))
-                    new_y = max(margin, min(new_y, self.container_height - margin))
-                    
-                    # Move the pet
-                    self.move_pet_to(new_x, new_y)
-                else:
-                    self.state = "idle"
-    
-    def wander_randomly(self):
-        """Make pet wander to a random spot in the container"""
-        if not self.is_dragging:
-            self.random_target()
-    
-    def update_behavior(self):
-        """Update pet behavior and state"""
-        self.idle_counter += 1
+            if is_in_water(test_x, test_y, self.water_level, self.container_height):
+                self.target_x = test_x
+                self.target_y = test_y
+                self.state = "swimming"
+                self.animation_frame = 0
+                self.idle_counter = 0
+                print(f"🌊 Kraken swimming to ({self.target_x}, {self.target_y})")
+                return
         
-        # Update status
-        self.status_label.config(text=f"State: {self.state}")
-        
-        # Random behavior changes
-        if self.idle_counter > 80:  # About 8 seconds in test mode
-            if self.state == "idle":
-                rand = random.random()
-                if rand < 0.15:
-                    self.state = random.choice(["sleep", "play"])
-                elif rand < 0.3:  # Random wandering
-                    self.wander_randomly()
-            elif self.state in ["sleep", "play"]:
-                # Return to idle after a while
-                if random.random() < 0.2:
-                    self.state = "idle"
-            self.idle_counter = 0
-            
-        # Follow cursor behavior
-        self.follow_cursor()
-        
-        # Update position
-        self.update_position()
-        
-        # Schedule next behavior update
-        self.root.after(100, self.update_behavior)
-    
-    def animate(self):
-        """Animate the pet sprite"""
-        # Get current animation sequence
-        current_animation = self.animations.get(self.state, self.animations['idle'])
+        print("Could not find valid water location for kraken")
+
+    def update_animation(self):
+        """Update kraken animation based on current state"""
+        # Handle different states
+        if self.state == "idle":
+            self.handle_idle_state()
+        elif self.state == "swimming":
+            self.handle_swimming_state()
+        elif self.state == "sleeping":
+            self.handle_sleeping_state()
+        elif self.state == "attack":
+            self.handle_attack_state()
         
         # Update animation frame
-        sprite_name = current_animation[self.animation_frame % len(current_animation)]
-        self.current_sprite = sprite_name
-        
-        # Render the updated sprite
-        self.render_pet()
-        
-        # Add a subtle bounce effect when walking
-        if self.state == "walking" and self.animation_frame % 4 < 2:
-            pet_coords = self.canvas.coords("pet")
-            if pet_coords and len(pet_coords) >= 2:
-                bounce_offset = 2 if self.animation_frame % 4 == 0 else -2
-                current_x, current_y = pet_coords[0], pet_coords[1]
-                self.move_pet_to(current_x, current_y + bounce_offset)
-        
-        # Advance animation frame
         self.animation_frame += 1
+        if self.animation_frame >= 20:  # Reset every 20 frames
+            self.animation_frame = 0
         
-        # Schedule next frame (slower for sleep)
-        delay = 1200 if self.state == "sleep" else 500
-        self.root.after(delay, self.animate)
+        # Add floating bubbles occasionally
+        self.bubble_timer += 1
+        if self.bubble_timer >= 30:  # Every 6 seconds
+            add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
+            self.bubble_timer = 0
+        
+        # Update status display
+        self.status_label.config(text=f"State: {self.state}")
+        
+        # Continue animation
+        self.root.after(200, self.update_animation)
+
+    def handle_idle_state(self):
+        """Handle kraken idle behavior"""
+        self.idle_counter += 1
+        
+        # Idle animation - gentle tentacle movement
+        if self.animation_frame < 10:
+            self.current_sprite = 'idle1'
+        else:
+            self.current_sprite = 'idle2'
+        
+        self.move_kraken_to(int(self.current_x), int(self.current_y))
+        
+        # Occasionally swim to a random spot when idle too long
+        if self.idle_counter > 50:  # After 10 seconds of idle
+            if random.random() < 0.3:  # 30% chance
+                self.random_target()
+            else:
+                self.idle_counter = 0  # Reset counter
+    
+    def handle_swimming_state(self):
+        """Handle kraken swimming behavior"""
+        # Move towards target
+        dx = self.target_x - self.current_x
+        dy = self.target_y - self.current_y
+        distance = math.sqrt(dx*dx + dy*dy)
+        
+        if distance > 5:  # Still moving
+            # Move step by step
+            step_size = 2  # Slower underwater movement
+            if distance > 0:
+                new_x = self.current_x + (dx / distance) * step_size
+                new_y = self.current_y + (dy / distance) * step_size
+                
+                # Only move if the new position is in water
+                if is_in_water(new_x, new_y, self.water_level, self.container_height):
+                    self.current_x = new_x
+                    self.current_y = new_y
+                else:
+                    # Hit boundary, stop swimming
+                    self.state = "idle"
+                    self.animation_frame = 0
+                    return
+            
+            # Use swimming animation
+            if self.animation_frame < 10:
+                self.current_sprite = 'swim1'
+            else:
+                self.current_sprite = 'swim2'
+            
+            self.move_kraken_to(int(self.current_x), int(self.current_y))
+        else:
+            # Reached target, go back to idle
+            self.state = "idle"
+            self.animation_frame = 0
+            self.idle_counter = 0
+            print("🌊 Kraken reached destination")
+    
+    def handle_sleeping_state(self):
+        """Handle kraken sleeping behavior"""
+        # Sleeping animation (slower, resting on ocean floor)
+        if self.animation_frame < 15:
+            self.current_sprite = 'sleep1'
+        else:
+            self.current_sprite = 'sleep2'
+        
+        self.move_kraken_to(int(self.current_x), int(self.current_y))
+        
+        # Wake up after a while
+        if self.animation_frame >= 19 and random.random() < 0.1:  # 10% chance to wake up
+            self.state = "idle"
+            self.animation_frame = 0
+            self.idle_counter = 0
+            print("🐙 Kraken awakened from the depths!")
+
+    def handle_attack_state(self):
+        """Handle kraken attack behavior"""
+        # Attack behavior - tentacle thrashing
+        if self.animation_frame < 3:
+            self.current_sprite = 'attack1'
+        elif self.animation_frame < 6:
+            self.current_sprite = 'attack2'
+        elif self.animation_frame < 9:
+            self.current_sprite = 'attack3'
+        elif self.animation_frame < 12:
+            self.current_sprite = 'attack2'
+        else:
+            self.current_sprite = 'attack1'
+        
+        # Add some aggressive movement during attack
+        if self.animation_frame % 3 == 0:
+            offset_x = random.randint(-8, 8)
+            offset_y = random.randint(-5, 5)
+            new_x = max(self.kraken_radius, min(self.container_width - self.kraken_radius, 
+                                              self.current_x + offset_x))
+            new_y = max(self.water_level + self.kraken_radius, 
+                       min(self.container_height - self.kraken_radius, self.current_y + offset_y))
+            
+            # Only move if still in water
+            if is_in_water(new_x, new_y, self.water_level, self.container_height):
+                self.current_x = new_x
+                self.current_y = new_y
+        
+        self.move_kraken_to(int(self.current_x), int(self.current_y))
+        
+        # Stop attacking after a while
+        if self.animation_frame >= 19:
+            self.state = "idle"
+            self.animation_frame = 0
+            self.idle_counter = 0
+            print("⚡ Kraken finished attacking")
+    
+    def on_kraken_click(self, event):
+        """Handle clicks on the kraken"""
+        self.trigger_swim()
+    
+    def on_kraken_double_click(self, event):
+        """Handle double clicks on the kraken"""
+        self.trigger_attack()
+
+    def start_drag(self, event):
+        """Start dragging the kraken"""
+        self.is_dragging = True
+        self.drag_start_x = event.x
+        self.drag_start_y = event.y
+        print("🐙 Started dragging kraken")
+    
+    def do_drag(self, event):
+        """Handle kraken dragging"""
+        if self.is_dragging:
+            # Calculate new position
+            new_x = self.current_x + (event.x - self.drag_start_x)
+            new_y = self.current_y + (event.y - self.drag_start_y)
+            
+            # Only allow dragging within water areas
+            if is_in_water(new_x, new_y, self.water_level, self.container_height):
+                # Keep within bounds
+                new_x = max(self.kraken_radius, min(self.container_width - self.kraken_radius, new_x))
+                new_y = max(self.water_level + self.kraken_radius, 
+                           min(self.container_height - self.kraken_radius, new_y))
+                
+                # Update position
+                self.current_x = new_x
+                self.current_y = new_y
+                self.target_x = new_x
+                self.target_y = new_y
+                
+                # Use swimming sprite while dragging
+                self.current_sprite = 'swim1'
+                self.move_kraken_to(int(self.current_x), int(self.current_y))
+                
+                # Update drag start for next movement
+                self.drag_start_x = event.x
+                self.drag_start_y = event.y
+    
+    def end_drag(self, event):
+        """End kraken dragging"""
+        if self.is_dragging:
+            self.is_dragging = False
+            self.state = "idle"
+            self.animation_frame = 0
+            self.idle_counter = 0
+            print(f"🐙 Kraken released at ({int(self.current_x)}, {int(self.current_y)})")
     
     def run(self):
         """Start the test application"""
-        print("🎮 ASCII Desktop Pet Test Mode")
-        print("• Window will open with interactive ASCII pet")
+        print("🎮 ASCII Underwater Kraken Test Mode")
+        print("• Window will open with interactive ASCII kraken")
         print("• Try all the controls and interactions")
         print("• Close window when done testing")
         print()
@@ -384,10 +439,22 @@ class TestASCIIDesktopPet:
         self.root.mainloop()
 
 if __name__ == "__main__":
+    print("Starting ASCII Underwater Kraken Interactive Test...")
+    print("Controls:")
+    print("  ⚡ Attack - Make kraken attack")
+    print("  😴 Sleep - Make kraken rest on ocean floor")
+    print("  🌊 Swim - Make kraken swim around")
+    print("  🎯 Random Swim - Send kraken to random water location")
+    print("  🔄 Drag - Click and drag the kraken (water areas only)")
+    print("  👁️ Double-click - Make kraken attack")
+    print()
+    
     try:
-        pet = TestASCIIDesktopPet()
-        pet.run()
+        kraken = TestASCIIUnderwaterKraken()
+        kraken.run()
+    except KeyboardInterrupt:
+        print("\n👋 Test interrupted by user")
     except Exception as e:
-        print(f"Error running test: {e}")
-        print("Make sure you have a display available (not in headless mode)")
-        sys.exit(1)
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()

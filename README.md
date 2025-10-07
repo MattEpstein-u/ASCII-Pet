@@ -1,20 +1,30 @@
-# ASCII Desktop Pet 🐱
+# ASCII Underwater Kraken �
 
-A cute, simple ASCII art desktop pet for macOS, Windows, and Linux that lives in a small container on your desktop background and provides companionship while you work!
+A mysterious, deep-sea ASCII art kraken that dwells in an underwater environment on your desktop! This aquatic companion lives in a beautiful underwater world with swaying seaweed, floating bubbles, and ocean depths.
 
-Unlike other desktop pets that use simple emojis, this pet features beautiful ASCII art animations that bring your desktop companion to life with detailed expressions and movements.
+Unlike simple desktop pets, this kraken features intricate ASCII art tentacles and is restricted to move only in the underwater portions of its environment, creating a realistic aquatic ecosystem on your desktop.
 
 ## Features
 
-- **Beautiful ASCII Art**: Detailed ASCII art animations instead of simple emojis
-- **Small Container**: Lives in a compact area (1/8 screen size) in desktop corner
-- **Desktop Background**: Only visible when all apps are minimized to desktop
+- **Underwater Environment**: Beautiful ASCII art ocean scene with surface waves, underwater depths, seaweed forests, and floating bubbles
+- **Water Physics**: Kraken can only move in underwater areas - realistic environmental constraints
+- **Detailed ASCII Art**: Intricate tentacle animations and creature expressions
+- **Aquatic Behaviors**: Swimming, resting on ocean floor, tentacle attacks, and idle floating
+- **Environmental Effects**: Animated bubbles, swaying seaweed, ocean waves
+- **Desktop Integration**: Lives on your desktop background in a translucent underwater window
 - **Cross-Platform**: Works on macOS, Windows, and Linux
-- **Interactive**: Click and drag to move within container, double-click to play
-- **Smart Behavior**: Follows your cursor and wanders randomly in container
-- **Multiple States**: Idle, walking, sleeping, and playing animations
+- **Interactive**: Click to make it swim, drag within water areas, double-click for attack mode
 - **Auto-Startup**: Automatically starts when you log in
-- **Non-Intrusive**: Subtle design that blends with your wallpaper
+- **Non-Intrusive**: Subtle underwater scene that complements your wallpaper
+
+## Kraken Behaviors
+
+- **🌊 Swimming**: Gracefully moves through water with flowing tentacle animations
+- **😴 Resting**: Settles on the ocean floor in a peaceful state
+- **⚡ Attack**: Aggressive tentacle thrashing when threatened or excited
+- **🫧 Bubble Effects**: Creates bubbles during movement and breathing
+- **🌿 Environment Interaction**: Navigates around seaweed and ocean floor terrain
+- **🎯 Water Boundaries**: Cannot move above the water line - true aquatic behavior
 
 ## Installation
 
@@ -56,31 +66,31 @@ Unlike other desktop pets that use simple emojis, this pet features beautiful AS
    ./install.sh
    ```
 
-That's it! Your ASCII desktop pet will start immediately and will automatically appear every time you restart your computer.
+Your underwater kraken will start immediately and appear in its aquatic habitat every time you restart your computer.
 
 ## Manual Usage
 
 ### macOS/Linux
-- **Start the pet**: `./start_pet.sh`
-- **Stop the pet**: Use Activity Monitor or `killall Python`
+- **Start the kraken**: `./start_pet.sh`
+- **Stop the kraken**: Use Activity Monitor or `killall Python`
 - **Uninstall**: `./uninstall.sh`
 
 ### Windows
-- **Start the pet**: `start_pet.bat`
-- **Stop the pet**: Use Task Manager to end Python process
+- **Start the kraken**: `start_pet.bat`
+- **Stop the kraken**: Use Task Manager to end Python process
 - **Uninstall**: `uninstall_windows.bat`
 
-## Interacting with Your ASCII Pet
+## Interacting with Your Underwater Kraken
 
-- **Container**: Pet lives in a small, subtle container in the corner of your desktop
-- **Visibility**: Only appears when all applications are minimized to show the desktop
-- **Move**: Click and drag the pet to move it within its container space
-- **Play**: Double-click on the pet to make it happy and playful
-- **Follow**: Move your cursor near the container and the pet will follow
-- **Wandering**: Pet randomly explores different spots within its container
-- **Automatic behaviors**: Pet will randomly sleep, play, and idle
-- **ASCII Art**: Enjoy detailed ASCII art animations that change based on mood
-- **Subtle design**: Container blends nicely with most desktop wallpapers
+- **Underwater World**: Kraken lives in a detailed ASCII underwater environment
+- **Water Movement**: Can only swim in underwater areas - true aquatic physics!
+- **Swimming**: Click on the kraken to make it swim to a new location
+- **Attack Mode**: Double-click to trigger aggressive tentacle thrashing
+- **Drag & Drop**: Click and drag the kraken within water areas only
+- **Ocean Floor**: Kraken rests on the sandy bottom when sleeping
+- **Bubble Effects**: Watch bubbles float up during movement and breathing
+- **Seaweed Forest**: Navigate through swaying underwater vegetation
+- **Environmental Immersion**: Realistic underwater ecosystem on your desktop
 
 ## Requirements
 
@@ -107,25 +117,25 @@ That's it! Your ASCII desktop pet will start immediately and will automatically 
    %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
    ```
 
-### 🎮 Interactive Testing Mode - **TRY IT FIRST!**
-**Test all pet behaviors in a regular window before installing:**
+## 🎮 Interactive Testing Mode - **TRY THE KRAKEN FIRST!**
 
-**Quick Start:**
+**Test the underwater kraken in a regular window before installing:**
+
 ```bash
-python3 test_interactive.py    # Direct interactive test
+python3 test_interactive.py    # Interactive kraken test
 # OR
-python3 play_test.py          # Guided launcher with instructions
+python3 demo.py               # Animation preview
 ```
 
-**What you can test:**
-- 🎮 **Control buttons** - Trigger play, sleep, walk, and random movement
-- 🖱️ **Mouse following** - Move mouse near pet to make it follow
-- 🎯 **Click and drag** - Move the pet around the container
-- 🏠 **Container preview** - See exactly how it will look on desktop  
-- 📊 **Live status** - See current pet state in real-time
-- ✨ **All behaviors** - Test wandering, animations, and interactions
-- 🎨 **ASCII Art** - Experience beautiful ASCII art animations
-- 🔄 **No restart needed** - Test everything without installation!
+**What you can experience:**
+- 🐙 **Kraken Controls** - Swimming, attacking, sleeping behaviors
+- 🌊 **Water Physics** - See how movement is restricted to underwater areas
+- 🫧 **Bubble Effects** - Watch bubbles float through the water
+- � **Underwater Environment** - Explore seaweed forests and ocean floor
+- ⚡ **Attack Mode** - Trigger aggressive tentacle animations
+- 🎯 **Water Boundaries** - Experience realistic aquatic movement constraints
+- 🖱️ **Drag and Drop** - Move the kraken within water areas only
+- � **Live Status** - Monitor kraken state and position in real-time
 
 ### Preview and Test the Pet
 See what your ASCII pet will look like and test its behavior before installing:
@@ -151,10 +161,20 @@ python3 test_compatibility.py
 python test_compatibility.py
 ```
 
-### Pet appears but doesn't respond
-- Make sure you're clicking directly on the ASCII art
-- Try double-clicking to wake it up
-- Check that the container window is active
+### Kraken appears but doesn't respond
+- Make sure you're clicking directly on the ASCII kraken tentacles
+- Try double-clicking to trigger attack mode
+- Check that the underwater window is active
+
+### ASCII art looks distorted
+- Make sure you're using a monospace font in your terminal
+- The underwater environment is optimized for smaller font sizes (6pt)
+- Try adjusting terminal font size if the kraken appears misaligned
+
+### Water physics not working
+- Ensure you're trying to move the kraken only in blue/underwater areas
+- The kraken cannot move above the water line - this is intentional!
+- Try clicking deeper in the underwater area
 
 ### Permission issues (macOS)
 If you get permission errors, you may need to give Terminal or Python accessibility permissions:
@@ -162,36 +182,24 @@ If you get permission errors, you may need to give Terminal or Python accessibil
 2. Click on "Accessibility" 
 3. Add Terminal or Python to the list of allowed apps
 
-### ASCII art looks wrong
-- Make sure you're using a monospace font in your terminal
-- Try adjusting terminal font size if the pet appears distorted
-- The ASCII art is optimized for Courier and similar monospace fonts
-
 ## Customization
 
-You can customize your ASCII pet by editing the files:
+You can customize your underwater kraken by editing the files:
 
-- **Change ASCII art**: Modify `ascii_pet_designs.py` to create new pet designs
-- **Adjust behavior timing**: Change values in the `update_behavior()` function in `desktop_pet.py`
-- **Modify animations**: Edit the animation sequences in `ascii_pet_designs.py`
-- **Container size**: Adjust the calculation in `calculate_container_size()` method
+- **Change ASCII art**: Modify `ascii_pet_designs.py` to create new kraken designs or environment elements
+- **Adjust water level**: Change the water boundary calculations in the environment rendering
+- **Add sea creatures**: Create new ASCII art for fish, coral, or other ocean life
+- **Modify behaviors**: Edit swimming patterns and animation sequences
+- **Environment effects**: Add new bubble patterns or seaweed animations
 
 ## Files Included
 
-- `desktop_pet.py` - Main ASCII pet application (cross-platform)
-- `ascii_pet_designs.py` - ASCII art sprites and animation definitions
-- `demo.py` - Preview script to see ASCII pet animations
-- `test_container.py` - Container size and position preview
-- `test_interactive.py` - **Interactive test mode - play with the ASCII pet!**
+- `desktop_pet.py` - Main underwater kraken application (ASCIIUnderwaterKraken class)
+- `ascii_pet_designs.py` - Kraken ASCII art sprites, underwater environment, and water physics
+- `demo.py` - Preview script to see kraken animations and underwater world
+- `test_interactive.py` - **Interactive test mode - play with the underwater kraken!**
 - `test_compatibility.py` - System compatibility checker
-- `play_test.py` - Quick launcher for interactive testing
-- `start_pet.sh` - macOS/Linux startup script
-- `start_pet.bat` - Windows startup script
-- `install.sh` - macOS/Linux installation script
-- `install_windows.bat` - Windows installation script
-- `uninstall.sh` - macOS/Linux removal script
-- `uninstall_windows.bat` - Windows removal script
-- `com.user.asciidesktoppet.plist` - macOS LaunchAgent configuration
+- Installation and startup scripts for all platforms
 
 ## Cross-Platform Notes
 
@@ -220,51 +228,101 @@ This ASCII desktop pet is designed to work seamlessly on macOS, Windows, and Lin
 
 ## ASCII Art Gallery
 
-The pet features several different ASCII art states:
+The kraken features several detailed underwater states:
 
-**Idle States:**
+**Idle Floating:**
 ```
-   /\_/\  
-  ( o.o ) 
-   > ^ <  
-```
-
-**Walking Animation:**
-```
-   /\_/\  
-  ( o.o ) 
-   > ^ <  
-    / \   
-```
-
-**Sleeping:**
-```
-  /\_/\   
- ( -.- )  
-  \___/   
+    .-""-.
+   /      \
+  |  o  o  |
+  |   <    |
+  |  ___   |
+   \  ~~~  /
+    '-...-'
+     |||||
+  ===V|||V===
+     |||||
 ```
 
-**Playing:**
+**Swimming Animation:**
 ```
-   /\_/\  
-  ( ^o^ ) 
-   >***<  
-    !!!   
+    .-""-.     
+   /      \    
+  |  O  O  |   ~ ~ ~
+  |   ^    |  
+  |  ___   |  
+   \  ~~~  /   
+    '-...-'    
+   ~~|||||~~   
+  ===V|||V===  
+   ~~|||||~~   
 ```
 
-## Differences from Mac-Pet
+**Attack Mode:**
+```
+    .-""-.
+   /  ^^  \
+  | >O  O< |
+  |   V    |
+  |  \^/   |
+   \  ~~~  /
+    '-!!-'
+    /|||||\\
+  ===V|||V===
+    \\|||||/
+```
 
-This ASCII-Pet is based on the [Mac-pet repository](https://github.com/MattEpstein-u/Mac-pet) but with these key improvements:
+**Resting on Ocean Floor:**
+```
+    .-""-.
+   /      \
+  |  -  -  |
+  |   u    |
+  |  ___   |
+   \  ~~~  /
+    '-...-'
+     |||||
+════V|||V════
+~~~~~~~~~~~~~~~~
+```
 
-- **ASCII Art**: Replaced simple emoji sprites with detailed ASCII art
-- **Enhanced Animations**: More expressive character states and movements
-- **Better Visual Appeal**: More detailed and engaging pet appearance
-- **Same Functionality**: All the beloved features of the original (cursor following, interactions, behaviors)
-- **Cross-Platform**: Works on Linux in addition to macOS and Windows
+**Underwater Environment:**
+```
+~~~~~~~~~~~~~~~~~ (surface waves)
+🌊🌊🌊🌊🌊🌊🌊🌊🌊
+                     ○ ○ (bubbles)
+     |     |    ○
+     |     |         (seaweed)
+     |     |    
+   __|     |__       
+════════════════     (ocean floor)
+```
+
+## Evolution from ASCII Pet
+
+This underwater kraken evolved from the original ASCII Pet concept with these transformations:
+
+- **Environment**: Added complete underwater ecosystem with water physics
+- **Movement Constraints**: Kraken restricted to water areas only - realistic aquatic behavior
+- **Creature Design**: Transformed from land animal to deep-sea kraken with tentacles
+- **Environmental Effects**: Added bubbles, seaweed, waves, and ocean floor
+- **Aquatic Behaviors**: Swimming replaces walking, ocean floor resting, tentacle attacks
+- **Visual Immersion**: Dark underwater color scheme with oceanic atmosphere
+
+## Based on Mac-Pet
+
+This underwater kraken is inspired by the [Mac-pet repository](https://github.com/MattEpstein-u/Mac-pet) but completely transformed:
+
+- **Aquatic Environment**: Complete underwater world instead of simple container
+- **Water Physics**: Movement restricted to underwater areas
+- **Marine Creature**: Deep-sea kraken instead of land animal
+- **Environmental Immersion**: Rich underwater ecosystem with multiple elements
+- **Same Core Features**: Cursor following, interactions, desktop integration
+- **Enhanced ASCII Art**: More detailed creature and environment designs
 
 ## Contributing
 
-Feel free to contribute new ASCII art designs, behaviors, or platform improvements!
+Contribute new sea creatures, underwater environments, marine behaviors, or aquatic effects!
 
 ## License
 
@@ -272,6 +330,6 @@ This project is open source. Feel free to modify and distribute.
 
 ---
 
-Enjoy your new ASCII desktop companion! 🐱
+Dive into the depths with your new underwater ASCII kraken companion! �🌊
 
-*Based on the original Mac-pet concept but enhanced with beautiful ASCII art for a more engaging desktop experience.*
+*Evolved from the Mac-pet concept into an immersive underwater ecosystem experience.*

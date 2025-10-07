@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-ASCII Desktop Pet - Cross-platform Desktop Companion
-A cute ASCII art pet that sits on your desktop background and provides companionship.
+ASCII Underwater Kraken - Cross-platform Desktop Companion
+A majestic ASCII art kraken that lives in an underwater environment on your desktop.
 Only visible when all applications are minimized to desktop.
 
-Based on the Mac-pet repository but using ASCII art instead of emoji sprites.
+Transformed from a simple pet into an underwater kraken in a detailed ASCII ocean.
 """
 
 import tkinter as tk
@@ -12,9 +12,10 @@ import random
 import math
 import platform
 import sys
-from ascii_pet_designs import ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art
+from ascii_pet_designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
+                              render_underwater_environment, is_in_water, add_floating_bubbles)
 
-class ASCIIDesktopPet:
+class ASCIIUnderwaterKraken:
     def __init__(self):
         self.root = tk.Tk()
         self.calculate_container_size()
@@ -22,22 +23,26 @@ class ASCIIDesktopPet:
         self.setup_pet()
         self.setup_animations()
         
-        # Pet state
+        # Kraken state
         self.target_x = self.container_width // 2
-        self.target_y = self.container_height // 2
+        self.target_y = (self.container_height * 2) // 3  # Start in underwater area
         self.current_x = self.container_width // 2
-        self.current_y = self.container_height // 2
+        self.current_y = (self.container_height * 2) // 3
         self.is_dragging = False
         self.drag_start_x = 0
         self.drag_start_y = 0
         self.animation_frame = 0
         self.idle_counter = 0
-        self.state = "idle"  # idle, walking, sleeping, playing
+        self.state = "idle"  # idle, swimming, sleeping, attack
         
-        # ASCII pet properties
-        self.pet_width = 80  # Approximate width of ASCII art
-        self.pet_height = 40  # Approximate height of ASCII art
-        self.pet_radius = 40  # For collision detection
+        # Kraken properties
+        self.kraken_width = 60  # Smaller for detailed ASCII art
+        self.kraken_height = 50
+        self.kraken_radius = 30  # For collision detection
+        self.water_level = 0  # Will be set when environment is rendered
+        
+        # Bubble effects
+        self.bubble_timer = 0
         
         # Start the main loops
         self.animate()
@@ -56,9 +61,9 @@ class ASCIIDesktopPet:
         # Make container roughly square, but constrain to reasonable dimensions
         container_side = int(container_area ** 0.5)
         
-        # Constrain to reasonable limits (minimum 300x300 for ASCII art, maximum 700x500)
-        self.container_width = max(300, min(container_side, 700))
-        self.container_height = max(300, min(container_side, 500))
+        # Constrain to reasonable limits (larger for underwater environment)
+        self.container_width = max(400, min(container_side, 800))
+        self.container_height = max(350, min(container_side, 600))
         
         # Position container in bottom-right corner with some margin
         margin = 50
@@ -70,7 +75,7 @@ class ASCIIDesktopPet:
     
     def setup_window(self):
         """Configure the main window"""
-        self.root.title("ASCII Desktop Pet")
+        self.root.title("ASCII Underwater Kraken")
         
         # Set window size and position using container dimensions
         geometry = f"{self.container_width}x{self.container_height}+{self.container_x}+{self.container_y}"
@@ -127,108 +132,114 @@ class ASCIIDesktopPet:
         self.root.configure(highlightbackground='#d5d5d5', highlightcolor='#d5d5d5', highlightthickness=1)
     
     def setup_pet(self):
-        """Create the pet display"""
+        """Create the underwater kraken display"""
         # Create canvas that fills the container
         self.canvas = tk.Canvas(self.root, width=self.container_width, height=self.container_height, 
-                               bg='#f5f5f5', highlightthickness=0)
+                               bg='#0F1419', highlightthickness=0)  # Dark ocean background
         self.canvas.pack(fill='both', expand=True)
         
-        # Add a subtle container background with rounded corners effect
-        self.canvas.create_rectangle(5, 5, self.container_width-5, self.container_height-5,
-                                   fill='#fafafa', outline='#e5e5e5', width=1)
+        # Render the underwater environment
+        self.water_level = render_underwater_environment(self.canvas, self.container_width, self.container_height)
         
-        # Add a small label in the corner to indicate this is the pet's home
-        self.canvas.create_text(self.container_width-15, 15, text='🏠', 
-                              font=('Arial', 10), anchor='ne', fill='#c0c0c0')
+        # Store kraken starting position (in underwater area)
+        self.kraken_start_x = self.container_width // 2
+        self.kraken_start_y = self.water_level + 100  # Well below water surface
         
-        # Store pet starting position (center of container)
-        self.pet_start_x = self.container_width // 2
-        self.pet_start_y = self.container_height // 2
+        # Ensure starting position is in water
+        if not is_in_water(self.kraken_start_x, self.kraken_start_y, self.water_level, self.container_height):
+            self.kraken_start_y = self.water_level + 50
         
-        # Create the initial ASCII pet art
+        # Create the initial ASCII kraken art
         self.current_sprite = 'idle1'
-        self.render_pet()
+        self.render_kraken()
+        
+        # Add initial bubbles
+        add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
         
         # Bind mouse events to the entire canvas
         self.canvas.bind('<Button-1>', self.start_drag)
-        self.canvas.bind('<B1-Motion>', self.drag_pet)
+        self.canvas.bind('<B1-Motion>', self.drag_kraken)
         self.canvas.bind('<ButtonRelease-1>', self.end_drag)
-        self.canvas.bind('<Double-Button-1>', self.pet_interaction)
+        self.canvas.bind('<Double-Button-1>', self.kraken_interaction)
     
-    def render_pet(self):
-        """Render the current ASCII pet sprite"""
+    def render_kraken(self):
+        """Render the current ASCII kraken sprite"""
         sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
         
-        # Get current pet position or use default
-        coords = self.canvas.coords("pet")
+        # Get current kraken position or use default
+        coords = self.canvas.coords("kraken")
         if coords:
             x, y = coords[0], coords[1]
         else:
-            x, y = self.pet_start_x, self.pet_start_y
+            x, y = self.kraken_start_x, self.kraken_start_y
         
-        # Render the ASCII art
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="pet", color="#2c3e50")
+        # Render the ASCII art with underwater coloring
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FF6B35", font_size=6)
     
     def setup_animations(self):
         """Setup animation sequences"""
         self.animations = ASCII_ANIMATIONS
     
     def start_drag(self, event):
-        """Start dragging the pet"""
-        # Check if click is near the pet
-        pet_coords = self.canvas.coords("pet")
-        if pet_coords:
-            pet_x, pet_y = pet_coords[0], pet_coords[1]
-            distance = ((event.x - pet_x)**2 + (event.y - pet_y)**2)**0.5
+        """Start dragging the kraken"""
+        # Check if click is near the kraken
+        kraken_coords = self.canvas.coords("kraken")
+        if kraken_coords:
+            kraken_x, kraken_y = kraken_coords[0], kraken_coords[1]
+            distance = ((event.x - kraken_x)**2 + (event.y - kraken_y)**2)**0.5
             
-            if distance <= self.pet_radius + 15:  # Allow some margin for clicking
+            if distance <= self.kraken_radius + 15:  # Allow some margin for clicking
                 self.is_dragging = True
                 self.drag_start_x = event.x
                 self.drag_start_y = event.y
     
-    def drag_pet(self, event):
-        """Handle pet dragging"""
+    def drag_kraken(self, event):
+        """Handle kraken dragging (only in water)"""
         if self.is_dragging:
-            # Calculate new pet position within container
+            # Calculate new kraken position within container
             dx = event.x - self.drag_start_x
             dy = event.y - self.drag_start_y
             
-            pet_coords = self.canvas.coords("pet")
-            if pet_coords:
-                new_x = pet_coords[0] + dx
-                new_y = pet_coords[1] + dy
+            kraken_coords = self.canvas.coords("kraken")
+            if kraken_coords:
+                new_x = kraken_coords[0] + dx
+                new_y = kraken_coords[1] + dy
                 
-                # Keep pet within container bounds
-                margin = self.pet_radius + 10
+                # Keep kraken within container bounds and in water
+                margin = self.kraken_radius + 10
                 new_x = max(margin, min(new_x, self.container_width - margin))
-                new_y = max(margin, min(new_y, self.container_height - margin))
                 
-                # Move the pet by re-rendering at new position
-                self.move_pet_to(new_x, new_y)
-                
-                # Update drag start position for smooth dragging
-                self.drag_start_x = event.x
-                self.drag_start_y = event.y
+                # Only allow movement in water areas
+                if is_in_water(new_x, new_y, self.water_level, self.container_height):
+                    # Move the kraken by re-rendering at new position
+                    if self.move_kraken_to(new_x, new_y):
+                        # Update drag start position for smooth dragging
+                        self.drag_start_x = event.x
+                        self.drag_start_y = event.y
     
-    def move_pet_to(self, x, y):
-        """Move pet to specific coordinates"""
-        sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="pet", color="#2c3e50")
+    def move_kraken_to(self, x, y):
+        """Move kraken to specific coordinates (only in water)"""
+        # Ensure the kraken stays in water
+        if is_in_water(x, y, self.water_level, self.container_height):
+            sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
+            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FF6B35", font_size=6)
+            return True
+        return False
     
     def end_drag(self, event):
         """End dragging"""
         self.is_dragging = False
     
-    def pet_interaction(self, event):
-        """Handle double-click interaction"""
-        # Check if double-click is near the pet
-        pet_coords = self.canvas.coords("pet")
-        if pet_coords:
-            pet_x, pet_y = pet_coords[0], pet_coords[1]
-            distance = ((event.x - pet_x)**2 + (event.y - pet_y)**2)**0.5
+    def kraken_interaction(self, event):
+        """Handle double-click interaction with kraken"""
+        # Check if double-click is near the kraken
+        kraken_coords = self.canvas.coords("kraken")
+        if kraken_coords:
+            kraken_x, kraken_y = kraken_coords[0], kraken_coords[1]
+            distance = ((event.x - kraken_x)**2 + (event.y - kraken_y)**2)**0.5
             
-            if distance <= self.pet_radius + 20:  # Allow some margin
-                self.state = "play"
+            if distance <= self.kraken_radius + 20:  # Allow some margin
+                self.state = "attack"  # Kraken gets aggressive when poked!
                 self.idle_counter = 0
     
     def get_cursor_position(self):
@@ -238,7 +249,7 @@ class ASCIIDesktopPet:
             y = self.root.winfo_pointery()
             return x, y
         except:
-            return self.current_x, self.current_y
+            return self.target_x, self.target_y
     
     def ensure_desktop_level(self):
         """Ensure the window stays at desktop level (platform-specific)"""
@@ -259,7 +270,7 @@ class ASCIIDesktopPet:
             pass
     
     def follow_cursor(self):
-        """Make pet follow cursor when idle"""
+        """Make kraken follow cursor when idle (only in water)"""
         if self.is_dragging or self.state != "idle":
             return
             
@@ -270,75 +281,84 @@ class ASCIIDesktopPet:
             cursor_x = cursor_screen_x - self.container_x
             cursor_y = cursor_screen_y - self.container_y
             
-            # Only follow if cursor is within or near the container
+            # Only follow if cursor is within or near the container and in water
             if (-50 <= cursor_x <= self.container_width + 50 and 
-                -50 <= cursor_y <= self.container_height + 50):
+                is_in_water(cursor_x, cursor_y, self.water_level, self.container_height)):
                 
-                pet_coords = self.canvas.coords("pet")
-                if pet_coords:
-                    pet_x, pet_y = pet_coords[0], pet_coords[1]
+                kraken_coords = self.canvas.coords("kraken")
+                if kraken_coords:
+                    kraken_x, kraken_y = kraken_coords[0], kraken_coords[1]
                     
                     # Calculate distance to cursor
-                    distance = math.sqrt((cursor_x - pet_x)**2 + (cursor_y - pet_y)**2)
+                    distance = math.sqrt((cursor_x - kraken_x)**2 + (cursor_y - kraken_y)**2)
                     
                     # Follow if cursor is close but not too close
                     if 40 < distance < 150:
-                        # Set target within container bounds
-                        margin = self.pet_radius + 15
-                        self.target_x = max(margin, min(cursor_x, self.container_width - margin))
-                        self.target_y = max(margin, min(cursor_y, self.container_height - margin))
-                        self.state = "walking"
+                        # Set target within water bounds
+                        margin = self.kraken_radius + 15
+                        target_x = max(margin, min(cursor_x, self.container_width - margin))
+                        if is_in_water(target_x, cursor_y, self.water_level, self.container_height):
+                            self.target_x = target_x
+                            self.target_y = cursor_y
+                            self.state = "swimming"
         except:
             pass
     
     def update_position(self):
-        """Smoothly move pet towards target"""
-        if self.state == "walking" and not self.is_dragging:
-            pet_coords = self.canvas.coords("pet")
-            if pet_coords:
-                current_pet_x, current_pet_y = pet_coords[0], pet_coords[1]
+        """Smoothly move kraken towards target (only in water)"""
+        if self.state == "swimming" and not self.is_dragging:
+            kraken_coords = self.canvas.coords("kraken")
+            if kraken_coords:
+                current_kraken_x, current_kraken_y = kraken_coords[0], kraken_coords[1]
                 
                 # Move towards target
-                dx = self.target_x - current_pet_x
-                dy = self.target_y - current_pet_y
+                dx = self.target_x - current_kraken_x
+                dy = self.target_y - current_kraken_y
                 distance = math.sqrt(dx**2 + dy**2)
                 
                 if distance > 5:
                     # Move step by step
-                    step_size = min(2.0, distance / 8)
-                    new_x = current_pet_x + (dx / distance) * step_size
-                    new_y = current_pet_y + (dy / distance) * step_size
+                    step_size = min(2.5, distance / 8)  # Kraken swims faster
+                    new_x = current_kraken_x + (dx / distance) * step_size
+                    new_y = current_kraken_y + (dy / distance) * step_size
                     
-                    # Keep within container bounds
-                    margin = self.pet_radius + 10
+                    # Keep within water bounds
+                    margin = self.kraken_radius + 10
                     new_x = max(margin, min(new_x, self.container_width - margin))
-                    new_y = max(margin, min(new_y, self.container_height - margin))
                     
-                    # Move the pet
-                    self.move_pet_to(new_x, new_y)
+                    # Only move if destination is in water
+                    if is_in_water(new_x, new_y, self.water_level, self.container_height):
+                        self.move_kraken_to(new_x, new_y)
+                    else:
+                        self.state = "idle"  # Stop if hit water boundary
                 else:
                     self.state = "idle"
     
     def update_behavior(self):
-        """Update pet behavior and state"""
+        """Update kraken behavior and state"""
         self.idle_counter += 1
+        self.bubble_timer += 1
         
         # Ensure we stay at desktop level every few cycles
         if self.idle_counter % 50 == 0:  # Every 5 seconds
             self.ensure_desktop_level()
         
+        # Add floating bubbles periodically
+        if self.bubble_timer % 30 == 0:  # Every 3 seconds
+            add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
+        
         # Random behavior changes
-        if self.idle_counter > 100:  # About 10 seconds
+        if self.idle_counter > 80:  # About 8 seconds
             if self.state == "idle":
                 # Occasionally do something random
                 rand = random.random()
-                if rand < 0.2:
-                    self.state = random.choice(["sleep", "play"])
-                elif rand < 0.4:  # Random wandering
-                    self.wander_randomly()
-            elif self.state in ["sleep", "play"]:
+                if rand < 0.15:
+                    self.state = random.choice(["sleep", "attack"])
+                elif rand < 0.35:  # Random swimming
+                    self.swim_randomly()
+            elif self.state in ["sleep", "attack"]:
                 # Return to idle after a while
-                if random.random() < 0.1:
+                if random.random() < 0.2:
                     self.state = "idle"
             self.idle_counter = 0
             
@@ -351,16 +371,23 @@ class ASCIIDesktopPet:
         # Schedule next behavior update
         self.root.after(100, self.update_behavior)
     
-    def wander_randomly(self):
-        """Make pet wander to a random spot in the container"""
+    def swim_randomly(self):
+        """Make kraken swim to a random spot in the water"""
         if not self.is_dragging:
-            margin = self.pet_radius + 25
-            self.target_x = random.randint(margin, self.container_width - margin)
-            self.target_y = random.randint(margin, self.container_height - margin)
-            self.state = "walking"
+            margin = self.kraken_radius + 25
+            attempts = 0
+            while attempts < 10:  # Try to find a valid water position
+                target_x = random.randint(margin, self.container_width - margin)
+                target_y = random.randint(self.water_level + 30, self.container_height - 40)
+                if is_in_water(target_x, target_y, self.water_level, self.container_height):
+                    self.target_x = target_x
+                    self.target_y = target_y
+                    self.state = "swimming"
+                    break
+                attempts += 1
     
     def animate(self):
-        """Animate the pet sprite"""
+        """Animate the kraken sprite"""
         # Get current animation sequence
         current_animation = self.animations.get(self.state, self.animations['idle'])
         
@@ -369,31 +396,38 @@ class ASCIIDesktopPet:
         self.current_sprite = sprite_name
         
         # Render the updated sprite
-        self.render_pet()
+        self.render_kraken()
         
-        # Add a subtle bounce effect when walking
-        if self.state == "walking" and self.animation_frame % 4 < 2:
-            # Slight vertical offset for bounce
-            pet_coords = self.canvas.coords("pet")
-            if pet_coords and len(pet_coords) >= 2:
-                bounce_offset = 3 if self.animation_frame % 4 == 0 else -3
-                current_x, current_y = pet_coords[0], pet_coords[1]
-                self.move_pet_to(current_x, current_y + bounce_offset)
+        # Add a subtle sway effect when swimming
+        if self.state == "swimming" and self.animation_frame % 6 < 3:
+            # Slight horizontal sway for swimming motion
+            kraken_coords = self.canvas.coords("kraken")
+            if kraken_coords and len(kraken_coords) >= 2:
+                sway_offset = 2 if self.animation_frame % 6 == 0 else -2
+                current_x, current_y = kraken_coords[0], kraken_coords[1]
+                if is_in_water(current_x + sway_offset, current_y, self.water_level, self.container_height):
+                    self.move_kraken_to(current_x + sway_offset, current_y)
         
         # Advance animation frame
         self.animation_frame += 1
         
-        # Schedule next frame (slower for sleep)
-        delay = 1000 if self.state == "sleep" else 600
+        # Schedule next frame (different speeds for different states)
+        if self.state == "sleep":
+            delay = 1200
+        elif self.state == "attack":
+            delay = 300  # Fast aggressive animation
+        else:
+            delay = 500
         self.root.after(delay, self.animate)
     
     def run(self):
-        """Start the pet application"""
-        print("Starting ASCII Desktop Pet...")
-        print("• Lives in desktop corner container")
-        print("• Click and drag to move within container") 
-        print("• Double-click to make it play")
-        print("• Follows your cursor when nearby")
+        """Start the kraken application"""
+        print("Starting ASCII Underwater Kraken...")
+        print("• Lives in underwater environment in desktop corner")
+        print("• Click and drag to move within water areas only") 
+        print("• Double-click to make it attack (aggressive!)")
+        print("• Follows your cursor when nearby (in water)")
+        print("• Swims randomly through the underwater world")
         print("• Press Ctrl+C in terminal to stop")
         
         # Position container (already calculated in __init__)
@@ -409,9 +443,9 @@ class ASCIIDesktopPet:
 
 if __name__ == "__main__":
     try:
-        pet = ASCIIDesktopPet()
-        pet.run()
+        kraken = ASCIIUnderwaterKraken()
+        kraken.run()
     except Exception as e:
-        print(f"Error starting ASCII pet: {e}")
+        print(f"Error starting ASCII kraken: {e}")
         print("Make sure you have a display available (not in headless mode)")
         sys.exit(1)
