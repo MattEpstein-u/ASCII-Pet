@@ -19,6 +19,22 @@ KRAKEN_CONFIG = {
     'color': '#E0C6FF',  # Kraken sprite color (change this to update all kraken sprites)
 }
 
+# Boat configuration
+BOAT_CONFIG = {
+    'speed': 2,  # Pixels per frame to move the boat
+    'color': '#8B4513',  # Boat color (brown)
+}
+
+# Boat ASCII art (6 lines tall)
+BOAT_SPRITE = [
+    "              |    |              ",
+    "             )_)  )_)             ",
+    "            )___))___)            ",
+    "           )____)_____)           ",
+    "         _____|____|_____         ",
+    "~~~~~~~~~\\______________/~~~~~~~~~",
+]
+
 # Debug grid overlay configuration
 DEBUG_CONFIG = {
     'show_grid': True,  # Set to True to show debugging grid
@@ -39,6 +55,18 @@ def get_density_line_height():
 def get_kraken_color():
     """Get the configured kraken color"""
     return KRAKEN_CONFIG['color']
+
+def get_boat_sprite():
+    """Get the boat ASCII art sprite"""
+    return BOAT_SPRITE
+
+def get_boat_speed():
+    """Get the configured boat speed"""
+    return BOAT_CONFIG['speed']
+
+def get_boat_color():
+    """Get the configured boat color"""
+    return BOAT_CONFIG['color']
 
 # ASCII art for the kraken in different states
 # Each state has multiple frames for animation

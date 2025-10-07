@@ -11,7 +11,8 @@ import platform
 import sys
 from designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
                     render_underwater_environment, is_in_water, update_bubbles,
-                    get_density_font_size, get_density_line_height, get_kraken_color, DEBUG_CONFIG)
+                    get_density_font_size, get_density_line_height, get_kraken_color, 
+                    get_boat_sprite, get_boat_speed, get_boat_color, DEBUG_CONFIG)
 
 class ASCIIUnderwaterKraken:
     def __init__(self):
@@ -53,6 +54,12 @@ class ASCIIUnderwaterKraken:
         self.eating_shrimp = False
         self.eating_frames = 0  # Counter for eating animation duration
         self.shrimp_counter = 0  # For unique shrimp tags
+        
+        # Boat system (spawns once when clicking above water)
+        self.boat_active = False  # Whether boat has been spawned
+        self.boat_spawned = False  # Whether boat spawn has been used
+        self.boat_x = 0  # Current boat X position
+        self.boat_y = 0  # Current boat Y position (at water level)
         
         # Start the main loops
         self.animate()
@@ -193,11 +200,15 @@ class ASCIIUnderwaterKraken:
         self.animations = ASCII_ANIMATIONS
     
     def on_click(self, event):
-        """Handle clicks: drop shrimp in water (only underwater area)"""
+        """Handle clicks: drop shrimp in water, spawn boat above water"""
         if is_in_water(event.x, event.y, self.water_level, self.container_height):
+            # Click underwater - drop shrimp
             self.drop_shrimp(event.x, event.y)
+        elif event.y < self.water_level and not self.boat_spawned:
+            # Click above water and boat hasn't been spawned yet - spawn boat
+            self.spawn_boat()
         else:
-            # Click was above water or below ocean floor - ignore silently
+            # Click was above water but boat already spawned, or other invalid area
             pass
 
     
@@ -288,6 +299,67 @@ class ASCIIUnderwaterKraken:
             self.eating_shrimp = True
             x, y, tag = self.current_shrimp_target
             print(f"🐙 Kraken targeting shrimp at ({x}, {y})")
+    
+    def spawn_boat(self):
+        """Spawn a boat that moves across the water surface (can only happen once)"""
+        if not self.boat_spawned:
+            self.boat_spawned = True
+            self.boat_active = True
+            self.boat_x = 0  # Start from left edge
+            # Position boat at water level (top of boat sits at water level)
+            # Boat sprite is 6 lines tall, we want the bottom line (waves) at water_level
+            boat_sprite = get_boat_sprite()
+            boat_height = len(boat_sprite) * 10  # Approximate line height for boat
+            self.boat_y = self.water_level - boat_height + 10  # Bottom line at water level
+            print(f"⛵ Boat spawned! Sailing across the ocean at y={self.boat_y}")
+    
+    def update_boat(self):
+        """Update boat position and render it"""
+        if self.boat_active:
+            # Move boat from left to right
+            self.boat_x += get_boat_speed()
+            
+            # Check if boat has sailed off the right edge
+            if self.boat_x > self.container_width + 200:  # Extra margin to fully disappear
+                self.boat_active = False
+                self.canvas.delete("boat")
+                print("⛵ Boat has sailed away...")
+                return
+            
+            # Render boat (it will overwrite the wave tiles)
+            self.render_boat()
+    
+    def render_boat(self):
+        """Render the boat sprite on the canvas"""
+        if self.boat_active:
+            boat_sprite = get_boat_sprite()
+            boat_color = get_boat_color()
+            
+            # Clear previous boat rendering
+            self.canvas.delete("boat")
+            
+            # Render each line of the boat sprite
+            # Use smaller font for boat to match scene scale
+            boat_font_size = 8
+            line_height = 10
+            
+            for i, line in enumerate(boat_sprite):
+                # Skip the bottom wave line (last line) - we want our ocean waves to show
+                if i == len(boat_sprite) - 1:
+                    continue
+                
+                y_pos = self.boat_y + (i * line_height)
+                self.canvas.create_text(
+                    self.boat_x, y_pos,
+                    text=line,
+                    font=('Courier', boat_font_size, 'bold'),
+                    anchor='w',  # Anchor to west (left)
+                    fill=boat_color,
+                    tags="boat"
+                )
+            
+            # Ensure boat is above environment but below debug grid
+            self.canvas.tag_raise("boat", "environment")
 
 
     
@@ -378,6 +450,9 @@ class ASCIIUnderwaterKraken:
         update_bubbles(self.bubble_list, self.canvas, self.container_width, 
                       self.water_level, self.container_height, spawn_chance=0.05)
         
+        # Update boat movement and rendering
+        self.update_boat()
+        
         # Update position (shrimp hunting)
         self.update_position()
         
@@ -408,12 +483,7 @@ class ASCIIUnderwaterKraken:
     
     def run(self):
         """Start the kraken application"""
-        print("Starting ASCII Underwater Kraken...")
-        print("• Lives in underwater environment in desktop corner")
-        print("• Click anywhere underwater to drop shrimp")
-        print("• Kraken will hunt and eat the shrimp")
         print("• Press Ctrl+C in terminal to stop")
-        
         # Position container (already calculated in __init__)
         geometry = f"{self.container_width}x{self.container_height}+{self.container_x}+{self.container_y}"
         self.root.geometry(geometry)
@@ -422,21 +492,16 @@ class ASCIIUnderwaterKraken:
         try:
             self.root.mainloop()
         except KeyboardInterrupt:
-            print("\nPet is going to sleep... 😴")
+            print("\n...")
             self.root.quit()
 
 if __name__ == "__main__":
     try:
-        print("🐙 Starting ASCII Underwater Kraken...")
-        print(f"📏 Density: Font Size={get_density_font_size()}, Line Height={get_density_line_height()}")
-        if DEBUG_CONFIG['show_grid']:
-            print(f"🐛 Debug Grid: ENABLED (Grid Size: {DEBUG_CONFIG['grid_size']}px)")
-        print("🦐 Click underwater to drop shrimp and feed your kraken!")
+        print("🐙 ...")
         print()
         
         kraken = ASCIIUnderwaterKraken()
         kraken.run()
     except Exception as e:
-        print(f"Error starting ASCII kraken: {e}")
-        print("Make sure you have a display available (not in headless mode)")
+        print(f"Error: {e}")
         sys.exit(1)
