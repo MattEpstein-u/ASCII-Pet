@@ -17,15 +17,16 @@ class ASCIIUnderwaterKraken:
         self.root = tk.Tk()
         self.calculate_container_size()
         self.setup_window()
-        self.setup_pet()
-        self.setup_animations()
         
-        # Kraken state
+        # Kraken state - MUST be initialized before setup_pet() and update_behavior()
         self.target_x = self.container_width // 2
         self.target_y = (self.container_height * 2) // 3
         self.animation_frame = 0
         self.state = "idle"
         self.wave_animation_frame = 0  # For ocean surface animation
+        
+        self.setup_pet()
+        self.setup_animations()
         
         # Kraken properties
         self.kraken_radius = 30
@@ -175,7 +176,7 @@ class ASCIIUnderwaterKraken:
             x, y = self.kraken_start_x, self.kraken_start_y
         
         # Render the ASCII art with underwater coloring
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FFB6C1", font_size=12)
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=12)
     
     def setup_animations(self):
         """Setup animation sequences"""

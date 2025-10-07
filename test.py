@@ -105,7 +105,7 @@ class Test:
         
         if is_in_water(x, y, self.water_level, self.container_height):
             sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FFB6C1", font_size=12)
+            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=12)
             self.current_x = x
             self.current_y = y
             return True
