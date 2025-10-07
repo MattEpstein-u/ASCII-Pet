@@ -1,6 +1,15 @@
 # ASCII Underwater Kraken �
 
-A mysterious, deep-sea ASCII art kraken that dwells in an underwater environment on your desktop! This aquatic companion lives in a beautiful underwater world with swaying seaweed, floating bubbles, and ocean depths.
+A mysterious, deep-sea ASCII art kraken that dwells in an underwater environment on your desktop! This aqu**What you can experience:**
+- 🐙 **Kraken Controls** - Swimming, attacking, sleeping, hunting behaviors
+- 🦐 **Feed the Kraken** - Click to drop shrimp and watch it hunt them down
+- 🌊 **Water Physics** - See how movement is restricted to underwater areas
+- 🫧 **Bubble Effects** - Watch bubbles float through the water
+- 🌿 **Underwater Environment** - Explore seaweed forests and ocean floor
+- ⚡ **Attack Mode** - Trigger aggressive tentacle animations when eating or double-clicking
+- 🎯 **Water Boundaries** - Experience realistic aquatic movement constraints with strict boundaries
+- 🖱️ **Drag and Drop** - Move the kraken within water areas only
+- 📊 **Live Status** - Monitor kraken state, position, and shrimp queue in real-timeanion lives in a beautiful underwater world with swaying seaweed, floating bubbles, and ocean depths.
 
 Unlike simple desktop pets, this kraken features intricate ASCII art tentacles and is restricted to move only in the underwater portions of its environment, creating a realistic aquatic ecosystem on your desktop.
 
@@ -8,23 +17,26 @@ Unlike simple desktop pets, this kraken features intricate ASCII art tentacles a
 
 - **Underwater Environment**: Beautiful ASCII art ocean scene with surface waves, underwater depths, seaweed forests, and floating bubbles
 - **Water Physics**: Kraken can only move in underwater areas - realistic environmental constraints
-- **Detailed ASCII Art**: Intricate tentacle animations and creature expressions
-- **Aquatic Behaviors**: Swimming, resting on ocean floor, tentacle attacks, and idle floating
+- **Interactive Feeding**: Click anywhere in the water to drop shrimp that the kraken will hunt and eat!
+- **Detailed ASCII Art**: Intricate tentacle animations and creature expressions with doubled character density
+- **Aquatic Behaviors**: Swimming, resting on ocean floor, tentacle attacks, hunting, and idle floating
 - **Environmental Effects**: Animated bubbles, swaying seaweed, ocean waves
-- **Desktop Integration**: Lives on your desktop background in a translucent underwater window
+- **Desktop Integration**: Lives on your desktop background in a translucent underwater window (1/8 screen size)
 - **Cross-Platform**: Works on macOS, Windows, and Linux
-- **Interactive**: Click to make it swim, drag within water areas, double-click for attack mode
+- **Interactive**: Click to feed shrimp, drag within water areas, double-click for attack mode
 - **Auto-Startup**: Automatically starts when you log in
 - **Non-Intrusive**: Subtle underwater scene that complements your wallpaper
 
 ## Kraken Behaviors
 
 - **🌊 Swimming**: Gracefully moves through water with flowing tentacle animations
+- **🦐 Hunting**: Swims to dropped shrimp and eats them in queue order
 - **😴 Resting**: Settles on the ocean floor in a peaceful state
-- **⚡ Attack**: Aggressive tentacle thrashing when threatened or excited
+- **⚡ Attack**: Aggressive tentacle thrashing when threatened, excited, or eating
 - **🫧 Bubble Effects**: Creates bubbles during movement and breathing
 - **🌿 Environment Interaction**: Navigates around seaweed and ocean floor terrain
-- **🎯 Water Boundaries**: Cannot move above the water line - true aquatic behavior
+- **🎯 Water Boundaries**: Cannot move above the water line or through ocean floor - true aquatic behavior
+- **👆 Cursor Following**: Only follows cursor when not hunting shrimp
 
 ## Installation
 
@@ -84,13 +96,16 @@ Your underwater kraken will start immediately and appear in its aquatic habitat 
 
 - **Underwater World**: Kraken lives in a detailed ASCII underwater environment
 - **Water Movement**: Can only swim in underwater areas - true aquatic physics!
+- **Feed Your Kraken**: Click anywhere underwater to drop a shrimp (`,` character)
+- **Hunting Behavior**: Kraken swims to shrimp in queue order and eats them
 - **Swimming**: Click on the kraken to make it swim to a new location
-- **Attack Mode**: Double-click to trigger aggressive tentacle thrashing
+- **Attack Mode**: Double-click to trigger aggressive tentacle thrashing, or watch it attack while eating!
 - **Drag & Drop**: Click and drag the kraken within water areas only
 - **Ocean Floor**: Kraken rests on the sandy bottom when sleeping
 - **Bubble Effects**: Watch bubbles float up during movement and breathing
 - **Seaweed Forest**: Navigate through swaying underwater vegetation
 - **Environmental Immersion**: Realistic underwater ecosystem on your desktop
+- **Smart Behavior**: Kraken prioritizes eating shrimp over following your cursor
 
 ## Requirements
 
@@ -152,24 +167,32 @@ python test_interactive.py   # Interactive test mode - play with the pet!
 ```
 
 ### Testing Compatibility
-Run the compatibility test before installation:
+Run the compatibility test before installation (optional):
 ```bash
-# macOS/Linux
-python3 test_compatibility.py
-
-# Windows
-python test_compatibility.py
+python3 test_compatibility.py    # Check system compatibility
 ```
+
+**Ready to try it? Just run:**
+```bash
+python3 quick_test.py    # Comprehensive interactive test - everything in one place!
+```
+
+## Troubleshooting
 
 ### Kraken appears but doesn't respond
 - Make sure you're clicking directly on the ASCII kraken tentacles
 - Try double-clicking to trigger attack mode
 - Check that the underwater window is active
 
+### No shrimp appearing when clicking
+- Make sure you're clicking in the underwater area (dark blue section)
+- Clicks on the kraken itself will drag it instead of dropping shrimp
+- Clicks above the water surface won't create shrimp
+
 ### ASCII art looks distorted
-- Make sure you're using a monospace font in your terminal
-- The underwater environment is optimized for smaller font sizes (6pt)
-- Try adjusting terminal font size if the kraken appears misaligned
+- Make sure you're using a monospace font
+- The kraken now uses 12pt font for better visibility
+- Try adjusting your display scaling if needed
 
 ### Water physics not working
 - Ensure you're trying to move the kraken only in blue/underwater areas
@@ -188,9 +211,11 @@ You can customize your underwater kraken by editing the files:
 
 - **Change ASCII art**: Modify `ascii_pet_designs.py` to create new kraken designs or environment elements
 - **Adjust water level**: Change the water boundary calculations in the environment rendering
-- **Add sea creatures**: Create new ASCII art for fish, coral, or other ocean life
-- **Modify behaviors**: Edit swimming patterns and animation sequences
+- **Add sea creatures**: Create new ASCII art for fish, coral, or other ocean life (shrimp are already included!)
+- **Modify behaviors**: Edit swimming patterns, hunting speed, and animation sequences
 - **Environment effects**: Add new bubble patterns or seaweed animations
+- **Feeding mechanics**: Adjust shrimp appearance, drop frequency, or eating animations
+- **Size and density**: Modify container size calculation or font size for different visual density
 
 ## Files Included
 
@@ -303,10 +328,13 @@ The kraken features several detailed underwater states:
 This underwater kraken evolved from the original ASCII Pet concept with these transformations:
 
 - **Environment**: Added complete underwater ecosystem with water physics
-- **Movement Constraints**: Kraken restricted to water areas only - realistic aquatic behavior
+- **Movement Constraints**: Kraken restricted to water areas only - realistic aquatic behavior with strict boundaries
+- **Interactive Feeding**: Click-to-drop shrimp system with hunting and eating behaviors
 - **Creature Design**: Transformed from land animal to deep-sea kraken with tentacles
 - **Environmental Effects**: Added bubbles, seaweed, waves, and ocean floor
-- **Aquatic Behaviors**: Swimming replaces walking, ocean floor resting, tentacle attacks
+- **Aquatic Behaviors**: Swimming replaces walking, ocean floor resting, tentacle attacks, shrimp hunting
+- **Visual Density**: Doubled ASCII character density for more detailed artwork
+- **Dynamic Sizing**: Smart container sizing (1/8 screen) for optimal desktop integration
 - **Visual Immersion**: Dark underwater color scheme with oceanic atmosphere
 
 ## Based on Mac-Pet

@@ -280,10 +280,10 @@ def render_underwater_environment(canvas, width, height):
     underwater_height = height - water_level
     
     # ===== SURFACE AREA (Top 1/5) =====
-    # Draw surface area background (light for air/sky)
+    # Draw surface area background (deep blue, almost black)
     canvas.create_rectangle(
         0, 0, width, water_level,
-        fill='#E8F4FD', outline='',
+        fill='#0A0F1C', outline='',
         tags="environment"
     )
     
@@ -293,7 +293,7 @@ def render_underwater_environment(canvas, width, height):
         width // 2, water_level // 2,
         text=surface_text,
         font=('Courier', 12, 'bold'),
-        fill='#7FB3D3',
+        fill='#FFFFFF',
         anchor='center',
         tags="environment"
     )
@@ -309,16 +309,16 @@ def render_underwater_environment(canvas, width, height):
             width // 2, water_level + (i * 5),
             text=full_line,
             font=('Courier', 8, 'bold'),
-            fill='#2980B9',
+            fill='#FFFFFF',
             anchor='center',
             tags="environment"
         )
     
     # ===== UNDERWATER AREA (Bottom 4/5) =====
-    # Draw underwater background (neutral - no blue tint)
+    # Draw underwater background (deep blue, almost black)
     canvas.create_rectangle(
         0, water_level + 15, width, height,
-        fill='#F8F9FA', outline='',
+        fill='#0A0F1C', outline='',
         tags="environment"
     )
     
@@ -340,7 +340,7 @@ def render_underwater_environment(canvas, width, height):
                 x_pos, y_pos + (i * 8),
                 text=line,
                 font=('Courier', 9),
-                fill='#27AE60',  # Sea green
+                fill='#98FB98',  # Light green
                 anchor='center',
                 tags="environment"
             )
@@ -356,7 +356,7 @@ def render_underwater_environment(canvas, width, height):
             width // 2, floor_start + (i * 10),
             text=full_line,
             font=('Courier', 8),
-            fill='#8B4513',  # Saddle brown
+            fill='#D2B48C',  # Tan for visibility on dark background
             anchor='center',
             tags="environment"
         )
@@ -371,7 +371,7 @@ def render_underwater_environment(canvas, width, height):
             width // 2, height - 40 + (i * 8),
             text=full_line,
             font=('Courier', 7),
-            fill='#5D6D7E',  # Gray rock color
+            fill='#C0C0C0',  # Light gray for visibility
             anchor='center',
             tags="environment"
         )
@@ -407,8 +407,8 @@ def add_floating_bubbles(canvas, width, water_level, height):
                                   UNDERWATER_ENVIRONMENT['bubbles_medium'] + 
                                   UNDERWATER_ENVIRONMENT['bubbles_large'])
         bubble_size = random.choice([10, 12, 14, 16])
-        # Neutral bubble colors that work with light background
-        bubble_color = random.choice(['#5DADE2', '#85C1E9', '#AED6F1', '#D6EAF8', '#EBF5FB'])
+        # White bubbles for deep ocean atmosphere
+        bubble_color = random.choice(['#FFFFFF', '#F8F8FF', '#F0F8FF', '#E6E6FA', '#FFFAFA'])
         
         canvas.create_text(x, y, text=bubble_char, font=('Arial', bubble_size),
                           fill=bubble_color, tags="bubbles")
