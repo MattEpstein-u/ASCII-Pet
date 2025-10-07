@@ -223,7 +223,7 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
         tags="environment"
     )
     
-    # ===== ANIMATED OCEAN SURFACE LINE (2 LINES TALL) =====
+    # ===== ANIMATED OCEAN SURFACE (2 LINES TALL) =====
     # Cycle through wave animation frames
     wave_frames = [
         UNDERWATER_ENVIRONMENT['ocean_surface_frame1'],
@@ -231,28 +231,31 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
         UNDERWATER_ENVIRONMENT['ocean_surface_frame3'],
         UNDERWATER_ENVIRONMENT['ocean_surface_frame4']
     ]
-    current_wave = wave_frames[animation_frame % 4]
+    current_wave_top = wave_frames[animation_frame % 4]
+    # Bottom line uses alternating frame for better wave effect
+    current_wave_bottom = wave_frames[(animation_frame + 2) % 4]
     
-    # Make surface line span the ENTIRE width
+    # Make surface lines span the ENTIRE width
     num_repeats = (width // 8) + 2  # Character width ~8 pixels, add extra for safety
-    full_wave_line = current_wave * num_repeats
+    full_wave_line_top = current_wave_top * num_repeats
+    full_wave_line_bottom = current_wave_bottom * num_repeats
     
-    # Draw FIRST animated wave line across entire width
+    # Draw FIRST animated wave line across entire width (top line)
     canvas.create_text(
         0, water_level,  # First line at water level
-        text=full_wave_line,
+        text=full_wave_line_top,
         font=('Courier', 8, 'bold'),
         fill='#FFFFFF',
         anchor='w',  # Anchor to west (left) to ensure full coverage
         tags="environment"
     )
     
-    # Draw SECOND animated wave line (creates 2-line surface)
+    # Draw SECOND animated wave line (bottom line - offset animation for depth)
     canvas.create_text(
         0, water_level + 10,  # Second line below first
-        text=full_wave_line,
+        text=full_wave_line_bottom,
         font=('Courier', 8, 'bold'),
-        fill='#FFFFFF',
+        fill='#AAAAAA',  # Slightly darker to show depth
         anchor='w',
         tags="environment"
     )
@@ -400,7 +403,9 @@ def render_debug_grid(canvas, width, height, water_level):
         )
     
     # Keep grid below other elements but above environment
-    canvas.tag_lower("debug_grid", "bubbles")
+    # Only lower if bubbles exist (to avoid "doesn't match any items" error)
+    if canvas.find_withtag("bubbles"):
+        canvas.tag_lower("debug_grid", "bubbles")
 
 def is_in_water(x, y, water_level, canvas_height):
     """Check if coordinates are in the underwater area (bottom 4/5 of canvas)"""
@@ -460,13 +465,14 @@ def update_bubbles(bubble_list, canvas, width, water_level, height, spawn_chance
     
     # Update existing bubbles
     bubbles_to_remove = []
-    surface_height = 20  # Height of 2-line surface
+    # Surface is 2 lines tall: water_level to water_level + 10
+    # Remove bubbles when they reach the top of the surface
     for i, bubble in enumerate(bubble_list):
         # Move bubble upward (rising physics)
         bubble['y'] -= 2  # Rise speed: 2 pixels per frame
         
-        # Mark for removal if reached surface (stop at 2-line surface)
-        if bubble['y'] <= water_level + surface_height:
+        # Mark for removal if reached surface (at or above water_level)
+        if bubble['y'] <= water_level:
             bubbles_to_remove.append(i)
     
     # Remove bubbles that reached surface (reverse order to preserve indices)
