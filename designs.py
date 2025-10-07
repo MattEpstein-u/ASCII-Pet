@@ -383,25 +383,6 @@ def render_debug_grid(canvas, width, height, water_level):
             font=('Arial', 9, 'bold'),
             tags="debug_grid"
         )
-        
-        # Kraken top boundary (where top of kraken can reach)
-        # Kraken center minimum = water_level + surface_height + kraken_radius
-        kraken_radius = (11 * get_density_line_height()) // 2
-        kraken_min_y = water_level + surface_height + kraken_radius
-        canvas.create_line(
-            0, kraken_min_y, width, kraken_min_y,
-            fill='#FF00FF',  # Magenta
-            width=2,
-            dash=(5, 3),
-            tags="debug_grid"
-        )
-        canvas.create_text(
-            width - 120, kraken_min_y - 15,
-            text=f"Kraken Center Min: {kraken_min_y}",
-            fill='#FF00FF',
-            font=('Arial', 9, 'bold'),
-            tags="debug_grid"
-        )
     
     # Keep grid below other elements but above environment
     # Only lower if bubbles exist (to avoid "doesn't match any items" error)

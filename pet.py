@@ -208,25 +208,21 @@ class ASCIIUnderwaterKraken:
         x = max(margin, min(x, self.container_width - margin))
         
         # Clamp to underwater area (below surface, above floor)
-        # Surface is 2 lines tall (20 pixels)
-        surface_height = 20
-        
-        # The kraken's TOP (head) must stay below the surface
+        # Allow kraken's head (top) to reach the water_level (top of surface)
         # Since y is the center point, and the kraken extends kraken_radius above center:
         # TOP position = y - kraken_radius
-        # We want: TOP >= water_level + surface_height
-        # So: y - kraken_radius >= water_level + surface_height
-        # Therefore: y >= water_level + surface_height + kraken_radius
-        min_y = self.water_level + surface_height + self.kraken_radius
+        # We want: TOP >= water_level (head can touch the surface top)
+        # So: y - kraken_radius >= water_level
+        # Therefore: y >= water_level + kraken_radius
+        min_y = self.water_level + self.kraken_radius
         max_y = self.container_height - margin  # Don't cross ocean floor
         y = max(min_y, min(y, max_y))
         
-        # Ensure the kraken stays in water and render with correct font size
-        if is_in_water(x, y, self.water_level, self.container_height):
-            sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=self.kraken_font_size)
-            return True
-        return False
+        # Render kraken at validated position
+        # No need to check is_in_water() since we've already validated boundaries above
+        sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=self.kraken_font_size)
+        return True
     
     def drop_shrimp(self, x, y):
         """Drop a shrimp at the specified underwater position"""
@@ -304,11 +300,10 @@ class ASCIIUnderwaterKraken:
             min_x = margin
             max_x = self.container_width - margin
             
-            # Calculate minimum y: kraken's TOP must stay below surface
-            # TOP = y - kraken_radius, and TOP >= water_level + surface_height
-            # Therefore: y >= water_level + surface_height + kraken_radius
-            surface_height = 20  # 2-line surface is 20 pixels tall
-            min_y = self.water_level + surface_height + self.kraken_radius
+            # Calculate minimum y: kraken's head can reach water_level (top of surface)
+            # TOP = y - kraken_radius, and TOP >= water_level
+            # Therefore: y >= water_level + kraken_radius
+            min_y = self.water_level + self.kraken_radius
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds
@@ -340,9 +335,8 @@ class ASCIIUnderwaterKraken:
                     new_x = max(min_x, min(new_x, max_x))
                     new_y = max(min_y, min(new_y, max_y))
                     
-                    # Only move if destination is in water
-                    if is_in_water(new_x, new_y, self.water_level, self.container_height):
-                        self.move_kraken_to(new_x, new_y)
+                    # Move kraken (already validated by boundary clamping above)
+                    self.move_kraken_to(new_x, new_y)
                 else:
                     # Reached target - start eating animation
                     if self.current_shrimp_target:
