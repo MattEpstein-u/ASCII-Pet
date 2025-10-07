@@ -53,7 +53,7 @@ Unlike simple desktop pets, this kraken features intricate ASCII art with tentac
 - 🎯 **Mouth Precision**: Kraken's mouth precisely reaches shrimp location
 
 ### Desktop Integration
-- **Non-Intrusive**: Lives in bottom-right corner (1/8 screen size)
+- **Non-Intrusive**: Lives in bottom-right corner (~1/5 screen size)
 - **Cross-Platform**: macOS, Windows, and Linux
 - **Auto-Startup**: Automatically starts when you log in
 - **Translucent**: Subtle underwater scene that complements your wallpaper
@@ -160,15 +160,14 @@ python3 test.py
 
 ```
 ASCII-Pet/
-├── ascii_pet_designs.py           # Sprites & bubble physics (NEW)
-├── desktop_pet.py                 # Main application
-├── test.py                        # Interactive test script
-├── verify_bubble_physics.py       # Automated physics tests (NEW)
-├── KRAKEN_UPDATE_SUMMARY.md       # Update overview (NEW)
-├── VISUAL_COMPARISON.md           # Sprite gallery (NEW)
-├── TECHNICAL_IMPLEMENTATION.md    # Technical details (NEW)
-├── QUICK_REFERENCE.md             # Quick reference card (NEW)
-└── README.md                      # This file
+├── ascii_pet_designs.py    # Sprites, animations, and environment
+├── desktop_pet.py          # Main desktop pet application
+├── test.py                 # Test window (try before installing)
+├── install.sh              # macOS/Linux installer
+├── install_windows.bat     # Windows installer
+├── uninstall.sh            # macOS/Linux uninstaller
+├── uninstall_windows.bat   # Windows uninstaller
+└── README.md               # This file
 ```
 
 ---
@@ -238,87 +237,40 @@ Edit `ascii_pet_designs.py` to customize:
 - **Bubble density**: Change `spawn_chance` (default: 0.05)
 - **Bubble speed**: Modify rise speed (default: 2 px/frame)
 - **Kraken appearance**: Edit sprite ASCII art
-- **Colors**: Adjust color scheme
-- **Animations**: Modify sprite sequences
-
-See `TECHNICAL_IMPLEMENTATION.md` for detailed configuration options.
-
----
-
-## 📚 Documentation
-
-- **KRAKEN_UPDATE_SUMMARY.md** - Overview of Version 2.0 changes
-- **VISUAL_COMPARISON.md** - All 8 sprite states with visual examples
-- **TECHNICAL_IMPLEMENTATION.md** - Bubble physics system details
-- **QUICK_REFERENCE.md** - Quick reference card for features
+- **Colors**: Adjust color scheme (`#FFB6C1` for kraken, `#0A0F1C` for water)
+- **Animations**: Modify sprite sequences in `ASCII_ANIMATIONS` dictionary
 
 ---
 
 ## Troubleshooting
 
 ### Kraken doesn't appear
-- Make sure Python 3.6+ is installed
+- Make sure Python 3.6+ is installed: `python3 --version`
 - Check that Tkinter is available: `python3 -c "import tkinter"`
-
-### Bubbles not moving
-- The bubble system is frame-based - make sure the application is running
-- Check that `update_bubbles()` is being called in `update_behavior()`
+- Test first: `python3 test.py`
 
 ### ASCII art looks wrong
-- Use a monospace font
+- The program uses 12pt Courier font for optimal visibility
+- Make sure your terminal/display uses monospace fonts
 - Check display scaling settings
-- Font size is 12pt for optimal visibility
 
-### Water boundaries not working
-- Ensure `is_in_water()` function is working correctly
-- Check that `water_level` is calculated properly
-
----
-
-## Evolution from ASCII Pet
-
-This underwater kraken evolved with these transformations:
-
-**Version 1.0:**
-- Basic kraken with underwater environment
-- Simple behaviors (idle, swimming, eating)
-- Periodic bubble spawning
-- Shrimp hunting system
-
-**Version 2.0 (Current):**
-- ✨ **8 directional tentacles** with suction cups
-- ✨ **Realistic bubble physics** with continuous rising
-- ✨ **Mouth targeting** for precise eating
-- ✨ **Enhanced animations** (8 sprites)
-- ✨ **Colossal octopus design**
-
----
-
-## Based on Mac-Pet
-
-Inspired by [Mac-pet repository](https://github.com/MattEpstein-u/Mac-pet) and transformed into an underwater experience with:
-- Aquatic environment and water physics
-- Marine creature (octopus) instead of land animal
-- Realistic bubble physics system
-- 8-directional tentacle design
-- Shrimp hunting mechanics
-
----
-
-## Contributing
-
-Contributions welcome! Ideas:
-- New sea creatures
-- Additional animations
-- Environmental effects (currents, schools of fish)
-- Enhanced bubble physics (wobble, size changes)
-- Different ocean biomes
+### Installation issues
+- **macOS**: Make sure install script has execute permissions: `chmod +x install.sh`
+- **Windows**: Run Command Prompt as Administrator
+- **Linux**: Install tkinter: `sudo apt-get install python3-tk`
 
 ---
 
 ## License
 
 Open source. Feel free to modify and distribute.
+
+---
+
+## Credits
+
+Inspired by [Mac-pet repository](https://github.com/MattEpstein-u/Mac-pet) and transformed into an underwater kraken experience.
+```
 
 ---
 

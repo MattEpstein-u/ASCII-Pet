@@ -340,8 +340,8 @@ def update_bubbles(bubble_list, canvas, width, water_level, height, spawn_chance
         # Move bubble upward (rising physics)
         bubble['y'] -= 2  # Rise speed: 2 pixels per frame
         
-        # Mark for removal if reached surface
-        if bubble['y'] <= water_level:
+        # Mark for removal if reached surface (one line below surface for visibility)
+        if bubble['y'] <= water_level + 15:
             bubbles_to_remove.append(i)
     
     # Remove bubbles that reached surface (reverse order to preserve indices)

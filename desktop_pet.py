@@ -51,14 +51,14 @@ class ASCIIUnderwaterKraken:
         self.update_behavior()
     
     def calculate_container_size(self):
-        """Calculate container size as 1/8 of screen area"""
+        """Calculate container size as 1/5 of screen area"""
         # Get screen dimensions
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         
-        # Calculate 1/8 of screen area (approximately square container)
+        # Calculate 1/5 of screen area (approximately square container)
         total_area = screen_width * screen_height
-        container_area = total_area // 8
+        container_area = total_area // 5
         
         # Make container roughly square, but constrain to reasonable dimensions
         container_side = int(container_area ** 0.5)
@@ -194,7 +194,8 @@ class ASCIIUnderwaterKraken:
         x = max(margin, min(x, self.container_width - margin))
         
         # Clamp to underwater area (below surface, above floor)
-        min_y = self.water_level + margin  # Don't cross water surface
+        # Add extra margin to keep kraken well below surface
+        min_y = self.water_level + margin + 50  # Extra buffer to stay below surface
         max_y = self.container_height - margin  # Don't cross ocean floor
         y = max(min_y, min(y, max_y))
         
@@ -261,7 +262,7 @@ class ASCIIUnderwaterKraken:
             margin = self.kraken_radius + 10
             min_x = margin
             max_x = self.container_width - margin
-            min_y = self.water_level + margin
+            min_y = self.water_level + margin + 50  # Extra buffer to stay below surface
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds
