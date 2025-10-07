@@ -299,6 +299,9 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
         tags="environment"
     )
     
+    # CRITICAL: Lower environment to bottom of z-order so it doesn't cover kraken/shrimp/bubbles
+    canvas.lower("environment")
+    
     return water_level  # Return water level for movement constraints
 
 def is_in_water(x, y, water_level, canvas_height):
