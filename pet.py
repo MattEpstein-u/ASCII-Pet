@@ -210,16 +210,23 @@ class ASCIIUnderwaterKraken:
         x = max(margin, min(x, self.container_width - margin))
         
         # Clamp to underwater area (below surface, above floor)
-        # Allow kraken's head (top) to reach the water_level (top of surface)
-        # The render_ascii_art function renders line 0 at y, so y IS the top of the sprite!
-        # We want: TOP >= water_level (head can touch the surface top)
-        # So: y >= water_level
+        # TOP boundary: kraken's head (top) can reach the water_level
+        # render_ascii_art renders line 0 at y, so y IS the top of the sprite
         min_y = self.water_level
-        max_y = self.container_height - margin  # Don't cross ocean floor
         
-        # Debug: show what min_y is being calculated
+        # BOTTOM boundary: kraken's legs (bottom) must stay above ocean floor
+        # Ocean floor is at container_height - 50
+        # Bottom of sprite = y + kraken_total_height
+        # We want: y + kraken_total_height <= ocean_floor
+        # Therefore: y <= ocean_floor - kraken_total_height
+        ocean_floor = self.container_height - 50
+        max_y = ocean_floor - self.kraken_total_height
+        
+        # Debug: show what boundaries are being calculated
         if y < min_y:
-            print(f"🐙 Clamping y from {y} to min_y {min_y} (water_level={self.water_level})")
+            print(f"🐙 Clamping y from {y} to min_y {min_y} (head at water surface)")
+        if y > max_y:
+            print(f"🐙 Clamping y from {y} to max_y {max_y} (legs at ocean floor)")
         
         y = max(min_y, min(y, max_y))
         
@@ -305,11 +312,14 @@ class ASCIIUnderwaterKraken:
             min_x = margin
             max_x = self.container_width - margin
             
-            # Calculate minimum y: kraken's top line can reach water_level
+            # TOP boundary: kraken's head can reach water_level
             # Since render_ascii_art draws line 0 at y, y IS the top position
-            # Therefore: y >= water_level
             min_y = self.water_level
-            max_y = self.container_height - margin
+            
+            # BOTTOM boundary: kraken's legs must stay above ocean floor
+            # Ocean floor at container_height - 50, bottom of sprite at y + kraken_total_height
+            ocean_floor = self.container_height - 50
+            max_y = ocean_floor - self.kraken_total_height
             
             # Clamp target to safe bounds
             target_sprite_x = max(min_x, min(target_sprite_x, max_x))
