@@ -16,7 +16,7 @@ ASCII_DENSITY_CONFIG = {
 
 # Debug grid overlay configuration
 DEBUG_CONFIG = {
-    'show_grid': False,  # Set to True to show debugging grid
+    'show_grid': True,  # Set to True to show debugging grid
     'grid_size': 50,     # Size of grid cells in pixels
     'grid_color': '#444444',  # Grid line color (dark gray)
     'show_coordinates': True,  # Show coordinate labels
@@ -223,7 +223,7 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
         tags="environment"
     )
     
-    # ===== ANIMATED OCEAN SURFACE LINE =====
+    # ===== ANIMATED OCEAN SURFACE LINE (2 LINES TALL) =====
     # Cycle through wave animation frames
     wave_frames = [
         UNDERWATER_ENVIRONMENT['ocean_surface_frame1'],
@@ -237,9 +237,9 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
     num_repeats = (width // 8) + 2  # Character width ~8 pixels, add extra for safety
     full_wave_line = current_wave * num_repeats
     
-    # Draw single animated wave line across entire width
+    # Draw FIRST animated wave line across entire width
     canvas.create_text(
-        0, water_level + 5,  # Position at water level
+        0, water_level,  # First line at water level
         text=full_wave_line,
         font=('Courier', 8, 'bold'),
         fill='#FFFFFF',
@@ -247,10 +247,22 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
         tags="environment"
     )
     
+    # Draw SECOND animated wave line (creates 2-line surface)
+    canvas.create_text(
+        0, water_level + 10,  # Second line below first
+        text=full_wave_line,
+        font=('Courier', 8, 'bold'),
+        fill='#FFFFFF',
+        anchor='w',
+        tags="environment"
+    )
+    
     # ===== UNDERWATER AREA (Bottom 4/5) =====
     # Draw underwater background (deep blue, almost black)
+    # Start below the 2-line surface (20 pixels for 2 lines)
+    surface_height = 20  # Height of 2-line surface
     canvas.create_rectangle(
-        0, water_level + 15, width, height,
+        0, water_level + surface_height, width, height,
         fill='#0A0F1C', outline='',
         tags="environment"
     )
@@ -392,8 +404,9 @@ def render_debug_grid(canvas, width, height, water_level):
 
 def is_in_water(x, y, water_level, canvas_height):
     """Check if coordinates are in the underwater area (bottom 4/5 of canvas)"""
-    # Water starts after the surface line (water_level + surface line height)
-    underwater_start = water_level + 15
+    # Water starts after the 2-line surface (20 pixels total)
+    surface_height = 20
+    underwater_start = water_level + surface_height
     # Leave space above ocean floor
     underwater_end = canvas_height - 50
     return y >= underwater_start and y <= underwater_end
@@ -402,8 +415,9 @@ def spawn_bubble(bubble_list, width, water_level, height):
     """Spawn a new bubble at a random underwater position"""
     import random
     
-    # Spawn in underwater area only (below surface line, above ocean floor)
-    underwater_start = water_level + 20  # Below surface line
+    # Spawn in underwater area only (below 2-line surface, above ocean floor)
+    surface_height = 20  # Height of 2-line surface
+    underwater_start = water_level + surface_height + 10  # Below surface
     underwater_end = height - 60  # Above ocean floor
     
     x = random.randint(80, width - 80)
@@ -446,12 +460,13 @@ def update_bubbles(bubble_list, canvas, width, water_level, height, spawn_chance
     
     # Update existing bubbles
     bubbles_to_remove = []
+    surface_height = 20  # Height of 2-line surface
     for i, bubble in enumerate(bubble_list):
         # Move bubble upward (rising physics)
         bubble['y'] -= 2  # Rise speed: 2 pixels per frame
         
-        # Mark for removal if reached surface (one line below surface for visibility)
-        if bubble['y'] <= water_level + 15:
+        # Mark for removal if reached surface (stop at 2-line surface)
+        if bubble['y'] <= water_level + surface_height:
             bubbles_to_remove.append(i)
     
     # Remove bubbles that reached surface (reverse order to preserve indices)

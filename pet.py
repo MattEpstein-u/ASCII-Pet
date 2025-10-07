@@ -176,7 +176,8 @@ class ASCIIUnderwaterKraken:
             x, y = self.kraken_start_x, self.kraken_start_y
         
         # Render the ASCII art with underwater coloring
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=12)
+        # Use smaller font size (6) to make kraken more compact
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=6)
     
     def setup_animations(self):
         """Setup animation sequences"""
