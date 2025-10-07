@@ -466,13 +466,14 @@ def update_bubbles(bubble_list, canvas, width, water_level, height, spawn_chance
     # Update existing bubbles
     bubbles_to_remove = []
     # Surface is 2 lines tall: water_level to water_level + 10
-    # Remove bubbles when they reach the top of the surface
+    # Remove bubbles slightly before they reach the visible surface (for realism)
+    bubble_removal_threshold = 15  # Remove 15 pixels before water_level
     for i, bubble in enumerate(bubble_list):
         # Move bubble upward (rising physics)
         bubble['y'] -= 2  # Rise speed: 2 pixels per frame
         
-        # Mark for removal if reached surface (at or above water_level)
-        if bubble['y'] <= water_level:
+        # Mark for removal if approaching surface (slightly before water_level)
+        if bubble['y'] <= water_level + bubble_removal_threshold:
             bubbles_to_remove.append(i)
     
     # Remove bubbles that reached surface (reverse order to preserve indices)

@@ -192,9 +192,12 @@ class ASCIIUnderwaterKraken:
         self.animations = ASCII_ANIMATIONS
     
     def on_click(self, event):
-        """Handle clicks: drop shrimp in water"""
+        """Handle clicks: drop shrimp in water (only underwater area)"""
         if is_in_water(event.x, event.y, self.water_level, self.container_height):
             self.drop_shrimp(event.x, event.y)
+        else:
+            # Click was above water or below ocean floor - ignore silently
+            pass
 
     
     def move_kraken_to(self, x, y):
@@ -209,9 +212,13 @@ class ASCIIUnderwaterKraken:
         # Surface is 2 lines tall (20 pixels)
         surface_height = 20
         
-        # Allow top of kraken to reach just below the wave surface
-        # min_y is the center point, so we add half the kraken height
-        min_y = self.water_level + self.kraken_radius + surface_height + 10
+        # The kraken's TOP (head) must stay below the surface
+        # Since y is the center point, and the kraken extends kraken_radius above center:
+        # TOP position = y - kraken_radius
+        # We want: TOP >= water_level + surface_height
+        # So: y - kraken_radius >= water_level + surface_height
+        # Therefore: y >= water_level + surface_height + kraken_radius
+        min_y = self.water_level + surface_height + self.kraken_radius
         max_y = self.container_height - margin  # Don't cross ocean floor
         y = max(min_y, min(y, max_y))
         
@@ -224,7 +231,16 @@ class ASCIIUnderwaterKraken:
     
     def drop_shrimp(self, x, y):
         """Drop a shrimp at the specified underwater position"""
+        # Validate position is truly underwater
+        surface_height = 20  # 2-line surface
+        underwater_start = self.water_level + surface_height
+        
         if is_in_water(x, y, self.water_level, self.container_height):
+            # Double-check y is below surface
+            if y < underwater_start:
+                print(f"⚠️ Invalid shrimp position ({x}, {y}) - above water level {underwater_start}")
+                return
+            
             # Add to queue with unique tag
             self.shrimp_counter += 1
             shrimp_tag = f"shrimp_{self.shrimp_counter}"
@@ -234,6 +250,8 @@ class ASCIIUnderwaterKraken:
             self.canvas.create_text(x, y, text=",", font=("Courier", shrimp_size, "bold"),
                                    fill="#FFB6C1", tags=shrimp_tag)
             print(f"🦐 Shrimp dropped at ({x}, {y}). Queue size: {len(self.shrimp_queue)}")
+        else:
+            print(f"⚠️ Click at ({x}, {y}) is not underwater (water_level: {self.water_level}, underwater_start: {self.water_level + 20})")
     
     def eat_shrimp(self):
         """Kraken eats the current target shrimp"""
@@ -280,9 +298,11 @@ class ASCIIUnderwaterKraken:
             min_x = margin
             max_x = self.container_width - margin
             
-            # Calculate minimum y based on actual kraken size and 2-line surface
+            # Calculate minimum y: kraken's TOP must stay below surface
+            # TOP = y - kraken_radius, and TOP >= water_level + surface_height
+            # Therefore: y >= water_level + surface_height + kraken_radius
             surface_height = 20  # 2-line surface is 20 pixels tall
-            min_y = self.water_level + self.kraken_radius + surface_height + 10
+            min_y = self.water_level + surface_height + self.kraken_radius
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds
