@@ -11,7 +11,7 @@ import platform
 import sys
 from designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
                     render_underwater_environment, is_in_water, update_bubbles,
-                    get_density_font_size, get_density_line_height, DEBUG_CONFIG)
+                    get_density_font_size, get_density_line_height, get_kraken_color, DEBUG_CONFIG)
 
 class ASCIIUnderwaterKraken:
     def __init__(self):
@@ -184,9 +184,9 @@ class ASCIIUnderwaterKraken:
         else:
             x, y = self.kraken_start_x, self.kraken_start_y
         
-        # Render the ASCII art with lavender coloring
+        # Render the ASCII art with configured kraken color
         # Use consistent font size for all kraken sprites
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#E6E6FA", font_size=self.kraken_font_size)
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color=get_kraken_color(), font_size=self.kraken_font_size)
     
     def setup_animations(self):
         """Setup animation sequences"""
@@ -230,10 +230,10 @@ class ASCIIUnderwaterKraken:
         
         y = max(min_y, min(y, max_y))
         
-        # Render kraken at validated position with lavender color
+        # Render kraken at validated position with configured color
         # No need to check is_in_water() since we've already validated boundaries above
         sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#C338E2", font_size=self.kraken_font_size)
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color=get_kraken_color(), font_size=self.kraken_font_size)
         return True
     
     def drop_shrimp(self, x, y):

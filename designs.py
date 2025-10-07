@@ -14,6 +14,11 @@ ASCII_DENSITY_CONFIG = {
     'char_spacing': 1.0,  # Character width multiplier (affects horizontal density)
 }
 
+# Kraken appearance configuration
+KRAKEN_CONFIG = {
+    'color': '#B85EDE',  # Kraken sprite color (change this to update all kraken sprites)
+}
+
 # Debug grid overlay configuration
 DEBUG_CONFIG = {
     'show_grid': True,  # Set to True to show debugging grid
@@ -30,6 +35,10 @@ def get_density_font_size():
 def get_density_line_height():
     """Get the calculated line height based on density config"""
     return ASCII_DENSITY_CONFIG['font_size'] + ASCII_DENSITY_CONFIG['line_spacing']
+
+def get_kraken_color():
+    """Get the configured kraken color"""
+    return KRAKEN_CONFIG['color']
 
 # ASCII art for the kraken in different states
 # Each state has multiple frames for animation
