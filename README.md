@@ -65,7 +65,7 @@ Unlike simple desktop pets, this kraken features intricate ASCII art with tentac
 **Test the kraken in a regular window before installing:**
 
 ```bash
-python3 quick_test.py
+python3 test.py
 ```
 
 **What you'll see:**
@@ -162,7 +162,7 @@ python3 quick_test.py
 ASCII-Pet/
 ├── ascii_pet_designs.py           # Sprites & bubble physics (NEW)
 ├── desktop_pet.py                 # Main application
-├── quick_test.py                  # Interactive test script
+├── test.py                        # Interactive test script
 ├── verify_bubble_physics.py       # Automated physics tests (NEW)
 ├── KRAKEN_UPDATE_SUMMARY.md       # Update overview (NEW)
 ├── VISUAL_COMPARISON.md           # Sprite gallery (NEW)

@@ -40,9 +40,11 @@ class ASCIIUnderwaterKraken:
         self.bubble_list = []  # List of active bubbles with positions
         
         # Shrimp feeding system
-        self.shrimp_queue = []
+        self.shrimp_queue = []  # List of (x, y, tag) tuples
         self.current_shrimp_target = None
         self.eating_shrimp = False
+        self.eating_frames = 0  # Counter for eating animation duration
+        self.shrimp_counter = 0  # For unique shrimp tags
         
         # Start the main loops
         self.animate()
@@ -206,23 +208,26 @@ class ASCIIUnderwaterKraken:
     def drop_shrimp(self, x, y):
         """Drop a shrimp at the specified underwater position"""
         if is_in_water(x, y, self.water_level, self.container_height):
-            # Add to queue
-            self.shrimp_queue.append((x, y))
+            # Add to queue with unique tag
+            self.shrimp_counter += 1
+            shrimp_tag = f"shrimp_{self.shrimp_counter}"
+            self.shrimp_queue.append((x, y, shrimp_tag))
             # Render shrimp on canvas
             self.canvas.create_text(x, y, text=",", font=("Courier", 16, "bold"),
-                                   fill="#FFB6C1", tags=f"shrimp_{len(self.shrimp_queue)}")
+                                   fill="#FFB6C1", tags=shrimp_tag)
             print(f"🦐 Shrimp dropped at ({x}, {y}). Queue size: {len(self.shrimp_queue)}")
     
     def eat_shrimp(self):
         """Kraken eats the current target shrimp"""
         if self.current_shrimp_target:
-            # Remove shrimp from canvas
-            shrimp_idx = self.shrimp_queue.index(self.current_shrimp_target) + 1
-            self.canvas.delete(f"shrimp_{shrimp_idx}")
+            # Remove shrimp from canvas using stored tag
+            x, y, tag = self.current_shrimp_target
+            self.canvas.delete(tag)
             # Remove from queue
             self.shrimp_queue.remove(self.current_shrimp_target)
             self.current_shrimp_target = None
             self.eating_shrimp = False
+            self.eating_frames = 0  # Reset eating timer
             print(f"🐙 Om nom nom! Shrimp eaten. Remaining: {len(self.shrimp_queue)}")
     
     def get_next_shrimp_target(self):
@@ -230,7 +235,8 @@ class ASCIIUnderwaterKraken:
         if self.shrimp_queue and not self.current_shrimp_target:
             self.current_shrimp_target = self.shrimp_queue[0]
             self.eating_shrimp = True
-            print(f"🐙 Kraken targeting shrimp at {self.current_shrimp_target}")
+            x, y, tag = self.current_shrimp_target
+            print(f"🐙 Kraken targeting shrimp at ({x}, {y})")
 
 
     
@@ -242,7 +248,7 @@ class ASCIIUnderwaterKraken:
         
         # If targeting shrimp, move towards it
         if self.current_shrimp_target:
-            shrimp_x, shrimp_y = self.current_shrimp_target
+            shrimp_x, shrimp_y, shrimp_tag = self.current_shrimp_target
             
             # Calculate where the sprite anchor should be so the mouth reaches the shrimp
             # Mouth is at (sprite_x + mouth_offset_x, sprite_y + mouth_offset_y)
@@ -291,10 +297,13 @@ class ASCIIUnderwaterKraken:
                     if is_in_water(new_x, new_y, self.water_level, self.container_height):
                         self.move_kraken_to(new_x, new_y)
                 else:
-                    # Reached target - eat the shrimp!
+                    # Reached target - start eating animation
                     if self.current_shrimp_target:
                         self.state = "eating"
-                        self.eat_shrimp()
+                        self.eating_frames += 1
+                        # Eat shrimp after 15 frames (~0.75 seconds at 20fps)
+                        if self.eating_frames >= 15:
+                            self.eat_shrimp()
         else:
             # No target, return to idle
             if self.state != "idle":

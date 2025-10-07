@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Quick Test - ASCII Underwater Kraken Shrimp Hunter
+Test - ASCII Underwater Kraken Shrimp Hunter
 Simple test script - just click to drop shrimp and watch the kraken hunt!
 """
 
@@ -10,7 +10,7 @@ import sys
 from ascii_pet_designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
                               render_underwater_environment, is_in_water, update_bubbles)
 
-class QuickTest:
+class Test:
     def __init__(self):
         self.root = tk.Tk()
         
@@ -68,9 +68,11 @@ class QuickTest:
         self.mouth_offset_y = 70  # Mouth is at line 5: 5 × (font_size + 2) = 5 × 14 = 70 pixels
         
         # Shrimp feeding
-        self.shrimp_queue = []
+        self.shrimp_queue = []  # List of (x, y, tag) tuples
         self.current_shrimp_target = None
         self.eating_shrimp = False
+        self.eating_frames = 0  # Counter for eating animation duration
+        self.shrimp_counter = 0  # For unique shrimp tags
         
         # Bubble physics system
         self.bubble_list = []  # List of active bubbles
@@ -120,8 +122,9 @@ class QuickTest:
     def drop_shrimp(self, x, y):
         """Drop shrimp at position"""
         if is_in_water(x, y, self.water_level, self.container_height):
-            self.shrimp_queue.append((x, y))
-            shrimp_tag = f"shrimp_{len(self.shrimp_queue)}"
+            self.shrimp_counter += 1
+            shrimp_tag = f"shrimp_{self.shrimp_counter}"
+            self.shrimp_queue.append((x, y, shrimp_tag))
             self.canvas.create_text(x, y, text=",", font=("Courier", 16, "bold"),
                                    fill="#FFB6C1", tags=shrimp_tag)
             print(f"🦐 Shrimp dropped at ({x}, {y})")
@@ -132,16 +135,18 @@ class QuickTest:
         if self.shrimp_queue and not self.current_shrimp_target:
             self.current_shrimp_target = self.shrimp_queue[0]
             self.eating_shrimp = True
-            print(f"🐙 Targeting shrimp at {self.current_shrimp_target}")
+            x, y, tag = self.current_shrimp_target
+            print(f"🐙 Targeting shrimp at ({x}, {y})")
     
     def eat_shrimp(self):
-        """Eat current target shrimp"""
+        """Eat current target shrimp (after eating animation completes)"""
         if self.current_shrimp_target:
-            idx = self.shrimp_queue.index(self.current_shrimp_target) + 1
-            self.canvas.delete(f"shrimp_{idx}")
+            x, y, tag = self.current_shrimp_target
+            self.canvas.delete(tag)  # Delete by the stored tag
             self.shrimp_queue.remove(self.current_shrimp_target)
             self.current_shrimp_target = None
             self.eating_shrimp = False
+            self.eating_frames = 0  # Reset eating timer
             print(f"🐙 Om nom nom! {len(self.shrimp_queue)} shrimp remaining")
 
     
@@ -155,7 +160,7 @@ class QuickTest:
         
         # Move towards shrimp target
         if self.current_shrimp_target:
-            shrimp_x, shrimp_y = self.current_shrimp_target
+            shrimp_x, shrimp_y, shrimp_tag = self.current_shrimp_target
             
             # Calculate where the sprite anchor should be so the mouth reaches the shrimp
             target_sprite_x = shrimp_x - self.mouth_offset_x
@@ -198,10 +203,13 @@ class QuickTest:
                     
                     self.move_kraken_to(new_x, new_y)
                 else:
-                    # Reached target - eat!
+                    # Reached target - start eating animation
                     if self.current_shrimp_target:
                         self.state = "eating"
-                        self.eat_shrimp()
+                        self.eating_frames += 1
+                        # Eat shrimp after 15 frames (~0.75 seconds at 20fps)
+                        if self.eating_frames >= 15:
+                            self.eat_shrimp()
         else:
             # No target, return to idle
             if self.state != "idle":
@@ -238,7 +246,7 @@ class QuickTest:
     def run(self):
         """Run the test"""
         print("\n" + "="*60)
-        print("🐙 ASCII Underwater Kraken - Quick Test")
+        print("🐙 ASCII Underwater Kraken - Test")
         print("="*60)
         print("\n🎯 Instructions:")
         print("  • Click anywhere in the water to drop shrimp")
@@ -260,7 +268,7 @@ class QuickTest:
 
 if __name__ == "__main__":
     try:
-        test = QuickTest()
+        test = Test()
         test.run()
         print("\n✅ Ready to install? Run:")
         print("  • macOS/Linux: ./install.sh")
