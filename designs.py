@@ -21,7 +21,7 @@ KRAKEN_CONFIG = {
 
 # Boat configuration
 BOAT_CONFIG = {
-    'speed': 1,  # Characters per frame to move the boat
+    'speed': 0.25,  # Characters per frame to move the boat
     'color': '#FFFFFF',  # Boat color (white)
 }
 
