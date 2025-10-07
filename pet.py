@@ -26,16 +26,24 @@ class ASCIIUnderwaterKraken:
         self.state = "idle"
         self.wave_animation_frame = 0  # For ocean surface animation
         
-        # Mouth offset (where kraken eats) - calculated based on density
+        # Kraken rendering settings - use consistent font size for all sprites
+        self.kraken_font_size = 6  # Font size for kraken rendering
+        self.kraken_sprite_lines = 11  # Kraken sprite is 11 lines tall
+        
+        # Calculate kraken dimensions based on actual rendering font size (6)
+        # Font size 6 with typical spacing gives ~8 pixels per line
+        self.kraken_line_height = self.kraken_font_size + 2  # 6 + 2 = 8 pixels per line
+        self.kraken_total_height = self.kraken_sprite_lines * self.kraken_line_height  # 11 * 8 = 88 pixels
+        self.kraken_radius = self.kraken_total_height // 2  # ~44 pixels
+        
+        # Mouth offset (where kraken eats) - mouth is on line 6 (0-indexed line 5)
         self.mouth_offset_x = 0  # Centered horizontally
-        # Mouth is at line 5 of sprite, calculate pixel offset based on density
-        self.mouth_offset_y = 5 * get_density_line_height()
+        self.mouth_offset_y = 5 * self.kraken_line_height  # 5 * 8 = 40 pixels from sprite anchor
         
         self.setup_pet()
         self.setup_animations()
         
         # Kraken properties
-        self.kraken_radius = 30
         self.water_level = 0
         
         # Bubble physics system
@@ -176,8 +184,8 @@ class ASCIIUnderwaterKraken:
             x, y = self.kraken_start_x, self.kraken_start_y
         
         # Render the ASCII art with underwater coloring
-        # Use smaller font size (6) to make kraken more compact
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=6)
+        # Use consistent font size for all kraken sprites
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=self.kraken_font_size)
     
     def setup_animations(self):
         """Setup animation sequences"""
@@ -198,21 +206,19 @@ class ASCIIUnderwaterKraken:
         x = max(margin, min(x, self.container_width - margin))
         
         # Clamp to underwater area (below surface, above floor)
-        # Calculate based on density: sprite is 11 lines tall
-        kraken_half_height = (11 * get_density_line_height()) // 2
-        wave_font_size = max(6, get_density_font_size() - 2)
-        wave_line_height = wave_font_size + 2
-        surface_height = wave_line_height * 2
+        # Surface is 2 lines tall (20 pixels)
+        surface_height = 20
         
         # Allow top of kraken to reach just below the wave surface
-        min_y = self.water_level + kraken_half_height + surface_height + 10
+        # min_y is the center point, so we add half the kraken height
+        min_y = self.water_level + self.kraken_radius + surface_height + 10
         max_y = self.container_height - margin  # Don't cross ocean floor
         y = max(min_y, min(y, max_y))
         
-        # Ensure the kraken stays in water
+        # Ensure the kraken stays in water and render with correct font size
         if is_in_water(x, y, self.water_level, self.container_height):
             sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=12)
+            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=self.kraken_font_size)
             return True
         return False
     
@@ -274,12 +280,9 @@ class ASCIIUnderwaterKraken:
             min_x = margin
             max_x = self.container_width - margin
             
-            # Calculate minimum y based on density
-            kraken_half_height = (11 * get_density_line_height()) // 2
-            wave_font_size = max(6, get_density_font_size() - 2)
-            wave_line_height = wave_font_size + 2
-            surface_height = wave_line_height * 2
-            min_y = self.water_level + kraken_half_height + surface_height + 10
+            # Calculate minimum y based on actual kraken size and 2-line surface
+            surface_height = 20  # 2-line surface is 20 pixels tall
+            min_y = self.water_level + self.kraken_radius + surface_height + 10
             max_y = self.container_height - margin
             
             # Clamp target to safe bounds
