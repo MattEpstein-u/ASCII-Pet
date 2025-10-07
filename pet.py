@@ -324,45 +324,7 @@ class ASCIIUnderwaterKraken:
             if self.boat_char_pos > screen_width_chars + 10:
                 self.boat_active = False
                 print("⛵...")
-    
-    def render_boat_above_water(self):
-        """Render the top part of the boat (lines 0-2) above the water surface"""
-        if self.boat_active:
-            boat_sprite = get_boat_sprite()
-            boat_color = get_boat_color()
-            
-            # Clear previous boat rendering
-            self.canvas.delete("boat")
-            
-            # Render the top 3 lines of boat above water surface
-            # Lines 3-4 are integrated into the wave animation
-            boat_font_size = 8
-            line_height = 10
-            
-            # Position boat so bottom lines (3-4) align with water level
-            boat_y_start = self.water_level - (len(boat_sprite) * line_height) + 20
-            
-            for i in range(min(3, len(boat_sprite))):  # Only render first 3 lines
-                line = boat_sprite[i]
-                y_pos = boat_y_start + (i * line_height)
-                
-                # Convert character position to pixel position
-                x_pos = self.boat_char_pos * 8  # 8 pixels per character
-                
-                self.canvas.create_text(
-                    x_pos, y_pos,
-                    text=line,
-                    font=('Courier', boat_font_size, 'bold'),
-                    anchor='w',  # Anchor to west (left)
-                    fill=boat_color,
-                    tags="boat"
-                )
-            
-            # Ensure boat is above environment but below debug grid
-            self.canvas.tag_raise("boat", "environment")
 
-
-    
     def update_position(self):
         """Smoothly move kraken towards shrimp target"""
         # Check if there's a shrimp to eat
@@ -455,12 +417,8 @@ class ASCIIUnderwaterKraken:
         update_bubbles(self.bubble_list, self.canvas, self.container_width, 
                       self.water_level, self.container_height, spawn_chance=0.05)
         
-        # Update boat movement
+        # Update boat movement (boat rendering is integrated into wave rendering above)
         self.update_boat()
-        
-        # Render boat above water (top 3 lines)
-        if self.boat_active:
-            self.render_boat_above_water()
         
         # Update position (shrimp hunting)
         self.update_position()

@@ -25,14 +25,15 @@ BOAT_CONFIG = {
     'color': '#FFFFFF',  # Boat color (white)
 }
 
-# Boat ASCII art (5 lines tall, rectangularized)
+# Boat ASCII art (6 lines tall, rectangularized)
 # Each line is exactly 35 characters wide
 BOAT_SPRITE = [
-    "              |    |               ",
-    "             )_)  )_)              ",
-    "            )___))___)             ",
-    "           )____)_____)            ",
-    "         _____|____|_____          ",
+    "              |    |               ",  # Line 0: Masts
+    "             )_)  )_)              ",  # Line 1: Sails
+    "            )___))___)             ",  # Line 2: Sails lower
+    "           )____)_____)            ",  # Line 3: Hull top
+    "         _____|____|_____          ",  # Line 4: Hull middle
+    "~~~~~~~~~\\______________/~~~~~~~~~~",  # Line 5: Hull bottom (overwrites top wave)
 ]
 
 # Debug grid overlay configuration
@@ -298,7 +299,7 @@ def render_underwater_environment(canvas, width, height, animation_frame=0, boat
         tags="environment"
     )
     
-    # ===== ANIMATED OCEAN SURFACE (2 LINES TALL) =====
+    # ===== ANIMATED OCEAN SURFACE (7 LINES TALL: 5 blank + 2 waves) =====
     # Cycle through wave animation frames
     wave_frames = [
         UNDERWATER_ENVIRONMENT['ocean_surface_frame1'],
@@ -315,21 +316,50 @@ def render_underwater_environment(canvas, width, height, animation_frame=0, boat
     full_wave_line_top = current_wave_top * num_repeats
     full_wave_line_bottom = current_wave_bottom * num_repeats
     
-    # Integrate boat into waves if active
+    # Create 5 blank lines above waves
+    blank_line = " " * (len(full_wave_line_top))
+    
+    # Integrate boat into surface if active (boat is 6 lines, overlaps top wave)
     if boat_active and boat_char_pos is not None:
         boat_sprite = BOAT_SPRITE
-        # Boat has 5 lines - we only render top 2 lines into the 2-line wave surface
-        # But we need to position it so the bottom of boat (line 4) aligns with bottom wave
-        # So we render boat lines 3 and 4 into wave lines 0 and 1
-        if len(boat_sprite) >= 4:
-            # Top wave line gets boat line 3 (second to last)
-            full_wave_line_top = integrate_boat_into_waves(full_wave_line_top, boat_sprite[3], boat_char_pos)
-            # Bottom wave line gets boat line 4 (last)
-            full_wave_line_bottom = integrate_boat_into_waves(full_wave_line_bottom, boat_sprite[4], boat_char_pos)
+        if len(boat_sprite) >= 6:
+            # Boat line 5 (hull bottom) overwrites the top wave line
+            full_wave_line_top = integrate_boat_into_waves(full_wave_line_top, boat_sprite[5], boat_char_pos)
     
-    # Draw FIRST animated wave line across entire width (top line)
+    # Render 7-line surface: 5 blank lines + 2 wave lines
+    line_height = 10
+    surface_y_start = water_level - (5 * line_height)  # Start 5 lines above water_level
+    
+    # Draw 5 blank lines (or boat lines 1-5 if boat is present)
+    for i in range(5):
+        y_pos = surface_y_start + (i * line_height)
+        
+        if boat_active and boat_char_pos is not None and i < len(boat_sprite) - 1:
+            # Render boat line i into this blank line
+            boat_line_text = blank_line
+            boat_line_text = integrate_boat_into_waves(boat_line_text, boat_sprite[i], boat_char_pos)
+            canvas.create_text(
+                0, y_pos,
+                text=boat_line_text,
+                font=('Courier', 8, 'bold'),
+                fill='#FFFFFF',
+                anchor='w',
+                tags="environment"
+            )
+        else:
+            # Just blank space
+            canvas.create_text(
+                0, y_pos,
+                text=blank_line,
+                font=('Courier', 8, 'bold'),
+                fill='#FFFFFF',
+                anchor='w',
+                tags="environment"
+            )
+    
+    # Draw FIRST animated wave line (line 6, with boat hull bottom overlapping if active)
     canvas.create_text(
-        0, water_level,  # First line at water level
+        0, water_level,  # First wave line at water level
         text=full_wave_line_top,
         font=('Courier', 8, 'bold'),
         fill='#FFFFFF',
@@ -337,7 +367,7 @@ def render_underwater_environment(canvas, width, height, animation_frame=0, boat
         tags="environment"
     )
     
-    # Draw SECOND animated wave line (bottom line - offset animation for depth)
+    # Draw SECOND animated wave line (line 7, bottom wave)
     canvas.create_text(
         0, water_level + 10,  # Second line below first
         text=full_wave_line_bottom,
