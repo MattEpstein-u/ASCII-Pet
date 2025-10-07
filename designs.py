@@ -385,8 +385,9 @@ def render_debug_grid(canvas, width, height, water_level):
         )
         
         # Kraken top boundary (where top of kraken can reach)
-        kraken_half_height = (11 * get_density_line_height()) // 2
-        kraken_min_y = water_level + kraken_half_height + surface_height + 10
+        # Kraken center minimum = water_level + surface_height + kraken_radius
+        kraken_radius = (11 * get_density_line_height()) // 2
+        kraken_min_y = water_level + surface_height + kraken_radius
         canvas.create_line(
             0, kraken_min_y, width, kraken_min_y,
             fill='#FF00FF',  # Magenta
@@ -396,7 +397,7 @@ def render_debug_grid(canvas, width, height, water_level):
         )
         canvas.create_text(
             width - 120, kraken_min_y - 15,
-            text=f"Kraken Top Limit: {kraken_min_y}",
+            text=f"Kraken Center Min: {kraken_min_y}",
             fill='#FF00FF',
             font=('Arial', 9, 'bold'),
             tags="debug_grid"

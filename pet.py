@@ -26,19 +26,18 @@ class ASCIIUnderwaterKraken:
         self.state = "idle"
         self.wave_animation_frame = 0  # For ocean surface animation
         
-        # Kraken rendering settings - use consistent font size for all sprites
-        self.kraken_font_size = 6  # Font size for kraken rendering
+        # Kraken rendering settings - use density config font size
+        self.kraken_font_size = get_density_font_size()  # Use density config (10)
         self.kraken_sprite_lines = 11  # Kraken sprite is 11 lines tall
         
-        # Calculate kraken dimensions based on actual rendering font size (6)
-        # Font size 6 with typical spacing gives ~8 pixels per line
-        self.kraken_line_height = self.kraken_font_size + 2  # 6 + 2 = 8 pixels per line
-        self.kraken_total_height = self.kraken_sprite_lines * self.kraken_line_height  # 11 * 8 = 88 pixels
-        self.kraken_radius = self.kraken_total_height // 2  # ~44 pixels
+        # Calculate kraken dimensions based on density configuration
+        self.kraken_line_height = get_density_line_height()  # Font size + line spacing from config
+        self.kraken_total_height = self.kraken_sprite_lines * self.kraken_line_height
+        self.kraken_radius = self.kraken_total_height // 2
         
         # Mouth offset (where kraken eats) - mouth is on line 6 (0-indexed line 5)
         self.mouth_offset_x = 0  # Centered horizontally
-        self.mouth_offset_y = 5 * self.kraken_line_height  # 5 * 8 = 40 pixels from sprite anchor
+        self.mouth_offset_y = 5 * self.kraken_line_height  # 5 lines down from top
         
         self.setup_pet()
         self.setup_animations()
@@ -231,27 +230,34 @@ class ASCIIUnderwaterKraken:
     
     def drop_shrimp(self, x, y):
         """Drop a shrimp at the specified underwater position"""
-        # Validate position is truly underwater
+        # Strict validation: shrimp must be below the 2-line surface
         surface_height = 20  # 2-line surface
         underwater_start = self.water_level + surface_height
+        ocean_floor = self.container_height - 50
         
-        if is_in_water(x, y, self.water_level, self.container_height):
-            # Double-check y is below surface
-            if y < underwater_start:
-                print(f"⚠️ Invalid shrimp position ({x}, {y}) - above water level {underwater_start}")
-                return
-            
-            # Add to queue with unique tag
-            self.shrimp_counter += 1
-            shrimp_tag = f"shrimp_{self.shrimp_counter}"
-            self.shrimp_queue.append((x, y, shrimp_tag))
-            # Render shrimp on canvas with density-based font size
-            shrimp_size = int(get_density_font_size() * 1.4)  # Slightly larger than kraken
-            self.canvas.create_text(x, y, text=",", font=("Courier", shrimp_size, "bold"),
-                                   fill="#FFB6C1", tags=shrimp_tag)
-            print(f"🦐 Shrimp dropped at ({x}, {y}). Queue size: {len(self.shrimp_queue)}")
-        else:
-            print(f"⚠️ Click at ({x}, {y}) is not underwater (water_level: {self.water_level}, underwater_start: {self.water_level + 20})")
+        # First check: y must be in valid underwater range
+        if y < underwater_start:
+            print(f"⚠️ Click rejected: y={y} is above underwater start {underwater_start} (water_level={self.water_level})")
+            return
+        
+        if y > ocean_floor:
+            print(f"⚠️ Click rejected: y={y} is below ocean floor {ocean_floor}")
+            return
+        
+        # Second check: use is_in_water validation
+        if not is_in_water(x, y, self.water_level, self.container_height):
+            print(f"⚠️ Click rejected by is_in_water: ({x}, {y})")
+            return
+        
+        # All checks passed - add shrimp
+        self.shrimp_counter += 1
+        shrimp_tag = f"shrimp_{self.shrimp_counter}"
+        self.shrimp_queue.append((x, y, shrimp_tag))
+        # Render shrimp on canvas with density-based font size
+        shrimp_size = int(get_density_font_size() * 1.4)  # Slightly larger than kraken
+        self.canvas.create_text(x, y, text=",", font=("Courier", shrimp_size, "bold"),
+                               fill="#FFB6C1", tags=shrimp_tag)
+        print(f"🦐 Shrimp dropped at ({x}, {y}). Queue size: {len(self.shrimp_queue)}")
     
     def eat_shrimp(self):
         """Kraken eats the current target shrimp"""
