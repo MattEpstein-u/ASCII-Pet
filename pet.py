@@ -76,8 +76,8 @@ class ASCIIUnderwaterKraken:
         self.container_height = max(350, min(container_side, 600))
         
         # Position container in bottom-right corner with no margin
-        margin = 0  # Remove right margin to touch edge
-        self.container_x = screen_width - self.container_width - margin
+        margin = 50  # Remove right margin to touch edge
+        self.container_x = screen_width - self.container_width
         self.container_y = screen_height - self.container_height - margin
         
         print(f"Screen: {screen_width}x{screen_height}")
@@ -233,7 +233,7 @@ class ASCIIUnderwaterKraken:
         # Render kraken at validated position with lavender color
         # No need to check is_in_water() since we've already validated boundaries above
         sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#E6E6FA", font_size=self.kraken_font_size)
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#C338E2", font_size=self.kraken_font_size)
         return True
     
     def drop_shrimp(self, x, y):
