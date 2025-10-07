@@ -33,7 +33,7 @@ class ASCIIUnderwaterKraken:
         # Mouth offset from sprite anchor (center bottom of head)
         # The octopus head is ~7 lines tall, mouth is at bottom center
         self.mouth_offset_x = 0  # Centered horizontally
-        self.mouth_offset_y = 7  # Bottom of head (line 7 of sprite)
+        self.mouth_offset_y = 6  # Bottom of head where tentacles connect (line 6 of 11-line sprite)
         
         # Bubble physics system
         self.bubble_list = []  # List of active bubbles with positions

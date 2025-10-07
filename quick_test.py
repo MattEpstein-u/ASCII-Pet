@@ -64,7 +64,7 @@ class QuickTest:
         
         # Mouth offset from sprite anchor (center bottom of head)
         self.mouth_offset_x = 0  # Centered horizontally
-        self.mouth_offset_y = 7  # Bottom of head (line 7 of sprite)
+        self.mouth_offset_y = 6  # Bottom of head where tentacles connect (line 6 of 11-line sprite)
         
         # Shrimp feeding
         self.shrimp_queue = []
