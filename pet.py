@@ -12,7 +12,7 @@ import sys
 from designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
                     render_underwater_environment, is_in_water, update_bubbles,
                     get_density_font_size, get_density_line_height, get_kraken_color, 
-                    get_boat_sprite, get_boat_speed, get_boat_color, DEBUG_CONFIG)
+                    get_boat_sprite, get_boat_speed, get_boat_color, get_boat_width, DEBUG_CONFIG)
 
 class ASCIIUnderwaterKraken:
     def __init__(self):
@@ -58,8 +58,7 @@ class ASCIIUnderwaterKraken:
         # Boat system (spawns once when clicking above water)
         self.boat_active = False  # Whether boat has been spawned
         self.boat_spawned = False  # Whether boat spawn has been used
-        self.boat_x = 0  # Current boat X position
-        self.boat_y = 0  # Current boat Y position (at water level)
+        self.boat_char_pos = -get_boat_width()  # Current boat character position (starts off-screen left)
         
         # Start the main loops
         self.animate()
@@ -155,9 +154,13 @@ class ASCIIUnderwaterKraken:
                                bg='#0A0F1C', highlightthickness=0)  # Deep blue, almost black background
         self.canvas.pack(fill='both', expand=True)
         
-        # Render the underwater environment with animation
-        self.water_level = render_underwater_environment(self.canvas, self.container_width, 
-                                                         self.container_height, self.wave_animation_frame)
+        # Render the underwater environment with animation (no boat initially)
+        self.water_level = render_underwater_environment(
+            self.canvas, self.container_width, self.container_height, 
+            self.wave_animation_frame,
+            boat_char_pos=None,
+            boat_active=False
+        )
         
         print(f"🌊 Water level initialized: {self.water_level}, Container height: {self.container_height}")
         print(f"🌊 Underwater starts at: {self.water_level + 20} (water_level + 20)")
@@ -305,32 +308,25 @@ class ASCIIUnderwaterKraken:
         if not self.boat_spawned:
             self.boat_spawned = True
             self.boat_active = True
-            self.boat_x = 0  # Start from left edge
-            # Position boat at water level (top of boat sits at water level)
-            # Boat sprite is 6 lines tall, we want the bottom line (waves) at water_level
-            boat_sprite = get_boat_sprite()
-            boat_height = len(boat_sprite) * 10  # Approximate line height for boat
-            self.boat_y = self.water_level - boat_height + 10  # Bottom line at water level
-            print(f"⛵ Boat spawned! Sailing across the ocean at y={self.boat_y}")
+            self.boat_char_pos = -get_boat_width()  # Start completely off-screen to the left
+            print(f"⛵")
     
     def update_boat(self):
-        """Update boat position and render it"""
+        """Update boat character position"""
         if self.boat_active:
-            # Move boat from left to right
-            self.boat_x += get_boat_speed()
+            # Move boat one character at a time from left to right
+            self.boat_char_pos += get_boat_speed()
             
-            # Check if boat has sailed off the right edge
-            if self.boat_x > self.container_width + 200:  # Extra margin to fully disappear
+            # Calculate approximate screen width in characters (8 pixels per char with Courier 8pt)
+            screen_width_chars = self.container_width // 8
+            
+            # Check if boat has sailed completely off the right edge
+            if self.boat_char_pos > screen_width_chars + 10:
                 self.boat_active = False
-                self.canvas.delete("boat")
-                print("⛵ Boat has sailed away...")
-                return
-            
-            # Render boat (it will overwrite the wave tiles)
-            self.render_boat()
+                print("⛵...")
     
-    def render_boat(self):
-        """Render the boat sprite on the canvas"""
+    def render_boat_above_water(self):
+        """Render the top part of the boat (lines 0-2) above the water surface"""
         if self.boat_active:
             boat_sprite = get_boat_sprite()
             boat_color = get_boat_color()
@@ -338,19 +334,23 @@ class ASCIIUnderwaterKraken:
             # Clear previous boat rendering
             self.canvas.delete("boat")
             
-            # Render each line of the boat sprite
-            # Use smaller font for boat to match scene scale
+            # Render the top 3 lines of boat above water surface
+            # Lines 3-4 are integrated into the wave animation
             boat_font_size = 8
             line_height = 10
             
-            for i, line in enumerate(boat_sprite):
-                # Skip the bottom wave line (last line) - we want our ocean waves to show
-                if i == len(boat_sprite) - 1:
-                    continue
+            # Position boat so bottom lines (3-4) align with water level
+            boat_y_start = self.water_level - (len(boat_sprite) * line_height) + 20
+            
+            for i in range(min(3, len(boat_sprite))):  # Only render first 3 lines
+                line = boat_sprite[i]
+                y_pos = boat_y_start + (i * line_height)
                 
-                y_pos = self.boat_y + (i * line_height)
+                # Convert character position to pixel position
+                x_pos = self.boat_char_pos * 8  # 8 pixels per character
+                
                 self.canvas.create_text(
-                    self.boat_x, y_pos,
+                    x_pos, y_pos,
                     text=line,
                     font=('Courier', boat_font_size, 'bold'),
                     anchor='w',  # Anchor to west (left)
@@ -441,17 +441,26 @@ class ASCIIUnderwaterKraken:
     def update_behavior(self):
         """Update kraken behavior and state"""
         # Update wave animation (slower cycle - every 10 frames)
+        # Pass boat position for integration into wave rendering
         if self.wave_animation_frame % 10 == 0:
-            render_underwater_environment(self.canvas, self.container_width, 
-                                         self.container_height, self.wave_animation_frame // 10)
+            render_underwater_environment(
+                self.canvas, self.container_width, self.container_height, 
+                self.wave_animation_frame // 10,
+                boat_char_pos=self.boat_char_pos if self.boat_active else None,
+                boat_active=self.boat_active
+            )
         self.wave_animation_frame += 1
         
         # Update bubble physics every frame (spawn, rise, remove at surface)
         update_bubbles(self.bubble_list, self.canvas, self.container_width, 
                       self.water_level, self.container_height, spawn_chance=0.05)
         
-        # Update boat movement and rendering
+        # Update boat movement
         self.update_boat()
+        
+        # Render boat above water (top 3 lines)
+        if self.boat_active:
+            self.render_boat_above_water()
         
         # Update position (shrimp hunting)
         self.update_position()

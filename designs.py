@@ -21,18 +21,18 @@ KRAKEN_CONFIG = {
 
 # Boat configuration
 BOAT_CONFIG = {
-    'speed': 2,  # Pixels per frame to move the boat
-    'color': '#8B4513',  # Boat color (brown)
+    'speed': 1,  # Characters per frame to move the boat
+    'color': '#FFFFFF',  # Boat color (white)
 }
 
-# Boat ASCII art (6 lines tall)
+# Boat ASCII art (5 lines tall, rectangularized)
+# Each line is exactly 35 characters wide
 BOAT_SPRITE = [
-    "              |    |              ",
-    "             )_)  )_)             ",
-    "            )___))___)            ",
-    "           )____)_____)           ",
-    "         _____|____|_____         ",
-    "~~~~~~~~~\\______________/~~~~~~~~~",
+    "              |    |               ",
+    "             )_)  )_)              ",
+    "            )___))___)             ",
+    "           )____)_____)            ",
+    "         _____|____|_____          ",
 ]
 
 # Debug grid overlay configuration
@@ -67,6 +67,43 @@ def get_boat_speed():
 def get_boat_color():
     """Get the configured boat color"""
     return BOAT_CONFIG['color']
+
+def get_boat_width():
+    """Get the width of the boat sprite in characters"""
+    if BOAT_SPRITE:
+        return len(BOAT_SPRITE[0])
+    return 0
+
+def integrate_boat_into_waves(wave_line, boat_line, boat_char_position):
+    """Integrate a boat line into a wave line at the specified character position
+    
+    Args:
+        wave_line: The wave pattern string (repeating)
+        boat_line: A line from the boat sprite
+        boat_char_position: Character position where boat starts (can be negative)
+    
+    Returns:
+        Modified wave line with boat integrated
+    """
+    if boat_char_position >= len(wave_line) or boat_char_position + len(boat_line) < 0:
+        # Boat completely off screen
+        return wave_line
+    
+    # Convert to list for modification
+    wave_chars = list(wave_line)
+    
+    # Calculate which part of the boat is visible
+    boat_start = max(0, -boat_char_position)
+    boat_end = min(len(boat_line), len(wave_line) - boat_char_position)
+    
+    wave_start = max(0, boat_char_position)
+    
+    # Overlay boat onto wave (only non-space characters)
+    for i in range(boat_start, boat_end):
+        if boat_line[i] != ' ':
+            wave_chars[wave_start + (i - boat_start)] = boat_line[i]
+    
+    return ''.join(wave_chars)
 
 # ASCII art for the kraken in different states
 # Each state has multiple frames for animation
@@ -236,7 +273,7 @@ def render_ascii_art(lines, x, y, canvas, tag="pet", color="#333333", font_size=
             tags=tag
         )
 
-def render_underwater_environment(canvas, width, height, animation_frame=0):
+def render_underwater_environment(canvas, width, height, animation_frame=0, boat_char_pos=None, boat_active=False):
     """Render ocean cross-section: top 1/5 surface area, bottom 4/5 underwater
     
     Args:
@@ -244,6 +281,8 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
         width: Canvas width
         height: Canvas height
         animation_frame: Current animation frame for wave animation
+        boat_char_pos: Character position of boat (for integration into waves)
+        boat_active: Whether boat is active and should be rendered
     """
     canvas.delete("environment")  # Clear previous environment
     
@@ -275,6 +314,18 @@ def render_underwater_environment(canvas, width, height, animation_frame=0):
     num_repeats = (width // 8) + 2  # Character width ~8 pixels, add extra for safety
     full_wave_line_top = current_wave_top * num_repeats
     full_wave_line_bottom = current_wave_bottom * num_repeats
+    
+    # Integrate boat into waves if active
+    if boat_active and boat_char_pos is not None:
+        boat_sprite = BOAT_SPRITE
+        # Boat has 5 lines - we only render top 2 lines into the 2-line wave surface
+        # But we need to position it so the bottom of boat (line 4) aligns with bottom wave
+        # So we render boat lines 3 and 4 into wave lines 0 and 1
+        if len(boat_sprite) >= 4:
+            # Top wave line gets boat line 3 (second to last)
+            full_wave_line_top = integrate_boat_into_waves(full_wave_line_top, boat_sprite[3], boat_char_pos)
+            # Bottom wave line gets boat line 4 (last)
+            full_wave_line_bottom = integrate_boat_into_waves(full_wave_line_bottom, boat_sprite[4], boat_char_pos)
     
     # Draw FIRST animated wave line across entire width (top line)
     canvas.create_text(
