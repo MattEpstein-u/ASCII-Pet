@@ -336,36 +336,36 @@ def render_debug_grid(canvas, width, height, water_level):
         wave_line_height = wave_font_size + 2
         surface_height = wave_line_height * 2
         
-        # Water level line (top of waves)
-        canvas.create_line(
-            0, water_level, width, water_level,
-            fill='#00FFFF',  # Cyan
-            width=2,
-            tags="debug_grid"
-        )
-        canvas.create_text(
-            width - 80, water_level - 10,
-            text=f"Water Level: {water_level}",
-            fill='#00FFFF',
-            font=('Arial', 9, 'bold'),
-            tags="debug_grid"
-        )
+        # Water level line (top of waves) - HIDDEN
+        # canvas.create_line(
+        #     0, water_level, width, water_level,
+        #     fill='#00FFFF',  # Cyan
+        #     width=2,
+        #     tags="debug_grid"
+        # )
+        # canvas.create_text(
+        #     width - 80, water_level - 10,
+        #     text=f"Water Level: {water_level}",
+        #     fill='#00FFFF',
+        #     font=('Arial', 9, 'bold'),
+        #     tags="debug_grid"
+        # )
         
-        # Underwater start (below waves)
-        underwater_start = water_level + surface_height + 5
-        canvas.create_line(
-            0, underwater_start, width, underwater_start,
-            fill='#00FF00',  # Green
-            width=2,
-            tags="debug_grid"
-        )
-        canvas.create_text(
-            width - 120, underwater_start + 15,
-            text=f"Underwater Start: {underwater_start}",
-            fill='#00FF00',
-            font=('Arial', 9, 'bold'),
-            tags="debug_grid"
-        )
+        # Underwater start (below waves) - HIDDEN
+        # underwater_start = water_level + surface_height + 5
+        # canvas.create_line(
+        #     0, underwater_start, width, underwater_start,
+        #     fill='#00FF00',  # Green
+        #     width=2,
+        #     tags="debug_grid"
+        # )
+        # canvas.create_text(
+        #     width - 120, underwater_start + 15,
+        #     text=f"Underwater Start: {underwater_start}",
+        #     fill='#00FF00',
+        #     font=('Arial', 9, 'bold'),
+        #     tags="debug_grid"
+        # )
         
         # Ocean floor boundary
         ocean_floor = height - 50
@@ -406,8 +406,8 @@ def spawn_bubble(bubble_list, width, water_level, height):
     underwater_start = water_level + surface_height + 10  # Below surface
     underwater_end = height - 60  # Above ocean floor
     
-    # Spawn across entire width (with small margin)
-    x = random.randint(20, width - 20)
+    # Spawn across entire width (no margin)
+    x = random.randint(0, width)
     y = random.randint(underwater_start, underwater_end)
     
     # Bubble appearance

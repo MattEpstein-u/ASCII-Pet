@@ -75,8 +75,8 @@ class ASCIIUnderwaterKraken:
         self.container_width = max(400, min(container_side, 800))
         self.container_height = max(350, min(container_side, 600))
         
-        # Position container in bottom-right corner with some margin
-        margin = 50
+        # Position container in bottom-right corner with no margin
+        margin = 0  # Remove right margin to touch edge
         self.container_x = screen_width - self.container_width - margin
         self.container_y = screen_height - self.container_height - margin
         
@@ -184,9 +184,9 @@ class ASCIIUnderwaterKraken:
         else:
             x, y = self.kraken_start_x, self.kraken_start_y
         
-        # Render the ASCII art with underwater coloring
+        # Render the ASCII art with lavender coloring
         # Use consistent font size for all kraken sprites
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=self.kraken_font_size)
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#E6E6FA", font_size=self.kraken_font_size)
     
     def setup_animations(self):
         """Setup animation sequences"""
@@ -230,10 +230,10 @@ class ASCIIUnderwaterKraken:
         
         y = max(min_y, min(y, max_y))
         
-        # Render kraken at validated position
+        # Render kraken at validated position with lavender color
         # No need to check is_in_water() since we've already validated boundaries above
         sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=self.kraken_font_size)
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#E6E6FA", font_size=self.kraken_font_size)
         return True
     
     def drop_shrimp(self, x, y):
@@ -261,9 +261,9 @@ class ASCIIUnderwaterKraken:
         self.shrimp_counter += 1
         shrimp_tag = f"shrimp_{self.shrimp_counter}"
         self.shrimp_queue.append((x, y, shrimp_tag))
-        # Render shrimp on canvas with fixed font size
+        # Render shrimp on canvas with same font size as kraken
         # Use Georgia font for a more curved, shrimp-like comma appearance
-        shrimp_size = 6  # Fixed small size for shrimp
+        shrimp_size = get_density_font_size()  # Same size as kraken
         self.canvas.create_text(x, y, text=",", font=("Georgia", shrimp_size, "bold"),
                                fill="#FFB6C1", tags=shrimp_tag)
         print(f"🦐 Shrimp dropped at ({x}, {y}). Queue size: {len(self.shrimp_queue)}")
