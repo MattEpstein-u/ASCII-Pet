@@ -38,8 +38,9 @@ class Test:
                                bg='#0A0F1C', highlightthickness=1, highlightbackground='#FFFFFF')
         self.canvas.pack()
         
-        # Render underwater environment
-        self.water_level = render_underwater_environment(self.canvas, self.container_width, self.container_height)
+        # Render underwater environment with animation
+        self.water_level = render_underwater_environment(self.canvas, self.container_width, 
+                                                         self.container_height, 0)
         
         # Bind mouse click to drop shrimp
         self.canvas.bind('<Button-1>', self.on_click)
@@ -58,6 +59,7 @@ class Test:
         self.state = "idle"
         self.current_sprite = 'idle1'
         self.animation_frame = 0
+        self.wave_animation_frame = 0  # For ocean surface animation
         
         # Properties
         self.kraken_radius = 30
@@ -89,7 +91,7 @@ class Test:
             x, y = self.current_x, self.current_y
         
         sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FFB6C1", font_size=12)
+        render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=12)
     
     def move_kraken_to(self, x, y):
         """Move kraken with boundary enforcement"""
@@ -233,6 +235,12 @@ class Test:
     
     def update_behavior(self):
         """Update behaviors and bubble effects"""
+        # Update wave animation (slower cycle - every 10 frames)
+        if self.wave_animation_frame % 10 == 0:
+            render_underwater_environment(self.canvas, self.container_width, 
+                                         self.container_height, self.wave_animation_frame // 10)
+        self.wave_animation_frame += 1
+        
         # Update bubble physics every frame (spawn, rise, remove at surface)
         update_bubbles(self.bubble_list, self.canvas, self.container_width,
                       self.water_level, self.container_height, spawn_chance=0.05)

@@ -25,6 +25,7 @@ class ASCIIUnderwaterKraken:
         self.target_y = (self.container_height * 2) // 3
         self.animation_frame = 0
         self.state = "idle"
+        self.wave_animation_frame = 0  # For ocean surface animation
         
         # Kraken properties
         self.kraken_radius = 30
@@ -140,8 +141,9 @@ class ASCIIUnderwaterKraken:
                                bg='#0A0F1C', highlightthickness=0)  # Deep blue, almost black background
         self.canvas.pack(fill='both', expand=True)
         
-        # Render the underwater environment
-        self.water_level = render_underwater_environment(self.canvas, self.container_width, self.container_height)
+        # Render the underwater environment with animation
+        self.water_level = render_underwater_environment(self.canvas, self.container_width, 
+                                                         self.container_height, self.wave_animation_frame)
         
         # Store kraken starting position (in underwater area)
         self.kraken_start_x = self.container_width // 2
@@ -202,7 +204,7 @@ class ASCIIUnderwaterKraken:
         # Ensure the kraken stays in water
         if is_in_water(x, y, self.water_level, self.container_height):
             sprite_lines = ASCII_PET_SPRITES.get(self.current_sprite, ASCII_PET_SPRITES['idle1'])
-            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FFB6C1", font_size=12)
+            render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#D2B48C", font_size=12)
             return True
         return False
     
@@ -312,6 +314,12 @@ class ASCIIUnderwaterKraken:
     
     def update_behavior(self):
         """Update kraken behavior and state"""
+        # Update wave animation (slower cycle - every 10 frames)
+        if self.wave_animation_frame % 10 == 0:
+            render_underwater_environment(self.canvas, self.container_width, 
+                                         self.container_height, self.wave_animation_frame // 10)
+        self.wave_animation_frame += 1
+        
         # Update bubble physics every frame (spawn, rise, remove at surface)
         update_bubbles(self.bubble_list, self.canvas, self.container_width, 
                       self.water_level, self.container_height, spawn_chance=0.05)

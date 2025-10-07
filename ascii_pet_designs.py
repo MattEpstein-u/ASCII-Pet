@@ -143,6 +143,12 @@ UNDERWATER_ENVIRONMENT = {
         "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈"
     ],
     
+    # Animated wave patterns (cycle through these for animation)
+    'ocean_surface_frame1': "~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈",
+    'ocean_surface_frame2': "≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈",
+    'ocean_surface_frame3': "~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈",
+    'ocean_surface_frame4': "≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈",
+    
     # Better seaweed designs using various ASCII techniques
     'kelp_forest_tall': [
         "    |    ",
@@ -238,8 +244,15 @@ def render_ascii_art(lines, x, y, canvas, tag="pet", color="#333333", font_size=
             tags=tag
         )
 
-def render_underwater_environment(canvas, width, height):
-    """Render ocean cross-section: top 1/5 surface area, bottom 4/5 underwater"""
+def render_underwater_environment(canvas, width, height, animation_frame=0):
+    """Render ocean cross-section: top 1/5 surface area, bottom 4/5 underwater
+    
+    Args:
+        canvas: Tkinter canvas
+        width: Canvas width
+        height: Canvas height
+        animation_frame: Current animation frame for wave animation
+    """
     canvas.delete("environment")  # Clear previous environment
     
     # Calculate water level (top 1/5 is surface, bottom 4/5 is underwater)
@@ -254,21 +267,29 @@ def render_underwater_environment(canvas, width, height):
         tags="environment"
     )
     
-    # ===== OCEAN SURFACE LINE =====
-    # Draw the water surface line that separates air from water
-    surface_lines = UNDERWATER_ENVIRONMENT['ocean_surface']
-    for i, line in enumerate(surface_lines):
-        # Create full-width surface line
-        chars_needed = width // 10  # Adjust character density
-        full_line = (line * (chars_needed // len(line) + 1))[:chars_needed]
-        canvas.create_text(
-            width // 2, water_level + (i * 5),
-            text=full_line,
-            font=('Courier', 8, 'bold'),
-            fill='#FFFFFF',
-            anchor='center',
-            tags="environment"
-        )
+    # ===== ANIMATED OCEAN SURFACE LINE =====
+    # Cycle through wave animation frames
+    wave_frames = [
+        UNDERWATER_ENVIRONMENT['ocean_surface_frame1'],
+        UNDERWATER_ENVIRONMENT['ocean_surface_frame2'],
+        UNDERWATER_ENVIRONMENT['ocean_surface_frame3'],
+        UNDERWATER_ENVIRONMENT['ocean_surface_frame4']
+    ]
+    current_wave = wave_frames[animation_frame % 4]
+    
+    # Make surface line span the ENTIRE width
+    num_repeats = (width // 8) + 2  # Character width ~8 pixels, add extra for safety
+    full_wave_line = current_wave * num_repeats
+    
+    # Draw single animated wave line across entire width
+    canvas.create_text(
+        0, water_level + 5,  # Position at water level
+        text=full_wave_line,
+        font=('Courier', 8, 'bold'),
+        fill='#FFFFFF',
+        anchor='w',  # Anchor to west (left) to ensure full coverage
+        tags="environment"
+    )
     
     # ===== UNDERWATER AREA (Bottom 4/5) =====
     # Draw underwater background (deep blue, almost black)
