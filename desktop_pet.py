@@ -4,7 +4,13 @@ ASCII Underwater Kraken - Cross-platform Desktop Companion
 A majestic ASCII art kraken that lives in an underwater environment on your desktop.
 Only visible when all applications are minimized to desktop.
 
-Transformed from a simple pet into an underwater kraken in a detailed ASCII ocean.
+Transformed from a simple pet into an underwater kraken in a                     # Follow if cursor is close but not too close - more responsive
+                    if 30 < distance < 200:
+                        # Set target within water bounds
+                        margin = self.kraken_radius + 15
+                        target_x = max(margin, min(cursor_x, self.container_width - margin))
+                        if is_in_water(target_x, cursor_y, self.water_level, self.container_height):
+                            self.set_target(target_x, cursor_y)d ASCII ocean.
 """
 
 import tkinter as tk
@@ -306,7 +312,7 @@ class ASCIIUnderwaterKraken:
     
     def update_position(self):
         """Smoothly move kraken towards target (only in water)"""
-        if self.state == "swimming" and not self.is_dragging:
+        if (self.state == "swimming" or self.state == "sleeping_prep") and not self.is_dragging:
             kraken_coords = self.canvas.coords("kraken")
             if kraken_coords:
                 current_kraken_x, current_kraken_y = kraken_coords[0], kraken_coords[1]
@@ -317,8 +323,8 @@ class ASCIIUnderwaterKraken:
                 distance = math.sqrt(dx**2 + dy**2)
                 
                 if distance > 5:
-                    # Move step by step
-                    step_size = min(2.5, distance / 8)  # Kraken swims faster
+                    # Move step by step - much faster swimming
+                    step_size = min(8.0, distance / 3)  # Much faster kraken swimming
                     new_x = current_kraken_x + (dx / distance) * step_size
                     new_y = current_kraken_y + (dy / distance) * step_size
                     
@@ -332,7 +338,11 @@ class ASCIIUnderwaterKraken:
                     else:
                         self.state = "idle"  # Stop if hit water boundary
                 else:
-                    self.state = "idle"
+                    # Reached target
+                    if self.state == "sleeping_prep":
+                        self.state = "sleep"  # Now start sleeping
+                    else:
+                        self.state = "idle"
     
     def update_behavior(self):
         """Update kraken behavior and state"""
@@ -343,8 +353,8 @@ class ASCIIUnderwaterKraken:
         if self.idle_counter % 50 == 0:  # Every 5 seconds
             self.ensure_desktop_level()
         
-        # Add floating bubbles periodically
-        if self.bubble_timer % 30 == 0:  # Every 3 seconds
+        # Add floating bubbles more frequently
+        if self.bubble_timer % 5 == 0:  # Every 0.5 seconds - much more frequent bubbles
             add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
         
         # Random behavior changes
@@ -353,10 +363,13 @@ class ASCIIUnderwaterKraken:
                 # Occasionally do something random
                 rand = random.random()
                 if rand < 0.15:
-                    self.state = random.choice(["sleep", "attack"])
+                    if random.choice([True, False]):
+                        self.prepare_for_sleep()  # Swim to bottom before sleeping
+                    else:
+                        self.state = "attack"
                 elif rand < 0.35:  # Random swimming
                     self.swim_randomly()
-            elif self.state in ["sleep", "attack"]:
+            elif self.state in ["sleeping_prep", "sleep", "attack"]:
                 # Return to idle after a while
                 if random.random() < 0.2:
                     self.state = "idle"
@@ -372,19 +385,32 @@ class ASCIIUnderwaterKraken:
         self.root.after(100, self.update_behavior)
     
     def swim_randomly(self):
-        """Make kraken swim to a random spot in the water"""
+        """Make kraken swim to a random spot in the underwater area"""
         if not self.is_dragging:
-            margin = self.kraken_radius + 25
-            attempts = 0
-            while attempts < 10:  # Try to find a valid water position
+            # Find a random underwater location
+            max_attempts = 20
+            for _ in range(max_attempts):
+                margin = self.kraken_radius + 20
                 target_x = random.randint(margin, self.container_width - margin)
-                target_y = random.randint(self.water_level + 30, self.container_height - 40)
+                target_y = random.randint(self.water_level + margin, self.container_height - margin)
+                
                 if is_in_water(target_x, target_y, self.water_level, self.container_height):
-                    self.target_x = target_x
-                    self.target_y = target_y
-                    self.state = "swimming"
+                    self.set_target(target_x, target_y)
                     break
-                attempts += 1
+    
+    def prepare_for_sleep(self):
+        """Make kraken swim to the ocean floor before sleeping"""
+        if not self.is_dragging:
+            # Find a spot on the ocean floor (bottom of container)
+            margin = self.kraken_radius + 20
+            target_x = random.randint(margin, self.container_width - margin)
+            target_y = self.container_height - 60  # Near the bottom
+            
+            if is_in_water(target_x, target_y, self.water_level, self.container_height):
+                self.target_x = target_x
+                self.target_y = target_y
+                self.state = "sleeping_prep"  # Swimming to sleep location
+                print("🐙 Kraken swimming to ocean floor to rest...")
     
     def animate(self):
         """Animate the kraken sprite"""

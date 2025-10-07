@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ASCII Underwater Kraken Environment
-Collection of ASCII art for underwater scenes and kraken animations
+Collection of ASCII art for underwater sraken animations
 """
 
 # ASCII art for the kraken in different states
@@ -9,27 +9,27 @@ Collection of ASCII art for underwater scenes and kraken animations
 # Using smaller characters for more detail
 
 ASCII_PET_SPRITES = {
-    # Idle kraken states - tentacles gently swaying
+    # Idle kraken states - single eye, tentacles gently swaying
     'idle1': [
-        "    .-'''-.",
-        "   /  o   o \\",
-        "  |     ^     |",
-        "   \\  \\___/  /",
-        "    '-.___.-'",
-        "   ~)  ) (  (~",
-        "  ~)  ) ( (  (~",
-        " ~)  ) ( ( (  (~"
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /         \\  ",
+        "  |    O    |  ",
+        "  |   ___   |  ",
+        "  \\  \\~~/  /  ",
+        "   '--___--'   ",
+        "     |||||     "
     ],
     
     'idle2': [
-        "    .-'''-.",
-        "   /  -   - \\",
-        "  |     ~     |",
-        "   \\  \\___/  /",
-        "    '-.___.-'",
-        "  (~  ) (  )~",
-        " (~  ) ( (  )~",
-        "(~  ) ( ( (  )~"
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /         \\  ",
+        "  |    O    |  ",
+        "  |   ~~~   |  ",
+        "  \\  \\~~/  /  ",
+        "   '--___--'   ",
+        "   ~~|||||~~   "
     ],
     
     'idle3': [
@@ -43,27 +43,27 @@ ASCII_PET_SPRITES = {
         " )~  ) ( ( (  ~)"
     ],
     
-    # Swimming kraken - tentacles propelling through water
+    # Swimming kraken - single eye, tentacles propelling through water
     'swim1': [
-        "    .-'''-.",
-        "   /  o   o \\",
-        "  |     ^     |",
-        "   \\  \\___/  /",
-        "    '-.___.-'",
-        "  ))  ) (  ((",
-        " ))  ) ( (  ((",
-        "))  ) ( ( (  (("
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /         \\  ",
+        "  |    O    |  ",
+        "  |   ^^^   |  ",
+        "  \\  \\~~/  /  ",
+        "   '--___--'   ",
+        "  ~~~|||||~~~  "
     ],
     
     'swim2': [
-        "    .-'''-.",
-        "   /  o   o \\",
-        "  |     ^     |",
-        "   \\  \\___/  /",
-        "    '-.___.-'",
-        "   ~)  ) (  (~",
-        "  ~))  ) ( ((~",
-        " ~)))  ) ( (((~"
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /         \\  ",
+        "  |    O    |  ",
+        "  |   vvv   |  ",
+        "  \\  \\~~/  /  ",
+        "   '--___--'   ",
+        "  ===|||||===  "
     ],
     
     'swim3': [
@@ -77,64 +77,61 @@ ASCII_PET_SPRITES = {
         "((((  ) ( (((("
     ],
     
-    # Sleeping kraken - curled up with tentacles tucked
+    # Sleeping kraken - resting on ocean floor with single eye closed
     'sleep1': [
-        "    zzz",
-        "   .-'''-.",
-        "  /  -   - \\",
-        " |     _     |",
-        "  \\  \\___/  /",
-        "   '-.___.-'",
-        "    \\   /",
-        "     ) ("
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /         \\  ",
+        "  |    -    |  ",
+        "  |   ___   |  ",
+        "  \\  \\~~/  /  ",
+        "   '--___--'   ",
+        "════|||||════  "
     ],
     
     'sleep2': [
-        "   zzz zzz",
-        "   .-'''-.",
-        "  /  .   . \\",
-        " |     _     |",
-        "  \\  \\___/  /",
-        "   '-.___.-'",
-        "    \\   /",
-        "     ) ("
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /         \\  ",
+        "  |    -    |  ",
+        "  |   zzz   |  ",
+        "  \\  \\~~/  /  ",
+        "   '--___--'   ",
+        "~~~~|||||~~~~  "
     ],
     
-    # Attacking kraken - aggressive tentacle spread
+    # Attack states - aggressive single eye
     'attack1': [
-        "    .-'''-.",
-        "   /  O   O \\",
-        "  |     !     |",
-        "   \\  \\___/  /",
-        "    '-.___.-'",
-        " )))  ) (  (((",
-        "))))  ) ( ((((",
-        ")))) ) ( ( ((((",
-        " ))) ) ( ( ((("
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /  \\   /  \\  ",
+        "  | >>O<<  |  ",
+        "  |   VVV   |  ",
+        "  \\  \\!!/  /  ",
+        "   '--!!!--'   ",
+        "  ///|||||\\\\\\  "
     ],
     
     'attack2': [
-        "    .-'''-.",
-        "   /  @   @ \\",
-        "  |     !!!   |",
-        "   \\  \\___/  /",
-        "    '-.___.-'",
-        "((((  ) (  ))))",
-        "(((( ) ( ( ))))",
-        "((( ) ( ( ( )))",
-        " (( ) ( ( ( ))"
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /  ^^^ ^^  \\  ",
+        "  |  >O<   |  ",
+        "  |   XXX   |  ",
+        "  \\  \\!!/  /  ",
+        "   '--!!!--'   ",
+        "  \\\\\\|||||///  "
     ],
     
     'attack3': [
-        "    .-'''-.",
-        "   /  X   X \\",
-        "  |    ><    |",
-        "   \\  \\___/  /",
-        "    '-.___.-'",
-        " ~))  ) (  ((~",
-        "~)))  ) ( (((~",
-        "~))) ) ( ( (((~",
-        " ~)) ) ( ( ((~"
+        "     .-.-.     ",
+        "   __(   )__   ",
+        "  /   vvv   \\  ",
+        "  |  >>O<<  |  ",
+        "  |   !!!   |  ",
+        "  \\  \\!!/  /  ",
+        "   '--VVV--'   ",
+        "  ===|||||===  "
     ],
     
     # Happy playful kraken
@@ -180,48 +177,48 @@ UNDERWATER_ENVIRONMENT = {
         "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     ],
     
-    # Underwater decorations
+    # Underwater decorations - more visible
     'seaweed_left': [
-        "  |",
-        " /|",
-        "/ |",
-        "  |",
-        " /|",
-        "/ |",
-        "  |",
-        " /|",
-        "/ |"
+        "  #",
+        " /#",
+        "/ #",
+        "  #",
+        " /#",
+        "/ #",
+        "  #",
+        " /#",
+        "/ #"
     ],
     
     'seaweed_right': [
-        "|  ",
-        "|\\ ",
-        "| \\",
-        "|  ",
-        "|\\ ",
-        "| \\",
-        "|  ",
-        "|\\ ",
-        "| \\"
+        "#  ",
+        "#\\ ",
+        "# \\",
+        "#  ",
+        "#\\ ",
+        "# \\",
+        "#  ",
+        "#\\ ",
+        "# \\"
     ],
     
     'seaweed_center': [
-        " | ",
-        "/|\\",
-        " | ",
-        "\\|/",
-        " | ",
-        "/|\\",
-        " | ",
-        "\\|/",
-        " | "
+        " # ",
+        "/#\\",
+        " # ",
+        "\\#/",
+        " # ",
+        "/#\\",
+        " # ",
+        "\\#/",
+        " # "
     ],
     
-    # Ocean floor
+    # Ocean floor - more visible
     'ocean_floor': [
-        "^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~",
-        "~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^",
-        "^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~"
+        "████████████████████████████████████████████████████████████████",
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+        "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
     ],
     
     # Bubbles for atmosphere
@@ -297,8 +294,8 @@ def render_underwater_environment(canvas, width, height):
             canvas.create_text(
                 x_pos, y_pos + (i * 8),
                 text=line,
-                font=('Courier', 6),
-                fill='#2D5016',
+                font=('Courier', 10),
+                fill='#32CD32',
                 anchor='center',
                 tags="environment"
             )
@@ -311,8 +308,8 @@ def render_underwater_environment(canvas, width, height):
         canvas.create_text(
             width // 2, floor_start + (i * 8),
             text=full_line,
-            font=('Courier', 6),
-            fill='#8B4513',
+            font=('Courier', 10),
+            fill='#A0522D',
             anchor='center',
             tags="environment"
         )
@@ -323,29 +320,26 @@ def is_in_water(x, y, water_level, canvas_height):
     """Check if coordinates are in the underwater area"""
     return y >= water_level and y <= (canvas_height - 30)  # Leave space above ocean floor
 
-def add_floating_bubbles(canvas, width, water_level, canvas_height):
-    """Add animated bubbles to the underwater scene"""
+def add_floating_bubbles(canvas, width, water_level, height):
+    """Add floating bubble effects in the underwater area (bubbles don't rise past water surface)"""
     import random
+    
+    # Clear existing bubbles
     canvas.delete("bubbles")
     
-    # Add various sized bubbles
-    num_bubbles = 15
-    for _ in range(num_bubbles):
+    # Add several bubbles at random underwater positions
+    for _ in range(random.randint(12, 20)):
         x = random.randint(50, width - 50)
-        y = random.randint(water_level + 20, canvas_height - 50)
+        # Ensure bubbles stay underwater - don't rise past water surface
+        y = random.randint(water_level + 30, height - 50)
         
-        # Choose bubble type
-        bubble_type = random.choice(['bubbles_small', 'bubbles_medium', 'bubbles_large'])
-        bubble_char = random.choice(UNDERWATER_ENVIRONMENT[bubble_type])
+        # Different bubble characters for variety
+        bubble_char = random.choice(['○', '∘', '◦', '•', '◯'])
+        bubble_size = random.choice([8, 10, 12, 14])
+        bubble_color = random.choice(['#87CEEB', '#ADD8E6', '#B0E0E6', '#E0F6FF', '#F0F8FF'])
         
-        canvas.create_text(
-            x, y,
-            text=bubble_char,
-            font=('Courier', random.randint(6, 10)),
-            fill='#87CEEB',
-            anchor='center',
-            tags="bubbles"
-        )
+        canvas.create_text(x, y, text=bubble_char, font=('Arial', bubble_size),
+                          fill=bubble_color, tags="bubbles")
 
 def demo_ascii_art():
     """Demo function to preview all kraken ASCII art"""

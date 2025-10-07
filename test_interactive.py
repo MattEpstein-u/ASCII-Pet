@@ -244,9 +244,9 @@ class TestASCIIUnderwaterKraken:
         if self.animation_frame >= 20:  # Reset every 20 frames
             self.animation_frame = 0
         
-        # Add floating bubbles occasionally
+        # Add floating bubbles much more frequently
         self.bubble_timer += 1
-        if self.bubble_timer >= 30:  # Every 6 seconds
+        if self.bubble_timer >= 5:  # Every 1 second - much more frequent bubbles
             add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
             self.bubble_timer = 0
         
@@ -283,8 +283,8 @@ class TestASCIIUnderwaterKraken:
         distance = math.sqrt(dx*dx + dy*dy)
         
         if distance > 5:  # Still moving
-            # Move step by step
-            step_size = 2  # Slower underwater movement
+            # Move step by step - much faster swimming
+            step_size = 8  # Much faster underwater movement
             if distance > 0:
                 new_x = self.current_x + (dx / distance) * step_size
                 new_y = self.current_y + (dy / distance) * step_size
