@@ -26,14 +26,14 @@ BOAT_CONFIG = {
 }
 
 # Boat ASCII art (6 lines tall, rectangularized)
-# Each line is exactly 35 characters wide
+# Each line is exactly 16 characters wide
 BOAT_SPRITE = [
-    "              |    |               ",  # Line 0: Masts
-    "             )_)  )_)              ",  # Line 1: Sails
-    "            )___))___)             ",  # Line 2: Sails lower
-    "           )____)_____)            ",  # Line 3: Hull top
-    "         _____|____|_____          ",  # Line 4: Hull middle
-    "~~~~~~~~~\\______________/~~~~~~~~~~",  # Line 5: Hull bottom (overwrites top wave)
+    "     |    |     ",  # Line 0: Masts
+    "    )_)  )_)    ",  # Line 1: Sails
+    "   )___))___)   ",  # Line 2: Sails lower
+    "  )____)_____)  ",  # Line 3: Hull top
+    "_____|____|_____",  # Line 4: Hull middle
+    "\\______________/",  # Line 5: Hull bottom (overwrites top wave)
 ]
 
 # Debug grid overlay configuration
