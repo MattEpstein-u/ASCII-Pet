@@ -63,8 +63,9 @@ class QuickTest:
         self.kraken_radius = 30
         
         # Mouth offset from sprite anchor (center bottom of head)
-        self.mouth_offset_x = 0  # Centered horizontally
-        self.mouth_offset_y = 6  # Bottom of head where tentacles connect (line 6 of 11-line sprite)
+        # Line 5 of sprite × 14 pixels per line = 70 pixels
+        mouth_offset_x = 0  # Center of sprite
+        mouth_offset_y = 70  # Mouth is at line 5: 5 × (font_size + 2) = 5 × 14 = 70 pixels
         
         # Shrimp feeding
         self.shrimp_queue = []
