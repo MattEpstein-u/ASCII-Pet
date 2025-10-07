@@ -13,52 +13,50 @@ This is a **simple, clean octopus/kraken design** based on the user-provided ASC
 
 ## Visual Showcase
 
-### Idle State
+### Idle State (User's Custom Design)
 ```
-     ______
-    /      \
-   /        \
-   |        |
-)  o        o   (
-(    \      /    )
- \___/||||||\___/
- /____/ |||| \____\
-,-.___/  ||  \___,-.
-/   ___/    \___   \
-   _/            \_
+         ______        
+        /      \       
+       /        \      
+       |        |      
+    )  o        o   ?  
+   (    \      /    |  
+  _ \___/||||||\___/ _ 
+   \____/ |||| \____/ `
+   ,-.___/ || \__,-._  
+  /    ___/  \__       
+     _/         `---   
 ```
 
 ### Swimming State
 ```
-     ______
-    /      \
-   /        \
-   |        |
-)  @        @   (
-(    \  >   /    )
- \___/||||||\___/
-/____/  ||||  \____\
--.___/   ||   \___,-
-  ___/        \___
- _/              \_
+         ______        
+        /      \       
+       /        \      
+       |        |      
+    )  @        @   ?  
+   (    \  >   /    |  
+  _ \___/||||||\___/ _ 
+   \____/ |||| \____/ `
+   ,-.___/ || \__,-._  
+  /    ___/  \__       
+     _/         `---   
 ```
 
-### Eating State
+### Eating State (Chewing - No Wrapping)
 ```
-     ______
-    /      \
-   /        \
-   |        |
-)  X        X   (
-(    \ /VV\ /    )
- \___((||||))___/
- /___((||||))___\
-,-.__(( || ))__,-.
-/  _((      ))_  \
-  ((            ))
-```
-
-## Design Features
+         ______        
+        /      \       
+       /        \      
+       |        |      
+    )  X        X   ?  
+   (    \ /VV\ /    |  
+  _ \___/||||||\___/ _ 
+   \____/ |||| \____/ `
+   ,-.___/ || \__,-._  
+  /    ___/  \__       
+     _/         `---   
+```## Design Features
 
 ### Head Structure
 - **Rounded dome top**: `______` creates a smooth mantle
@@ -85,14 +83,16 @@ This is a **simple, clean octopus/kraken design** based on the user-provided ASC
 ### Tentacles
 - **||||||** - Main tentacle cluster (6 visible)
 - **||||** - Secondary tentacles
-- **|| ||** - Spread tentacles
-- **(( ))** - Wrapping tentacles (eating animation)
+- Tentacles remain **consistent** across all states
+- **NO wrapping** during eating - structure stays the same
 
-### Animation Effects
-The eating animation shows the tentacles **wrapping around prey** using parentheses:
-- `\\___((||||))___/` - Tentacles gripping
-- `,-.__(( || ))__,-.` - Tight grip
-- `((            ))` - Fully wrapped
+### Eating Behavior
+The eating animation is **simple and clean**:
+1. Kraken **swims to shrimp** location
+2. Mouth (line 6) **positions directly over** shrimp
+3. **Chewing animation** begins with mouth variations
+4. Tentacles **do NOT wrap** - they stay as ||||||
+5. Only **eyes and mouth change** during eating
 
 ## Technical Details
 
@@ -137,20 +137,22 @@ python3 desktop_pet.py
 
 ### Idle Animation
 `idle1` ↔️ `idle2`
-- Eyes alternate: o → O
-- Mouth changes: calm → neutral
+- Eyes alternate: o → O (blinking)
+- Mouth changes: plain → __ (slight movement)
+- Calm, floating state
 
 ### Swimming Animation  
 `swim1` → `swim2` → `swim3` → (repeat)
-- Eyes: @ → O → @
-- Mouth shows forward/upward motion
-- Tentacles shift position
+- Eyes: @ → O → @ (alert, scanning)
+- Mouth shows directional intent: > → ^ → >
+- Swimming toward shrimp location
 
 ### Eating Animation
 `eat1` → `eat2` → `eat3` → (repeat)
-- Eyes: X → * → ^
-- Mouth: /VV\\ → <WW> → /^^\\ 
-- Tentacles wrap with (( ))
+- Eyes: X → * → ^ (excited to satisfied)
+- Mouth: /VV\\ → <WW> → /^^\\ (chewing motion)
+- Tentacles: **||||||** (unchanged, NO wrapping)
+- Mouth is positioned directly over shrimp
 
 ## Code Compatibility
 
