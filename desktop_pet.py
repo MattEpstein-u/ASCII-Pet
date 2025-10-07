@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 """
-ASCII Underwater Kraken - Cross-platform Desktop Companion
-A majestic ASCII art kraken that lives in an underwater environment on your desktop.
-Only visible when all applications are minimized to desktop.
-
-Transformed from a simple pet into an underwater kraken in a detailed ASCII ocean.
+ASCII Underwater Kraken - Shrimp Hunter
+A simple ASCII art kraken that hunts and eats shrimp you drop in the water.
+Click anywhere underwater to drop shrimp!
 """
 
 import tkinter as tk
-import random
 import math
 import platform
 import sys
@@ -25,27 +22,24 @@ class ASCIIUnderwaterKraken:
         
         # Kraken state
         self.target_x = self.container_width // 2
-        self.target_y = (self.container_height * 2) // 3  # Start in underwater area
-        self.current_x = self.container_width // 2
-        self.current_y = (self.container_height * 2) // 3
-        self.is_dragging = False
-        self.drag_start_x = 0
-        self.drag_start_y = 0
+        self.target_y = (self.container_height * 2) // 3
         self.animation_frame = 0
-        self.idle_counter = 0
-        self.state = "idle"  # idle, swimming, sleeping, attack, eating
+        self.state = "idle"
         
         # Kraken properties
-        self.kraken_width = 60  # Smaller for detailed ASCII art
-        self.kraken_height = 50
-        self.kraken_radius = 30  # For collision detection
-        self.water_level = 0  # Will be set when environment is rendered
+        self.kraken_radius = 30
+        self.water_level = 0
+        
+        # Mouth offset from sprite anchor (center bottom of head)
+        # The octopus head is ~7 lines tall, mouth is at bottom center
+        self.mouth_offset_x = 0  # Centered horizontally
+        self.mouth_offset_y = 7  # Bottom of head (line 7 of sprite)
         
         # Bubble effects
         self.bubble_timer = 0
         
         # Shrimp feeding system
-        self.shrimp_queue = []  # List of (x, y) shrimp positions
+        self.shrimp_queue = []
         self.current_shrimp_target = None
         self.eating_shrimp = False
         
@@ -161,11 +155,8 @@ class ASCIIUnderwaterKraken:
         # Add initial bubbles
         add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
         
-        # Bind mouse events to the entire canvas
-        self.canvas.bind('<Button-1>', self.start_drag)
-        self.canvas.bind('<B1-Motion>', self.drag_kraken)
-        self.canvas.bind('<ButtonRelease-1>', self.end_drag)
-        self.canvas.bind('<Double-Button-1>', self.kraken_interaction)
+        # Bind mouse click to drop shrimp
+        self.canvas.bind('<Button-1>', self.on_click)
     
     def render_kraken(self):
         """Render the current ASCII kraken sprite"""
@@ -185,45 +176,11 @@ class ASCIIUnderwaterKraken:
         """Setup animation sequences"""
         self.animations = ASCII_ANIMATIONS
     
-    def start_drag(self, event):
-        """Handle clicks: start dragging kraken OR drop shrimp in water"""
-        # Check if click is near the kraken
-        kraken_coords = self.canvas.coords("kraken")
-        if kraken_coords:
-            kraken_x, kraken_y = kraken_coords[0], kraken_coords[1]
-            distance = ((event.x - kraken_x)**2 + (event.y - kraken_y)**2)**0.5
-            
-            if distance <= self.kraken_radius + 15:  # Click is on kraken - allow dragging
-                self.is_dragging = True
-                self.drag_start_x = event.x
-                self.drag_start_y = event.y
-            elif is_in_water(event.x, event.y, self.water_level, self.container_height):
-                # Click is in water - drop a shrimp
-                self.drop_shrimp(event.x, event.y)
-    
-    def drag_kraken(self, event):
-        """Handle kraken dragging (only in water)"""
-        if self.is_dragging:
-            # Calculate new kraken position within container
-            dx = event.x - self.drag_start_x
-            dy = event.y - self.drag_start_y
-            
-            kraken_coords = self.canvas.coords("kraken")
-            if kraken_coords:
-                new_x = kraken_coords[0] + dx
-                new_y = kraken_coords[1] + dy
-                
-                # Keep kraken within container bounds and in water
-                margin = self.kraken_radius + 10
-                new_x = max(margin, min(new_x, self.container_width - margin))
-                
-                # Only allow movement in water areas
-                if is_in_water(new_x, new_y, self.water_level, self.container_height):
-                    # Move the kraken by re-rendering at new position
-                    if self.move_kraken_to(new_x, new_y):
-                        # Update drag start position for smooth dragging
-                        self.drag_start_x = event.x
-                        self.drag_start_y = event.y
+    def on_click(self, event):
+        """Handle clicks: drop shrimp in water"""
+        if is_in_water(event.x, event.y, self.water_level, self.container_height):
+            self.drop_shrimp(event.x, event.y)
+
     
     def move_kraken_to(self, x, y):
         """Move kraken to specific coordinates (only in water, with strict boundaries)"""
@@ -244,22 +201,6 @@ class ASCIIUnderwaterKraken:
             render_ascii_art(sprite_lines, x, y, self.canvas, tag="kraken", color="#FFB6C1", font_size=12)
             return True
         return False
-    
-    def end_drag(self, event):
-        """End dragging"""
-        self.is_dragging = False
-    
-    def kraken_interaction(self, event):
-        """Handle double-click interaction with kraken"""
-        # Check if double-click is near the kraken
-        kraken_coords = self.canvas.coords("kraken")
-        if kraken_coords:
-            kraken_x, kraken_y = kraken_coords[0], kraken_coords[1]
-            distance = ((event.x - kraken_x)**2 + (event.y - kraken_y)**2)**0.5
-            
-            if distance <= self.kraken_radius + 20:  # Allow some margin
-                self.state = "attack"  # Kraken gets aggressive when poked!
-                self.idle_counter = 0
     
     def drop_shrimp(self, x, y):
         """Drop a shrimp at the specified underwater position"""
@@ -282,9 +223,6 @@ class ASCIIUnderwaterKraken:
             self.current_shrimp_target = None
             self.eating_shrimp = False
             print(f"🐙 Om nom nom! Shrimp eaten. Remaining: {len(self.shrimp_queue)}")
-            # Trigger eating animation
-            self.state = "attack"  # Use attack animation for eating
-            self.idle_counter = 0
     
     def get_next_shrimp_target(self):
         """Get the next shrimp from the queue"""
@@ -293,86 +231,40 @@ class ASCIIUnderwaterKraken:
             self.eating_shrimp = True
             print(f"🐙 Kraken targeting shrimp at {self.current_shrimp_target}")
 
-    
-    def get_cursor_position(self):
-        """Get mouse cursor position"""
-        try:
-            x = self.root.winfo_pointerx()
-            y = self.root.winfo_pointery()
-            return x, y
-        except:
-            return self.target_x, self.target_y
-    
-    def ensure_desktop_level(self):
-        """Ensure the window stays at desktop level (platform-specific)"""
-        try:
-            if self.os_type == "Darwin":  # macOS
-                # Periodically ensure we stay at desktop level
-                self.root.call('wm', 'attributes', '.', '-level', 'desktop')
-            elif self.os_type == "Windows":  # Windows
-                try:
-                    import win32gui
-                    import win32con
-                    hwnd = int(self.root.wm_frame(), 16)
-                    win32gui.SetWindowPos(hwnd, win32con.HWND_BOTTOM, 0, 0, 0, 0, 
-                                        win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
-                except ImportError:
-                    pass
-        except:
-            pass
-    
-    def follow_cursor(self):
-        """Make kraken follow cursor when idle and no shrimp (only in water)"""
-        if self.is_dragging or self.state != "idle":
-            return
-        
-        # Don't follow cursor if there are shrimp to eat
-        if len(self.shrimp_queue) > 0:
-            return
-            
-        # Get cursor position relative to container
-        try:
-            cursor_screen_x, cursor_screen_y = self.get_cursor_position()
-            # Convert to container-relative coordinates
-            cursor_x = cursor_screen_x - self.container_x
-            cursor_y = cursor_screen_y - self.container_y
-            
-            # Only follow if cursor is within or near the container and in water
-            if (-50 <= cursor_x <= self.container_width + 50 and 
-                is_in_water(cursor_x, cursor_y, self.water_level, self.container_height)):
-                
-                kraken_coords = self.canvas.coords("kraken")
-                if kraken_coords:
-                    kraken_x, kraken_y = kraken_coords[0], kraken_coords[1]
-                    
-                    # Calculate distance to cursor
-                    distance = math.sqrt((cursor_x - kraken_x)**2 + (cursor_y - kraken_y)**2)
-                    
-                    # Follow if cursor is close but not too close
-                    if 40 < distance < 150:
-                        # Set target within water bounds
-                        margin = self.kraken_radius + 15
-                        target_x = max(margin, min(cursor_x, self.container_width - margin))
-                        if is_in_water(target_x, cursor_y, self.water_level, self.container_height):
-                            self.target_x = target_x
-                            self.target_y = cursor_y
-                            self.state = "swimming"
-        except:
-            pass
+
     
     def update_position(self):
-        """Smoothly move kraken towards target (shrimp or cursor, only in water)"""
+        """Smoothly move kraken towards shrimp target"""
         # Check if there's a shrimp to eat
         if not self.current_shrimp_target and len(self.shrimp_queue) > 0:
             self.get_next_shrimp_target()
         
-        # If eating shrimp, override target
-        if self.current_shrimp_target and not self.is_dragging:
-            self.target_x, self.target_y = self.current_shrimp_target
-            if self.state == "idle":
-                self.state = "swimming"
-        
-        if self.state == "swimming" and not self.is_dragging:
+        # If targeting shrimp, move towards it
+        if self.current_shrimp_target:
+            shrimp_x, shrimp_y = self.current_shrimp_target
+            
+            # Calculate where the sprite anchor should be so the mouth reaches the shrimp
+            # Mouth is at (sprite_x + mouth_offset_x, sprite_y + mouth_offset_y)
+            # So: sprite_x + mouth_offset_x = shrimp_x  =>  sprite_x = shrimp_x - mouth_offset_x
+            target_sprite_x = shrimp_x - self.mouth_offset_x
+            target_sprite_y = shrimp_y - self.mouth_offset_y
+            
+            # Safety check: ensure target position is valid (in water and within bounds)
+            # If not, fall back to simple targeting to avoid bugs at boundaries
+            margin = self.kraken_radius + 10
+            min_x = margin
+            max_x = self.container_width - margin
+            min_y = self.water_level + margin
+            max_y = self.container_height - margin
+            
+            # Clamp target to safe bounds
+            target_sprite_x = max(min_x, min(target_sprite_x, max_x))
+            target_sprite_y = max(min_y, min(target_sprite_y, max_y))
+            
+            # Use adjusted target
+            self.target_x = target_sprite_x
+            self.target_y = target_sprite_y
+            
             kraken_coords = self.canvas.coords("kraken")
             if kraken_coords:
                 current_kraken_x, current_kraken_y = kraken_coords[0], kraken_coords[1]
@@ -383,82 +275,48 @@ class ASCIIUnderwaterKraken:
                 distance = math.sqrt(dx**2 + dy**2)
                 
                 if distance > 5:
-                    # Move step by step - faster for shrimp!
-                    base_speed = 8.0 if self.eating_shrimp else 2.5
-                    step_size = min(base_speed, distance / 3)
+                    # Swimming to shrimp
+                    self.state = "swimming"
+                    # Move step by step
+                    step_size = min(8.0, distance / 3)
                     new_x = current_kraken_x + (dx / distance) * step_size
                     new_y = current_kraken_y + (dy / distance) * step_size
                     
                     # Keep within water bounds
-                    margin = self.kraken_radius + 10
-                    new_x = max(margin, min(new_x, self.container_width - margin))
+                    new_x = max(min_x, min(new_x, max_x))
+                    new_y = max(min_y, min(new_y, max_y))
                     
                     # Only move if destination is in water
                     if is_in_water(new_x, new_y, self.water_level, self.container_height):
                         self.move_kraken_to(new_x, new_y)
-                    else:
-                        self.state = "idle"  # Stop if hit water boundary
                 else:
-                    # Reached target
-                    if self.eating_shrimp and self.current_shrimp_target:
+                    # Reached target - eat the shrimp!
+                    if self.current_shrimp_target:
+                        self.state = "eating"
                         self.eat_shrimp()
-                    self.state = "idle"
+        else:
+            # No target, return to idle
+            if self.state != "idle":
+                self.state = "idle"
     
     def update_behavior(self):
         """Update kraken behavior and state"""
-        self.idle_counter += 1
         self.bubble_timer += 1
         
-        # Ensure we stay at desktop level every few cycles
-        if self.idle_counter % 50 == 0:  # Every 5 seconds
-            self.ensure_desktop_level()
-        
         # Add floating bubbles periodically
-        if self.bubble_timer % 30 == 0:  # Every 3 seconds
+        if self.bubble_timer % 5 == 0:  # Every 0.5 seconds
             add_floating_bubbles(self.canvas, self.container_width, self.water_level, self.container_height)
         
-        # Random behavior changes
-        if self.idle_counter > 80:  # About 8 seconds
-            if self.state == "idle":
-                # Occasionally do something random
-                rand = random.random()
-                if rand < 0.15:
-                    self.state = random.choice(["sleep", "attack"])
-                elif rand < 0.35:  # Random swimming
-                    self.swim_randomly()
-            elif self.state in ["sleep", "attack"]:
-                # Return to idle after a while
-                if random.random() < 0.2:
-                    self.state = "idle"
-            self.idle_counter = 0
-            
-        # Follow cursor behavior
-        self.follow_cursor()
-        
-        # Update position
+        # Update position (shrimp hunting)
         self.update_position()
         
         # Schedule next behavior update
         self.root.after(100, self.update_behavior)
-    
-    def swim_randomly(self):
-        """Make kraken swim to a random spot in the water"""
-        if not self.is_dragging:
-            margin = self.kraken_radius + 25
-            attempts = 0
-            while attempts < 10:  # Try to find a valid water position
-                target_x = random.randint(margin, self.container_width - margin)
-                target_y = random.randint(self.water_level + 30, self.container_height - 40)
-                if is_in_water(target_x, target_y, self.water_level, self.container_height):
-                    self.target_x = target_x
-                    self.target_y = target_y
-                    self.state = "swimming"
-                    break
-                attempts += 1
+
     
     def animate(self):
         """Animate the kraken sprite"""
-        # Get current animation sequence
+        # Get animation sequence based on current state
         current_animation = self.animations.get(self.state, self.animations['idle'])
         
         # Update animation frame
@@ -468,36 +326,21 @@ class ASCIIUnderwaterKraken:
         # Render the updated sprite
         self.render_kraken()
         
-        # Add a subtle sway effect when swimming
-        if self.state == "swimming" and self.animation_frame % 6 < 3:
-            # Slight horizontal sway for swimming motion
-            kraken_coords = self.canvas.coords("kraken")
-            if kraken_coords and len(kraken_coords) >= 2:
-                sway_offset = 2 if self.animation_frame % 6 == 0 else -2
-                current_x, current_y = kraken_coords[0], kraken_coords[1]
-                if is_in_water(current_x + sway_offset, current_y, self.water_level, self.container_height):
-                    self.move_kraken_to(current_x + sway_offset, current_y)
-        
         # Advance animation frame
         self.animation_frame += 1
         
-        # Schedule next frame (different speeds for different states)
-        if self.state == "sleep":
-            delay = 1200
-        elif self.state == "attack":
-            delay = 300  # Fast aggressive animation
-        else:
-            delay = 500
+        # Faster animation for eating
+        delay = 300 if self.state == "eating" else 500
+        
+        # Schedule next frame
         self.root.after(delay, self.animate)
     
     def run(self):
         """Start the kraken application"""
         print("Starting ASCII Underwater Kraken...")
         print("• Lives in underwater environment in desktop corner")
-        print("• Click and drag to move within water areas only") 
-        print("• Double-click to make it attack (aggressive!)")
-        print("• Follows your cursor when nearby (in water)")
-        print("• Swims randomly through the underwater world")
+        print("• Click anywhere underwater to drop shrimp")
+        print("• Kraken will hunt and eat the shrimp")
         print("• Press Ctrl+C in terminal to stop")
         
         # Position container (already calculated in __init__)
