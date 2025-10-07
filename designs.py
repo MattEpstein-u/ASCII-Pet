@@ -16,7 +16,7 @@ ASCII_DENSITY_CONFIG = {
 
 # Kraken appearance configuration
 KRAKEN_CONFIG = {
-    'color': '#B85EDE',  # Kraken sprite color (change this to update all kraken sprites)
+    'color': '#E0C6FF',  # Kraken sprite color (change this to update all kraken sprites)
 }
 
 # Debug grid overlay configuration
