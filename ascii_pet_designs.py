@@ -136,84 +136,13 @@ ASCII_ANIMATIONS = {
 
 # Ocean Cross-Section Environment ASCII Art
 UNDERWATER_ENVIRONMENT = {
-    # Ocean surface line (separates air from water at 1/5 from top)
-    'ocean_surface': [
-        "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈",
-        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-        "≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈"
-    ],
+
     
     # Animated wave patterns (cycle through these for animation)
     'ocean_surface_frame1': "~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈",
     'ocean_surface_frame2': "≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈~≈",
     'ocean_surface_frame3': "~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈",
     'ocean_surface_frame4': "≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈~~≈≈",
-    
-    # Better seaweed designs using various ASCII techniques
-    'kelp_forest_tall': [
-        "    |    ",
-        "   /|\\   ",
-        "  / | \\  ",
-        "    |    ",
-        "   /|\\   ",
-        "  / | \\  ",
-        "    |    ",
-        "   /|\\   ",
-        "  / | \\  ",
-        "    |    ",
-        "   /|\\   ",
-        "  / | \\  "
-    ],
-    
-    'kelp_forest_medium': [
-        "  | |  ",
-        " /| |\\ ",
-        "/ | | \\",
-        "  | |  ",
-        " /| |\\ ",
-        "/ | | \\",
-        "  | |  ",
-        " /| |\\ "
-    ],
-    
-    'sea_grass': [
-        " | | | ",
-        "|| | ||",
-        " | | | ",
-        "|| | ||",
-        " | | | ",
-        "|| | ||"
-    ],
-    
-    'coral_formation': [
-        " ∩∩∩ ",
-        "∩   ∩",
-        " ∩ ∩ ",
-        "  |  ",
-        "  |  ",
-        " _|_ "
-    ],
-    
-    # Ocean floor with texture and depth
-    'ocean_floor_layers': [
-        "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀",
-        "████████████████████████████████████████████████████████████████████████████████",
-        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-        "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░"
-    ],
-    
-    # Rocks and underwater features
-    'rock_formations': [
-        "  ▲   ▲     ▲▲    ▲   ▲▲▲   ▲    ▲▲     ▲   ▲▲▲    ▲     ▲▲   ▲▲    ▲▲▲  ",
-        " ▲▲▲ ▲▲▲   ▲▲▲▲  ▲▲▲ ▲▲▲▲  ▲▲▲  ▲▲▲▲   ▲▲▲ ▲▲▲▲   ▲▲▲   ▲▲▲▲ ▲▲▲▲  ▲▲▲▲ "
-    ],
-    
-    # Surface area for future boat (top 1/5 of screen)
-    'surface_area': [
-        "                                                                                 ",
-        "                     [ BOAT WILL SAIL HERE ]                                   ",
-        "                                                                                 "
-    ],
     
     # Bubbles for atmosphere
     'bubbles_small': ["○", "∘", "·", "°"],
@@ -328,7 +257,7 @@ def spawn_bubble(bubble_list, width, water_level, height):
                               UNDERWATER_ENVIRONMENT['bubbles_medium'] + 
                               UNDERWATER_ENVIRONMENT['bubbles_large'])
     bubble_size = random.choice([10, 12, 14, 16])
-    bubble_color = random.choice(['#FFFFFF', '#F8F8FF', '#F0F8FF', '#E6E6FA', '#FFFAFA'])
+    bubble_color = '#FFFFFF'
     
     # Add to bubble list with all needed info
     bubble_list.append({
