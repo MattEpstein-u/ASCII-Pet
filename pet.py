@@ -42,9 +42,6 @@ class ASCIIUnderwaterKraken:
         self.setup_pet()
         self.setup_animations()
         
-        # Kraken properties
-        self.water_level = 0
-        
         # Bubble physics system
         self.bubble_list = []  # List of active bubbles with positions
         
@@ -152,6 +149,9 @@ class ASCIIUnderwaterKraken:
         # Render the underwater environment with animation
         self.water_level = render_underwater_environment(self.canvas, self.container_width, 
                                                          self.container_height, self.wave_animation_frame)
+        
+        print(f"🌊 Water level initialized: {self.water_level}, Container height: {self.container_height}")
+        print(f"🌊 Underwater starts at: {self.water_level + 20} (water_level + 20)")
         
         # Store kraken starting position (in underwater area)
         self.kraken_start_x = self.container_width // 2
