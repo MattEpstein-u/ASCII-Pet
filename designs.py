@@ -174,7 +174,6 @@ UNDERWATER_ENVIRONMENT = {
     # Bubbles for atmosphere
     'bubbles_small': ["○", "∘", "·", "°"],
     'bubbles_medium': ["●", "○", "◯"],
-    'bubbles_large': ["⬤", "⭕", "◯"]
 }
 
 def get_ascii_pet(sprite_name):
@@ -412,8 +411,7 @@ def spawn_bubble(bubble_list, width, water_level, height):
     
     # Bubble appearance
     bubble_char = random.choice(UNDERWATER_ENVIRONMENT['bubbles_small'] + 
-                              UNDERWATER_ENVIRONMENT['bubbles_medium'] + 
-                              UNDERWATER_ENVIRONMENT['bubbles_large'])
+                              UNDERWATER_ENVIRONMENT['bubbles_medium'])
     bubble_size = random.choice([10, 12, 14, 16])
     bubble_color = '#FFFFFF'
     
