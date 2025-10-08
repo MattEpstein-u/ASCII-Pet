@@ -486,7 +486,8 @@ class ASCIIUnderwaterKraken:
                 # Attack duration: 30 frames (3 seconds) to determine outcome
                 attack_should_end = False
                 
-                if self.attack_frames >= 30:
+                if self.attack_frames == 30:
+                    # Exactly at frame 30, determine outcome (only happens once)
                     if self.attack_will_destroy:
                         # Successful attack: mark boat for destruction at next sprite update
                         # Don't end attack yet - wait for boat to disappear
