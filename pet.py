@@ -393,20 +393,31 @@ class ASCIIUnderwaterKraken:
     
     def trigger_boat_attack(self):
         """Trigger kraken attack on the boat - abandon everything and attack!"""
+        import random
+        
         self.boat_attacked = True
         self.attacking_boat = True
         self.attack_phase = 'swimming'  # Start with swimming phase (upside down)
         self.attack_frames = 0
+        
+        # Determine if this attack will destroy the boat (50% chance)
+        self.attack_will_destroy = random.random() < 0.5
         
         # Save current state to resume later
         self.pre_attack_state = self.state
         self.pre_attack_target = self.current_shrimp_target
         
         # Calculate boat position in pixels for kraken to intercept
+        # Position slightly ahead of the boat based on direction
         boat_pixel_x = self.boat_char_pos * 8  # Approximate char width
         
-        # Position kraken at the boat location (upside down, attacking from above)
-        self.target_x = boat_pixel_x
+        if self.boat_direction == 'rl':
+            # Boat moving right-to-left, position kraken ahead (to the left)
+            self.target_x = boat_pixel_x - 30
+        else:
+            # Boat moving left-to-right, position kraken ahead (to the right)
+            self.target_x = boat_pixel_x + 30
+        
         self.target_y = self.water_level - 20  # Just below the surface
         
         # DON'T clear shrimp targets - save them for later
@@ -430,6 +441,13 @@ class ASCIIUnderwaterKraken:
             
             # PHASE 1: Swimming upside-down to intercept (0-20 frames, 2 seconds)
             if self.attack_phase == 'swimming':
+                # Update target to track boat movement (stay ahead of boat)
+                boat_pixel_x = self.boat_char_pos * 8
+                if self.boat_direction == 'rl':
+                    self.target_x = boat_pixel_x - 30  # Ahead to the left
+                else:
+                    self.target_x = boat_pixel_x + 30  # Ahead to the right
+                
                 # Move quickly to intercept position
                 dx = self.target_x - current_kraken_x
                 dy = self.target_y - current_kraken_y
@@ -447,13 +465,33 @@ class ASCIIUnderwaterKraken:
                     self.attack_phase = 'attacking'
                     self.attack_frames = 0  # Reset for attack phase timing
             
-            # PHASE 2: Attacking the boat (20 frames, 2 seconds)
+            # PHASE 2: Attacking the boat (30 frames, 3 seconds - 1.5x longer)
             elif self.attack_phase == 'attacking':
-                # Stay at position and attack
-                if self.attack_frames >= 20:
-                    # Destroy boat
-                    self.boat_active = False
-                    print("💥 Boat destroyed!")
+                # Track and move with the boat during attack
+                boat_pixel_x = self.boat_char_pos * 8
+                if self.boat_direction == 'rl':
+                    self.target_x = boat_pixel_x - 30  # Stay ahead to the left
+                else:
+                    self.target_x = boat_pixel_x + 30  # Stay ahead to the right
+                
+                # Follow the boat smoothly
+                dx = self.target_x - current_kraken_x
+                distance_x = abs(dx)
+                if distance_x > 5:
+                    step_size = min(4.0, distance_x / 2)
+                    new_x = current_kraken_x + (dx / distance_x) * step_size
+                    self.move_kraken_to(new_x, current_kraken_y)
+                
+                # Attack duration: 30 frames (3 seconds)
+                if self.attack_frames >= 30:
+                    # Check if attack destroys the boat
+                    if self.attack_will_destroy:
+                        # Destroy boat
+                        self.boat_active = False
+                        print("💥 Boat destroyed!")
+                    else:
+                        # Boat survives!
+                        print("⛵ Boat escaped!")
                     
                     # Start returning phase
                     self.attack_phase = 'returning'
