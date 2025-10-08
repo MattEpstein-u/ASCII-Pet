@@ -419,8 +419,10 @@ class ASCIIUnderwaterKraken:
         self.target_y = self.water_level - 20  # Just below the surface
         
         # DON'T clear shrimp targets - save them for later
-        # But stop eating current shrimp
+        # But stop eating current shrimp and reset eating counter
+        # This allows kraken to resume eating the same shrimp from scratch
         self.eating_shrimp = False
+        self.eating_frames = 0
         
         print("🐙 ATTACK!")
 
@@ -615,6 +617,7 @@ class ASCIIUnderwaterKraken:
                 # Reached target - start eating animation
                 if self.current_shrimp_target:
                     self.state = "eating"
+                    self.eating_shrimp = True  # Set flag so animate() shows eating animation
                     self.eating_frames += 1
                     # Eat shrimp after 15 frames (~0.75 seconds at 20fps)
                     if self.eating_frames >= 15:
