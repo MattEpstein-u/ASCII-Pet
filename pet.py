@@ -614,11 +614,12 @@ class ASCIIUnderwaterKraken:
             
             # Check if kraken is as close as it can get (considering boundaries)
             # If the target was clamped and we're at that clamped position, consider it "reached"
+            # Use a larger threshold (10 pixels) to account for clamping behavior
             at_boundary_limit = (
-                (target_sprite_y == max_y and abs(current_kraken_y - max_y) < 5) or  # At bottom boundary
-                (target_sprite_y == min_y and abs(current_kraken_y - min_y) < 5) or  # At top boundary
-                (target_sprite_x == min_x and abs(current_kraken_x - min_x) < 5) or  # At left boundary
-                (target_sprite_x == max_x and abs(current_kraken_x - max_x) < 5)     # At right boundary
+                (target_sprite_y == max_y and abs(current_kraken_y - max_y) <= 10) or  # At bottom boundary
+                (target_sprite_y == min_y and abs(current_kraken_y - min_y) <= 10) or  # At top boundary
+                (target_sprite_x == min_x and abs(current_kraken_x - min_x) <= 10) or  # At left boundary
+                (target_sprite_x == max_x and abs(current_kraken_x - max_x) <= 10)     # At right boundary
             )
             
             if distance > 2 and not at_boundary_limit:
