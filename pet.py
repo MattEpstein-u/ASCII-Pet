@@ -599,9 +599,12 @@ class ASCIIUnderwaterKraken:
             dy = self.target_y - current_kraken_y
             distance = math.sqrt(dx**2 + dy**2)
             
-            if distance > 5:
-                # Swimming to shrimp
+            if distance > 2:
+                # Still moving to shrimp - reset eating timer since we're not stationary
                 self.state = "swimming"
+                self.eating_shrimp = False
+                self.eating_frames = 0
+                
                 # Move step by step
                 step_size = min(8.0, distance / 3)
                 new_x = current_kraken_x + (dx / distance) * step_size
@@ -614,7 +617,8 @@ class ASCIIUnderwaterKraken:
                 # Move kraken (already validated by boundary clamping above)
                 self.move_kraken_to(new_x, new_y)
             else:
-                # Reached target - start eating animation
+                # Stopped moving - now can start eating animation
+                # Kraken is stationary with mouth as close as possible to shrimp
                 if self.current_shrimp_target:
                     self.state = "eating"
                     self.eating_shrimp = True  # Set flag so animate() shows eating animation
