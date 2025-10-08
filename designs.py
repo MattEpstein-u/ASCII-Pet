@@ -26,6 +26,15 @@ BOAT_CONFIG = {
     'update_interval': 3  # Update every N frames to slow down movement
 }
 
+# Debug grid overlay configuration
+DEBUG_CONFIG = {
+    'show_grid': False,  # Set to True to show debugging grid
+    'grid_size': 50,     # Size of grid cells in pixels
+    'grid_color': '#444444',  # Grid line color (dark gray)
+    'show_coordinates': True,  # Show coordinate labels
+    'show_boundaries': True,   # Show water level and boundaries
+}
+
 # Boat ASCII art - Left to Right (6 lines tall, rectangularized)
 # Each line is exactly 16 characters wide
 BOAT_SPRITE_LR = [
@@ -47,15 +56,6 @@ BOAT_SPRITE_RL = [
     "_____|____|_____",  # Line 4: Hull middle
     "\\______________/",  # Line 5: Hull bottom (overwrites top wave)
 ]
-
-# Debug grid overlay configuration
-DEBUG_CONFIG = {
-    'show_grid': True,  # Set to True to show debugging grid
-    'grid_size': 50,     # Size of grid cells in pixels
-    'grid_color': '#444444',  # Grid line color (dark gray)
-    'show_coordinates': True,  # Show coordinate labels
-    'show_boundaries': True,   # Show water level and boundaries
-}
 
 def get_density_font_size():
     """Get the configured font size for ASCII density"""
