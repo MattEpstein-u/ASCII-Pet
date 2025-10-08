@@ -612,7 +612,16 @@ class ASCIIUnderwaterKraken:
             dy = self.target_y - current_kraken_y
             distance = math.sqrt(dx**2 + dy**2)
             
-            if distance > 2:
+            # Check if kraken is as close as it can get (considering boundaries)
+            # If the target was clamped and we're at that clamped position, consider it "reached"
+            at_boundary_limit = (
+                (target_sprite_y == max_y and abs(current_kraken_y - max_y) < 5) or  # At bottom boundary
+                (target_sprite_y == min_y and abs(current_kraken_y - min_y) < 5) or  # At top boundary
+                (target_sprite_x == min_x and abs(current_kraken_x - min_x) < 5) or  # At left boundary
+                (target_sprite_x == max_x and abs(current_kraken_x - max_x) < 5)     # At right boundary
+            )
+            
+            if distance > 2 and not at_boundary_limit:
                 # Still moving to shrimp - reset eating timer since we're not stationary
                 self.state = "swimming"
                 self.eating_shrimp = False
@@ -630,7 +639,7 @@ class ASCIIUnderwaterKraken:
                 # Move kraken (already validated by boundary clamping above)
                 self.move_kraken_to(new_x, new_y)
             else:
-                # Stopped moving - now can start eating animation
+                # Stopped moving OR at boundary limit - now can start eating animation
                 # Kraken is stationary with mouth as close as possible to shrimp
                 if self.current_shrimp_target:
                     self.state = "eating"
