@@ -56,9 +56,8 @@ class ASCIIUnderwaterKraken:
         self.eating_frames = 0  # Counter for eating animation duration
         self.shrimp_counter = 0  # For unique shrimp tags
         
-        # Boat system (spawns once when clicking above water)
-        self.boat_active = False  # Whether boat has been spawned
-        self.boat_spawned = False  # Whether boat spawn has been used
+        # Boat system (spawns when clicking above water, can respawn after previous boat sails off)
+        self.boat_active = False  # Whether a boat is currently on screen
         self.boat_char_pos = -get_boat_width()  # Current boat character position (starts off-screen left)
         self.boat_update_counter = 0  # Frame counter for slowing down boat movement
         
@@ -209,11 +208,11 @@ class ASCIIUnderwaterKraken:
         if is_in_water(event.x, event.y, self.water_level, self.container_height):
             # Click underwater - drop shrimp
             self.drop_shrimp(event.x, event.y)
-        elif event.y < self.water_level and not self.boat_spawned:
-            # Click above water and boat hasn't been spawned yet - spawn boat
+        elif event.y < self.water_level and not self.boat_active:
+            # Click above water and no boat currently active - spawn boat
             self.spawn_boat()
         else:
-            # Click was above water but boat already spawned, or other invalid area
+            # Click was above water but boat is active, or other invalid area
             pass
 
     
@@ -306,9 +305,8 @@ class ASCIIUnderwaterKraken:
             print(f"🐙 Kraken targeting shrimp at ({x}, {y})")
     
     def spawn_boat(self):
-        """Spawn a boat that moves across the water surface (can only happen once)"""
-        if not self.boat_spawned:
-            self.boat_spawned = True
+        """Spawn a boat that moves across the water surface (can be called multiple times after previous boat sails off)"""
+        if not self.boat_active:
             self.boat_active = True
             self.boat_char_pos = -get_boat_width()  # Start completely off-screen to the left
             self.boat_update_counter = 0  # Reset frame counter

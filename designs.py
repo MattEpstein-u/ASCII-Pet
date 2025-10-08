@@ -23,7 +23,7 @@ KRAKEN_CONFIG = {
 BOAT_CONFIG = {
     'speed': 1,
     'color': '#FFFFFF',
-    'update_interval': 5  # Update every N frames to slow down movement
+    'update_interval': 4  # Update every N frames to slow down movement
 }
 
 # Boat ASCII art (6 lines tall, rectangularized)
