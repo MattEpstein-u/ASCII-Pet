@@ -26,13 +26,24 @@ BOAT_CONFIG = {
     'update_interval': 3  # Update every N frames to slow down movement
 }
 
-# Boat ASCII art (6 lines tall, rectangularized)
+# Boat ASCII art - Left to Right (6 lines tall, rectangularized)
 # Each line is exactly 16 characters wide
-BOAT_SPRITE = [
+BOAT_SPRITE_LR = [
     "     |    |     ",  # Line 0: Masts
     "    )_)  )_)    ",  # Line 1: Sails
     "   )___))___)   ",  # Line 2: Sails lower
     "  )____)_____)  ",  # Line 3: Hull top
+    "_____|____|_____",  # Line 4: Hull middle
+    "\\______________/",  # Line 5: Hull bottom (overwrites top wave)
+]
+
+# Boat ASCII art - Right to Left (6 lines tall, rectangularized)
+# Each line is exactly 16 characters wide
+BOAT_SPRITE_RL = [
+    "     |    |     ",  # Line 0: Masts
+    "    )_(  )_(    ",  # Line 1: Sails
+    "   )___((___(   ",  # Line 2: Sails lower
+    "  )_____(____(  ",  # Line 3: Hull top
     "_____|____|_____",  # Line 4: Hull middle
     "\\______________/",  # Line 5: Hull bottom (overwrites top wave)
 ]
@@ -58,9 +69,15 @@ def get_kraken_color():
     """Get the configured kraken color"""
     return KRAKEN_CONFIG['color']
 
-def get_boat_sprite():
-    """Get the boat ASCII art sprite"""
-    return BOAT_SPRITE
+def get_boat_sprite(direction='lr'):
+    """Get the boat ASCII art sprite
+    
+    Args:
+        direction: 'lr' for left-to-right, 'rl' for right-to-left
+    """
+    if direction == 'rl':
+        return BOAT_SPRITE_RL
+    return BOAT_SPRITE_LR
 
 def get_boat_speed():
     """Get the configured boat speed"""
@@ -72,8 +89,8 @@ def get_boat_color():
 
 def get_boat_width():
     """Get the width of the boat sprite in characters"""
-    if BOAT_SPRITE:
-        return len(BOAT_SPRITE[0])
+    if BOAT_SPRITE_LR:
+        return len(BOAT_SPRITE_LR[0])
     return 0
 
 def get_boat_update_interval():
@@ -253,7 +270,7 @@ UNDERWATER_ENVIRONMENT = {
     
     # Bubbles for atmosphere
     'bubbles_small': ["○", "∘", "·", "°"],
-    'bubbles_medium': ["●", "○", "◯"],
+    'bubbles_medium': ["●", "○"],
 }
 
 def get_ascii_pet(sprite_name):
@@ -279,7 +296,7 @@ def render_ascii_art(lines, x, y, canvas, tag="pet", color="#333333", font_size=
             tags=tag
         )
 
-def render_underwater_environment(canvas, width, height, animation_frame=0, boat_char_pos=None, boat_active=False):
+def render_underwater_environment(canvas, width, height, animation_frame=0, boat_char_pos=None, boat_active=False, boat_direction='lr'):
     """Render ocean cross-section: top 1/5 surface area, bottom 4/5 underwater
     
     Args:
@@ -289,6 +306,7 @@ def render_underwater_environment(canvas, width, height, animation_frame=0, boat
         animation_frame: Current animation frame for wave animation
         boat_char_pos: Character position of boat (for integration into waves)
         boat_active: Whether boat is active and should be rendered
+        boat_direction: Direction of boat ('lr' = left-to-right, 'rl' = right-to-left)
     """
     canvas.delete("environment")  # Clear previous environment
     
@@ -326,7 +344,7 @@ def render_underwater_environment(canvas, width, height, animation_frame=0, boat
     
     # Integrate boat into surface if active (boat is 6 lines, overlaps top wave)
     if boat_active and boat_char_pos is not None:
-        boat_sprite = BOAT_SPRITE
+        boat_sprite = get_boat_sprite(boat_direction)
         if len(boat_sprite) >= 6:
             # Boat line 5 (hull bottom) overwrites the top wave line
             full_wave_line_top = integrate_boat_into_waves(full_wave_line_top, boat_sprite[5], boat_char_pos)

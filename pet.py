@@ -60,6 +60,7 @@ class ASCIIUnderwaterKraken:
         self.boat_active = False  # Whether a boat is currently on screen
         self.boat_char_pos = -get_boat_width()  # Current boat character position (starts off-screen left)
         self.boat_update_counter = 0  # Frame counter for slowing down boat movement
+        self.boat_direction = 'lr'  # Direction: 'lr' = left-to-right, 'rl' = right-to-left
         
         # Start the main loops
         self.animate()
@@ -181,8 +182,9 @@ class ASCIIUnderwaterKraken:
         # Bubble system initialized (bubbles will spawn over time)
         # No initial bubbles needed - they'll appear naturally
         
-        # Bind mouse click to drop shrimp
-        self.canvas.bind('<Button-1>', self.on_click)
+        # Bind mouse clicks: left-click and right-click
+        self.canvas.bind('<Button-1>', self.on_click)  # Left-click
+        self.canvas.bind('<Button-3>', self.on_click)  # Right-click
     
     def render_kraken(self):
         """Render the current ASCII kraken sprite"""
@@ -204,13 +206,22 @@ class ASCIIUnderwaterKraken:
         self.animations = ASCII_ANIMATIONS
     
     def on_click(self, event):
-        """Handle clicks: drop shrimp in water, spawn boat above water"""
+        """Handle clicks: drop shrimp in water, spawn boat above water
+        
+        Left-click above water: spawn boat going right-to-left
+        Right-click above water: spawn boat going left-to-right
+        Any click in water: drop shrimp
+        """
         if is_in_water(event.x, event.y, self.water_level, self.container_height):
             # Click underwater - drop shrimp
             self.drop_shrimp(event.x, event.y)
         elif event.y < self.water_level and not self.boat_active:
             # Click above water and no boat currently active - spawn boat
-            self.spawn_boat()
+            # event.num: 1 = left-click, 3 = right-click
+            if event.num == 3:  # Right-click: left-to-right
+                self.spawn_boat(direction='lr')
+            else:  # Left-click (or any other): right-to-left
+                self.spawn_boat(direction='rl')
         else:
             # Click was above water but boat is active, or other invalid area
             pass
@@ -304,33 +315,59 @@ class ASCIIUnderwaterKraken:
             x, y, tag = self.current_shrimp_target
             print(f"🐙 Kraken targeting shrimp at ({x}, {y})")
     
-    def spawn_boat(self):
-        """Spawn a boat that moves across the water surface (can be called multiple times after previous boat sails off)"""
+    def spawn_boat(self, direction='lr'):
+        """Spawn a boat that moves across the water surface (can be called multiple times after previous boat sails off)
+        
+        Args:
+            direction: 'lr' for left-to-right (right-click), 'rl' for right-to-left (left-click)
+        """
         if not self.boat_active:
             self.boat_active = True
-            self.boat_char_pos = -get_boat_width()  # Start completely off-screen to the left
+            self.boat_direction = direction
+            
+            # Set starting position based on direction
+            screen_width_chars = self.container_width // 8
+            if direction == 'rl':
+                # Start off-screen to the right for right-to-left
+                self.boat_char_pos = screen_width_chars + 10
+            else:
+                # Start off-screen to the left for left-to-right
+                self.boat_char_pos = -get_boat_width()
+            
             self.boat_update_counter = 0  # Reset frame counter
             print(f"⛵")
     
     def update_boat(self):
-        """Update boat character position"""
+        """Update boat character position based on direction"""
         if self.boat_active:
             # Increment frame counter
             self.boat_update_counter += 1
             
             # Only update position every N frames to slow down movement
             if self.boat_update_counter >= get_boat_update_interval():
-                # Move boat one character at a time from left to right
-                self.boat_char_pos += get_boat_speed()
+                # Move boat based on direction
+                if self.boat_direction == 'rl':
+                    # Right-to-left: subtract speed
+                    self.boat_char_pos -= get_boat_speed()
+                else:
+                    # Left-to-right: add speed
+                    self.boat_char_pos += get_boat_speed()
                 self.boat_update_counter = 0
             
             # Calculate approximate screen width in characters (8 pixels per char with Courier 8pt)
             screen_width_chars = self.container_width // 8
             
-            # Check if boat has sailed completely off the right edge
-            if self.boat_char_pos > screen_width_chars + 10:
-                self.boat_active = False
-                print("⛵...")
+            # Check if boat has sailed completely off screen (either direction)
+            if self.boat_direction == 'rl':
+                # Right-to-left: check if sailed off left edge
+                if self.boat_char_pos < -get_boat_width() - 10:
+                    self.boat_active = False
+                    print("⛵...")
+            else:
+                # Left-to-right: check if sailed off right edge
+                if self.boat_char_pos > screen_width_chars + 10:
+                    self.boat_active = False
+                    print("⛵...")
 
     def update_position(self):
         """Smoothly move kraken towards shrimp target"""
@@ -416,7 +453,8 @@ class ASCIIUnderwaterKraken:
                 self.canvas, self.container_width, self.container_height, 
                 self.wave_animation_frame // 10,
                 boat_char_pos=self.boat_char_pos if self.boat_active else None,
-                boat_active=self.boat_active
+                boat_active=self.boat_active,
+                boat_direction=self.boat_direction
             )
         self.wave_animation_frame += 1
         
