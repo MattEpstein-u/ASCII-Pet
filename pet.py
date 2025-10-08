@@ -301,8 +301,8 @@ class ASCIIUnderwaterKraken:
             print(f"⚠️ Click rejected by is_in_water: ({x}, {y})")
             return
         
-        # Fourth check: ensure new shrimp is at least 100 pixels from all existing shrimp
-        min_distance = 100
+        # Fourth check: ensure new shrimp is at least 80 pixels from all existing shrimp
+        min_distance = 80
         for existing_x, existing_y, _ in self.shrimp_queue:
             distance = math.sqrt((x - existing_x)**2 + (y - existing_y)**2)
             if distance < min_distance:
@@ -334,9 +334,28 @@ class ASCIIUnderwaterKraken:
             print(f"🐙 Om nom nom! Shrimp eaten. Remaining: {len(self.shrimp_queue)}")
     
     def get_next_shrimp_target(self):
-        """Get the next shrimp from the queue"""
+        """Get the closest shrimp from the queue"""
         if self.shrimp_queue and not self.current_shrimp_target:
-            self.current_shrimp_target = self.shrimp_queue[0]
+            # Get current kraken position
+            kraken_coords = self.canvas.coords("kraken")
+            if not kraken_coords:
+                # Kraken not yet rendered, just pick first shrimp
+                self.current_shrimp_target = self.shrimp_queue[0]
+            else:
+                # Find the closest shrimp to current kraken position
+                kraken_x, kraken_y = kraken_coords[0], kraken_coords[1]
+                closest_shrimp = None
+                closest_distance = float('inf')
+                
+                for shrimp in self.shrimp_queue:
+                    shrimp_x, shrimp_y, _ = shrimp
+                    distance = math.sqrt((shrimp_x - kraken_x)**2 + (shrimp_y - kraken_y)**2)
+                    if distance < closest_distance:
+                        closest_distance = distance
+                        closest_shrimp = shrimp
+                
+                self.current_shrimp_target = closest_shrimp
+            
             self.eating_shrimp = True
             x, y, tag = self.current_shrimp_target
             print(f"🐙 Kraken targeting shrimp at ({x}, {y})")
@@ -527,14 +546,10 @@ class ASCIIUnderwaterKraken:
                     self.attack_phase = 'returning'
                     self.attack_frames = 0
                     
-                    # Set return position based on what kraken was doing
-                    if self.pre_attack_target and self.pre_attack_target in self.shrimp_queue:
-                        # Return to specific shrimp that was being hunted
-                        shrimp_x, shrimp_y, _ = self.pre_attack_target
-                        self.target_x = shrimp_x - self.mouth_offset_x
-                        self.target_y = shrimp_y - self.mouth_offset_y
-                    elif len(self.shrimp_queue) > 0:
-                        # Pre-attack shrimp is gone, but there are others - return to hunting position
+                    # Don't target specific pre-attack shrimp anymore
+                    # Just return to a central hunting position and find closest shrimp
+                    if len(self.shrimp_queue) > 0:
+                        # Return to center of ocean to hunt closest shrimp
                         self.target_x = self.container_width // 2
                         self.target_y = self.water_level + 150
                     else:
@@ -578,23 +593,13 @@ class ASCIIUnderwaterKraken:
                     self.attack_phase = 'none'
                     self.attack_frames = 0
                     
-                    # Resume previous activity - check if shrimp still exists
-                    if self.pre_attack_target:
-                        # Check if this shrimp is still in the queue
-                        if self.pre_attack_target in self.shrimp_queue:
-                            # Resume hunting this specific shrimp
-                            self.current_shrimp_target = self.pre_attack_target
-                            self.eating_shrimp = False  # Will start eating when reached
-                            print("🐙 Back to hunting saved shrimp...")
-                        else:
-                            # Shrimp was removed, get next from queue
-                            self.current_shrimp_target = None
-                            self.eating_shrimp = False
-                            print("🐙 Back to hunting...")
+                    # Resume hunting - clear current target so closest shrimp will be selected
+                    self.current_shrimp_target = None
+                    self.eating_shrimp = False
+                    
+                    if len(self.shrimp_queue) > 0:
+                        print("🐙 Back to hunting...")
                     else:
-                        # Was idle before attack, return to idle
-                        self.current_shrimp_target = None
-                        self.eating_shrimp = False
                         print("🐙 Back to idle...")
                     
                     self.pre_attack_state = None
