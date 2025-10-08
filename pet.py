@@ -612,17 +612,28 @@ class ASCIIUnderwaterKraken:
             dy = self.target_y - current_kraken_y
             distance = math.sqrt(dx**2 + dy**2)
             
-            # Check if kraken is as close as it can get (considering boundaries)
-            # If the target was clamped and we're at that clamped position, consider it "reached"
-            # Use a larger threshold (10 pixels) to account for clamping behavior
-            at_boundary_limit = (
-                (target_sprite_y == max_y and abs(current_kraken_y - max_y) <= 10) or  # At bottom boundary
-                (target_sprite_y == min_y and abs(current_kraken_y - min_y) <= 10) or  # At top boundary
-                (target_sprite_x == min_x and abs(current_kraken_x - min_x) <= 10) or  # At left boundary
-                (target_sprite_x == max_x and abs(current_kraken_x - max_x) <= 10)     # At right boundary
-            )
+            # Calculate where the mouth actually is right now
+            current_mouth_x = current_kraken_x + self.mouth_offset_x
+            current_mouth_y = current_kraken_y + self.mouth_offset_y
             
-            if distance > 2 and not at_boundary_limit:
+            # Check if mouth can reach the shrimp (either perfectly or as close as boundaries allow)
+            # The mouth should be within eating range of the shrimp
+            mouth_to_shrimp_dx = shrimp_x - current_mouth_x
+            mouth_to_shrimp_dy = shrimp_y - current_mouth_y
+            mouth_distance = math.sqrt(mouth_to_shrimp_dx**2 + mouth_to_shrimp_dy**2)
+            
+            # Check if we can get the mouth closer by moving, or if we're boundary-blocked
+            # If target was clamped, calculate what the mouth position would be at the clamped target
+            ideal_mouth_x = target_sprite_x + self.mouth_offset_x
+            ideal_mouth_y = target_sprite_y + self.mouth_offset_y
+            ideal_mouth_distance = math.sqrt((shrimp_x - ideal_mouth_x)**2 + (shrimp_y - ideal_mouth_y)**2)
+            
+            # We're at boundary limit if:
+            # 1. We're close to the target position (within 3 pixels)
+            # 2. The ideal mouth position (at target) is still not at the shrimp (boundary preventing perfect alignment)
+            at_boundary_and_closest = (distance <= 3 and ideal_mouth_distance > 2)
+            
+            if distance > 2 and not at_boundary_and_closest:
                 # Still moving to shrimp - reset eating timer since we're not stationary
                 self.state = "swimming"
                 self.eating_shrimp = False
