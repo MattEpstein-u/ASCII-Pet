@@ -28,7 +28,7 @@ BOAT_CONFIG = {
 
 # Debug grid overlay configuration
 DEBUG_CONFIG = {
-    'show_grid': True,  # Set to True to show debugging grid
+    'show_grid': False,  # Set to True to show debugging grid
     'grid_size': 50,     # Size of grid cells in pixels
     'grid_color': '#444444',  # Grid line color (dark gray)
     'show_coordinates': True,  # Show coordinate labels
