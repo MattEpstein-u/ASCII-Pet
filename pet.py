@@ -412,11 +412,9 @@ class ASCIIUnderwaterKraken:
         boat_pixel_x = self.boat_char_pos * 8  # Approximate char width
         
         if self.boat_direction == 'rl':
-            # Boat moving right-to-left, position kraken to the right side of boat
             self.target_x = boat_pixel_x + 180
         else:
-            # Boat moving left-to-right, position kraken to the left side of boat
-            self.target_x = boat_pixel_x + 120
+            self.target_x = boat_pixel_x + 300
         
         self.target_y = self.water_level - 20  # Just below the surface
         
