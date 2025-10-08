@@ -465,7 +465,7 @@ class ASCIIUnderwaterKraken:
                     self.attack_phase = 'attacking'
                     self.attack_frames = 0  # Reset for attack phase timing
             
-            # PHASE 2: Attacking the boat (30 frames, 3 seconds - 1.5x longer)
+            # PHASE 2: Attacking the boat
             elif self.attack_phase == 'attacking':
                 # Track and move with the boat during attack
                 boat_pixel_x = self.boat_char_pos * 8
@@ -482,18 +482,35 @@ class ASCIIUnderwaterKraken:
                     new_x = current_kraken_x + (dx / distance_x) * step_size
                     self.move_kraken_to(new_x, current_kraken_y)
                 
-                # Attack duration: 30 frames (3 seconds) to determine outcome
-                if self.attack_frames >= 30:
-                    # Check if attack destroys the boat
-                    if self.attack_will_destroy:
-                        # Destroy boat immediately
+                # Determine when to end attack based on success/failure
+                screen_width_chars = self.container_width // 8
+                boat_completely_gone = False
+                
+                # Check if boat has sailed completely off screen
+                if self.boat_direction == 'rl':
+                    # Right-to-left: check if sailed off left edge
+                    boat_completely_gone = self.boat_char_pos < -get_boat_width() - 10
+                else:
+                    # Left-to-right: check if sailed off right edge
+                    boat_completely_gone = self.boat_char_pos > screen_width_chars + 10
+                
+                # Attack ending conditions
+                attack_should_end = False
+                
+                if self.attack_will_destroy:
+                    # Successful attack: continue until boat is completely gone from screen
+                    if boat_completely_gone:
                         self.boat_active = False
                         print("💥 Boat destroyed!")
-                    else:
-                        # Boat survives!
+                        attack_should_end = True
+                else:
+                    # Unsuccessful attack: end after 30 frames (boat escapes)
+                    if self.attack_frames >= 30:
                         print("⛵ Boat escaped!")
-                    
-                    # Start returning phase (regardless of outcome)
+                        attack_should_end = True
+                
+                if attack_should_end:
+                    # Start returning phase
                     self.attack_phase = 'returning'
                     self.attack_frames = 0
                     
