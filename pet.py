@@ -276,12 +276,18 @@ class ASCIIUnderwaterKraken:
     
     def drop_shrimp(self, x, y):
         """Drop a shrimp at the specified underwater position"""
+        # First check: maximum queue size (20 shrimp)
+        max_shrimp = 20
+        if len(self.shrimp_queue) >= max_shrimp:
+            print(f"⚠️ Click rejected: shrimp queue is full ({len(self.shrimp_queue)}/{max_shrimp}). Wait for kraken to eat some!")
+            return
+        
         # Strict validation: shrimp must be below the 2-line surface
         surface_height = 20  # 2-line surface
         underwater_start = self.water_level + surface_height
         ocean_floor = self.container_height - 50
         
-        # First check: y must be in valid underwater range
+        # Second check: y must be in valid underwater range
         if y < underwater_start:
             print(f"⚠️ Click rejected: y={y} is above underwater start {underwater_start} (water_level={self.water_level})")
             return
@@ -290,10 +296,18 @@ class ASCIIUnderwaterKraken:
             print(f"⚠️ Click rejected: y={y} is below ocean floor {ocean_floor}")
             return
         
-        # Second check: use is_in_water validation
+        # Third check: use is_in_water validation
         if not is_in_water(x, y, self.water_level, self.container_height):
             print(f"⚠️ Click rejected by is_in_water: ({x}, {y})")
             return
+        
+        # Fourth check: ensure new shrimp is at least 100 pixels from all existing shrimp
+        min_distance = 100
+        for existing_x, existing_y, _ in self.shrimp_queue:
+            distance = math.sqrt((x - existing_x)**2 + (y - existing_y)**2)
+            if distance < min_distance:
+                print(f"⚠️ Click rejected: too close to existing shrimp (distance: {distance:.1f} < {min_distance})")
+                return
         
         # All checks passed - add shrimp
         self.shrimp_counter += 1
