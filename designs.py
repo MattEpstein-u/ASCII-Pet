@@ -249,13 +249,57 @@ ASCII_PET_SPRITES = {
         "  /    ___/  \\__       ",
         "     _/         `---   ",
     ],
+    
+    # Upside-down attack sprites (for attacking boats)
+    'attack_flip1': [
+        "     _/         `---   ",
+        "  /    ___/  \\__       ",
+        "   ,-.___/ || \\__,-._  ",
+        "   \\____/ |||| \\____/ `",
+        "  _ \\___/||||||\\___/ _ ",
+        "   (    \\  ><  /    |  ",
+        "    )  @        @   ?  ",
+        "       |        |      ",
+        "       \\        /      ",
+        "        \\______/       ",
+        "                       ",
+    ],
+    
+    'attack_flip2': [
+        "     _/         `---   ",
+        "  /    ___/  \\__       ",
+        "   ,-.___/ || \\__,-._  ",
+        "   \\____/ |||| \\____/ `",
+        "  _ \\___/||||||\\___/ _ ",
+        "   (    \\ >XX< /    |  ",
+        "    )  X        X   ?  ",
+        "       |        |      ",
+        "       \\        /      ",
+        "        \\______/       ",
+        "                       ",
+    ],
+    
+    'attack_flip3': [
+        "     _/         `---   ",
+        "  /    ___/  \\__       ",
+        "   ,-.___/ || \\__,-._  ",
+        "   \\____/ |||| \\____/ `",
+        "  _ \\___/||||||\\___/ _ ",
+        "   (    \\ <**> /    |  ",
+        "    )  *        *   ?  ",
+        "       |        |      ",
+        "       \\        /      ",
+        "        \\______/       ",
+        "                       ",
+    ],
 }
 
 # Animation sequences for different kraken states
 ASCII_ANIMATIONS = {
     'idle': ['idle1', 'idle2'],
     'swimming': ['swim1', 'swim2', 'swim3'],
-    'eating': ['eat1', 'eat2', 'eat3']
+    'eating': ['eat1', 'eat2', 'eat3'],
+    'attacking': ['attack_flip1', 'attack_flip2', 'attack_flip3']
 }
 
 # Ocean Cross-Section Environment ASCII Art

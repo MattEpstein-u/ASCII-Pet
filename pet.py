@@ -61,6 +61,14 @@ class ASCIIUnderwaterKraken:
         self.boat_char_pos = -get_boat_width()  # Current boat character position (starts off-screen left)
         self.boat_update_counter = 0  # Frame counter for slowing down boat movement
         self.boat_direction = 'lr'  # Direction: 'lr' = left-to-right, 'rl' = right-to-left
+        self.boat_attacked = False  # Whether kraken has triggered attack on current boat
+        
+        # Kraken attack state
+        self.attacking_boat = False  # Whether kraken is currently attacking a boat
+        self.attack_phase = 'none'  # Attack phases: 'none', 'swimming', 'attacking', 'returning'
+        self.attack_frames = 0  # Counter for attack animation duration
+        self.pre_attack_state = None  # Store what kraken was doing before attack
+        self.pre_attack_target = None  # Store shrimp target before attack
         
         # Start the main loops
         self.animate()
@@ -324,6 +332,7 @@ class ASCIIUnderwaterKraken:
         if not self.boat_active:
             self.boat_active = True
             self.boat_direction = direction
+            self.boat_attacked = False  # Reset attack flag for new boat
             
             # Set starting position based on direction
             screen_width_chars = self.container_width // 8
@@ -340,6 +349,22 @@ class ASCIIUnderwaterKraken:
     def update_boat(self):
         """Update boat character position based on direction"""
         if self.boat_active:
+            # Check if boat has reached 1/3 of the way across screen
+            screen_width_chars = self.container_width // 8
+            one_third_position = screen_width_chars / 3
+            
+            if not self.boat_attacked:
+                # Check if boat crossed 1/3 threshold
+                if self.boat_direction == 'rl':
+                    # Right-to-left: check if passed 2/3 mark (coming from right)
+                    two_thirds_position = 2 * screen_width_chars / 3
+                    if self.boat_char_pos <= two_thirds_position:
+                        self.trigger_boat_attack()
+                else:
+                    # Left-to-right: check if passed 1/3 mark (coming from left)
+                    if self.boat_char_pos >= one_third_position:
+                        self.trigger_boat_attack()
+            
             # Increment frame counter
             self.boat_update_counter += 1
             
@@ -354,9 +379,6 @@ class ASCIIUnderwaterKraken:
                     self.boat_char_pos += get_boat_speed()
                 self.boat_update_counter = 0
             
-            # Calculate approximate screen width in characters (8 pixels per char with Courier 8pt)
-            screen_width_chars = self.container_width // 8
-            
             # Check if boat has sailed completely off screen (either direction)
             if self.boat_direction == 'rl':
                 # Right-to-left: check if sailed off left edge
@@ -368,9 +390,109 @@ class ASCIIUnderwaterKraken:
                 if self.boat_char_pos > screen_width_chars + 10:
                     self.boat_active = False
                     print("⛵...")
+    
+    def trigger_boat_attack(self):
+        """Trigger kraken attack on the boat - abandon everything and attack!"""
+        self.boat_attacked = True
+        self.attacking_boat = True
+        self.attack_phase = 'swimming'  # Start with swimming phase (upside down)
+        self.attack_frames = 0
+        
+        # Save current state to resume later
+        self.pre_attack_state = self.state
+        self.pre_attack_target = self.current_shrimp_target
+        
+        # Calculate boat position in pixels for kraken to intercept
+        boat_pixel_x = self.boat_char_pos * 8  # Approximate char width
+        
+        # Position kraken at the boat location (upside down, attacking from above)
+        self.target_x = boat_pixel_x
+        self.target_y = self.water_level - 20  # Just below the surface
+        
+        # DON'T clear shrimp targets - save them for later
+        # But stop eating current shrimp
+        self.eating_shrimp = False
+        
+        print("🐙 ATTACK!")
 
     def update_position(self):
-        """Smoothly move kraken towards shrimp target"""
+        """Smoothly move kraken towards target (shrimp or boat)"""
+        # If attacking boat, handle multi-phase attack sequence
+        if self.attacking_boat:
+            self.attack_frames += 1
+            
+            # PHASE 1: Swimming upside-down to intercept (0-20 frames, 2 seconds)
+            if self.attack_phase == 'swimming':
+                # Move quickly to intercept position
+                dx = self.target_x - self.kraken_x
+                dy = self.target_y - self.kraken_y
+                
+                # Fast movement during attack
+                speed_multiplier = 8
+                if abs(dx) > 2:
+                    self.kraken_x += (dx / abs(dx)) * speed_multiplier
+                if abs(dy) > 2:
+                    self.kraken_y += (dy / abs(dy)) * speed_multiplier
+                
+                # Once reached position, start attacking
+                if abs(dx) < 20 and abs(dy) < 20:
+                    self.attack_phase = 'attacking'
+                    self.attack_frames = 0  # Reset for attack phase timing
+            
+            # PHASE 2: Attacking the boat (20 frames, 2 seconds)
+            elif self.attack_phase == 'attacking':
+                # Stay at position and attack
+                if self.attack_frames >= 20:
+                    # Destroy boat
+                    self.boat_active = False
+                    print("💥 Boat destroyed!")
+                    
+                    # Start returning phase
+                    self.attack_phase = 'returning'
+                    self.attack_frames = 0
+                    
+                    # Set return position based on what kraken was doing
+                    if self.pre_attack_target:
+                        # Return to shrimp hunting
+                        self.current_shrimp_target = self.pre_attack_target
+                        shrimp_x, shrimp_y, _ = self.current_shrimp_target
+                        self.target_x = shrimp_x - self.mouth_offset_x
+                        self.target_y = shrimp_y - self.mouth_offset_y
+                    else:
+                        # Return to idle position
+                        self.target_x = self.container_width // 2
+                        self.target_y = self.water_level + 150
+            
+            # PHASE 3: Returning and flipping right-side up (swim back)
+            elif self.attack_phase == 'returning':
+                # Move back to resume position
+                dx = self.target_x - self.kraken_x
+                dy = self.target_y - self.kraken_y
+                
+                # Normal movement speed
+                speed_multiplier = 4
+                if abs(dx) > 2:
+                    self.kraken_x += (dx / abs(dx)) * speed_multiplier
+                if abs(dy) > 2:
+                    self.kraken_y += (dy / abs(dy)) * speed_multiplier
+                
+                # Once back in position, finish attack and flip right-side up
+                if abs(dx) < 20 and abs(dy) < 20:
+                    self.attacking_boat = False
+                    self.attack_phase = 'none'
+                    self.attack_frames = 0
+                    
+                    # Resume previous activity
+                    if self.pre_attack_target:
+                        self.eating_shrimp = True
+                    
+                    self.pre_attack_state = None
+                    self.pre_attack_target = None
+                    print("🐙 Back to hunting...")
+            
+            return
+        
+        # Normal shrimp hunting behavior
         # Check if there's a shrimp to eat
         if not self.current_shrimp_target and len(self.shrimp_queue) > 0:
             self.get_next_shrimp_target()
@@ -474,6 +596,26 @@ class ASCIIUnderwaterKraken:
     
     def animate(self):
         """Animate the kraken sprite"""
+        # Determine state based on what kraken is doing
+        if self.attacking_boat:
+            # Show upside-down sprites during swimming and attacking
+            # Show normal sprites during returning (flipped back)
+            if self.attack_phase == 'returning':
+                # Flipped back right-side up
+                if self.pre_attack_target:
+                    self.state = "swimming"  # Swimming back to shrimp
+                else:
+                    self.state = "swimming"  # Swimming back to idle position
+            else:
+                # Still upside down during swimming and attacking phases
+                self.state = "attacking"
+        elif self.eating_shrimp:
+            self.state = "eating"
+        elif self.current_shrimp_target or len(self.shrimp_queue) > 0:
+            self.state = "swimming"
+        else:
+            self.state = "idle"
+        
         # Get animation sequence based on current state
         current_animation = self.animations.get(self.state, self.animations['idle'])
         
@@ -487,8 +629,11 @@ class ASCIIUnderwaterKraken:
         # Advance animation frame
         self.animation_frame += 1
         
-        # Faster animation for eating
-        delay = 300 if self.state == "eating" else 500
+        # Faster animation for eating and attacking
+        if self.state == "eating" or self.state == "attacking":
+            delay = 200
+        else:
+            delay = 500
         
         # Schedule next frame
         self.root.after(delay, self.animate)
