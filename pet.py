@@ -413,10 +413,10 @@ class ASCIIUnderwaterKraken:
         
         if self.boat_direction == 'rl':
             # Boat moving right-to-left, position kraken to the right side of boat
-            self.target_x = boat_pixel_x + 32
+            self.target_x = boat_pixel_x + 64
         else:
             # Boat moving left-to-right, position kraken to the left side of boat
-            self.target_x = boat_pixel_x
+            self.target_x = boat_pixel_x + 8
         
         self.target_y = self.water_level - 20  # Just below the surface
         
