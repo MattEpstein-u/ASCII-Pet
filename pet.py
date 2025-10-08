@@ -539,8 +539,24 @@ class ASCIIUnderwaterKraken:
                     new_y = current_kraken_y + (dy / distance) * step_size
                     self.move_kraken_to(new_x, new_y)
                 
-                # Once back in position, finish attack and flip right-side up
-                if distance < 30:
+                # Check if we're stuck at a boundary trying to reach an unreachable target
+                # Define boundaries for stuck detection
+                margin = self.kraken_radius + 10
+                min_x = margin
+                max_x = self.container_width - margin
+                min_y = self.water_level
+                ocean_floor = self.container_height - 50
+                max_y = ocean_floor - self.kraken_total_height
+                
+                stuck_at_boundary_returning = (
+                    (abs(current_kraken_y - min_y) < 1 and self.target_y < current_kraken_y) or
+                    (abs(current_kraken_y - max_y) < 1 and self.target_y > current_kraken_y) or
+                    (abs(current_kraken_x - min_x) < 1 and self.target_x < current_kraken_x) or
+                    (abs(current_kraken_x - max_x) < 1 and self.target_x > current_kraken_x)
+                )
+                
+                # Once back in position OR stuck at boundary, finish attack and flip right-side up
+                if distance < 30 or stuck_at_boundary_returning:
                     self.attacking_boat = False
                     self.attack_phase = 'none'
                     self.attack_frames = 0
