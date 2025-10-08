@@ -349,20 +349,20 @@ class ASCIIUnderwaterKraken:
     def update_boat(self):
         """Update boat character position based on direction"""
         if self.boat_active:
-            # Check if boat has reached 1/3 of the way across screen
+            # Check if boat has reached 1/4 of the way across screen
             screen_width_chars = self.container_width // 8
-            one_third_position = screen_width_chars / 3
+            one_quarter_position = screen_width_chars / 4
             
             if not self.boat_attacked:
-                # Check if boat crossed 1/3 threshold
+                # Check if boat crossed 1/4 threshold
                 if self.boat_direction == 'rl':
-                    # Right-to-left: check if passed 2/3 mark (coming from right)
-                    two_thirds_position = 2 * screen_width_chars / 3
-                    if self.boat_char_pos <= two_thirds_position:
+                    # Right-to-left: check if passed 3/4 mark (coming from right)
+                    three_quarters_position = 3 * screen_width_chars / 4
+                    if self.boat_char_pos <= three_quarters_position:
                         self.trigger_boat_attack()
                 else:
-                    # Left-to-right: check if passed 1/3 mark (coming from left)
-                    if self.boat_char_pos >= one_third_position:
+                    # Left-to-right: check if passed 1/4 mark (coming from left)
+                    if self.boat_char_pos >= one_quarter_position:
                         self.trigger_boat_attack()
             
             # Increment frame counter
@@ -413,10 +413,10 @@ class ASCIIUnderwaterKraken:
         
         if self.boat_direction == 'rl':
             # Boat moving right-to-left, position kraken to the right side of boat
-            self.target_x = boat_pixel_x + 150
+            self.target_x = boat_pixel_x + 180
         else:
             # Boat moving left-to-right, position kraken to the left side of boat
-            self.target_x = boat_pixel_x + 50
+            self.target_x = boat_pixel_x + 120
         
         self.target_y = self.water_level - 20  # Just below the surface
         
