@@ -12,7 +12,8 @@ import sys
 from designs import (ASCII_PET_SPRITES, ASCII_ANIMATIONS, render_ascii_art,
                     render_underwater_environment, is_in_water, update_bubbles,
                     get_density_font_size, get_density_line_height, get_kraken_color, 
-                    get_boat_sprite, get_boat_speed, get_boat_color, get_boat_width, DEBUG_CONFIG)
+                    get_boat_sprite, get_boat_speed, get_boat_color, get_boat_width, 
+                    get_boat_update_interval, DEBUG_CONFIG)
 
 class ASCIIUnderwaterKraken:
     def __init__(self):
@@ -59,6 +60,7 @@ class ASCIIUnderwaterKraken:
         self.boat_active = False  # Whether boat has been spawned
         self.boat_spawned = False  # Whether boat spawn has been used
         self.boat_char_pos = -get_boat_width()  # Current boat character position (starts off-screen left)
+        self.boat_update_counter = 0  # Frame counter for slowing down boat movement
         
         # Start the main loops
         self.animate()
@@ -309,13 +311,20 @@ class ASCIIUnderwaterKraken:
             self.boat_spawned = True
             self.boat_active = True
             self.boat_char_pos = -get_boat_width()  # Start completely off-screen to the left
+            self.boat_update_counter = 0  # Reset frame counter
             print(f"⛵")
     
     def update_boat(self):
         """Update boat character position"""
         if self.boat_active:
-            # Move boat one character at a time from left to right
-            self.boat_char_pos += get_boat_speed()
+            # Increment frame counter
+            self.boat_update_counter += 1
+            
+            # Only update position every N frames to slow down movement
+            if self.boat_update_counter >= get_boat_update_interval():
+                # Move boat one character at a time from left to right
+                self.boat_char_pos += get_boat_speed()
+                self.boat_update_counter = 0
             
             # Calculate approximate screen width in characters (8 pixels per char with Courier 8pt)
             screen_width_chars = self.container_width // 8

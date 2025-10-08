@@ -21,8 +21,9 @@ KRAKEN_CONFIG = {
 
 # Boat configuration
 BOAT_CONFIG = {
-    'speed': 0.25,  # Characters per frame to move the boat
-    'color': '#FFFFFF',  # Boat color (white)
+    'speed': 1,
+    'color': '#FFFFFF',
+    'update_interval': 3  # Update every N frames to slow down movement
 }
 
 # Boat ASCII art (6 lines tall, rectangularized)
@@ -74,6 +75,10 @@ def get_boat_width():
     if BOAT_SPRITE:
         return len(BOAT_SPRITE[0])
     return 0
+
+def get_boat_update_interval():
+    """Get the configured boat update interval (frames between position updates)"""
+    return BOAT_CONFIG['update_interval']
 
 def integrate_boat_into_waves(wave_line, boat_line, boat_char_position):
     """Integrate a boat line into a wave line at the specified character position
