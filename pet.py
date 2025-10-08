@@ -55,6 +55,9 @@ class ASCIIUnderwaterKraken:
         self.eating_shrimp = False
         self.eating_frames = 0  # Counter for eating animation duration
         self.shrimp_counter = 0  # For unique shrimp tags
+        self.stuck_frames = 0  # Counter for how long kraken has been stuck at boundary
+        self.last_kraken_x = 0  # Track last position to detect if stuck
+        self.last_kraken_y = 0
         
         # Boat system (spawns when clicking above water, can respawn after previous boat sails off)
         self.boat_active = False  # Whether a boat is currently on screen
@@ -653,12 +656,25 @@ class ASCIIUnderwaterKraken:
             stuck_at_right = (abs(current_kraken_x - max_x) < 1 and target_sprite_x > current_kraken_x)
             stuck_at_boundary = stuck_at_top or stuck_at_bottom or stuck_at_left or stuck_at_right
             
-            # We're at boundary limit if:
-            # 1. We're stuck at a boundary, OR
-            # 2. We're close to the target position (within 3 pixels) and the ideal mouth still can't reach
-            at_boundary_and_closest = stuck_at_boundary or (distance <= 3 and ideal_mouth_distance > 2)
+            # Check if kraken hasn't moved (is genuinely stuck)
+            position_changed = (abs(current_kraken_x - self.last_kraken_x) > 0.5 or 
+                              abs(current_kraken_y - self.last_kraken_y) > 0.5)
             
-            if distance > 2 and not at_boundary_and_closest:
+            # Update stuck counter
+            if stuck_at_boundary and not position_changed:
+                self.stuck_frames += 1
+            else:
+                self.stuck_frames = 0
+            
+            # Update last position for next frame
+            self.last_kraken_x = current_kraken_x
+            self.last_kraken_y = current_kraken_y
+            
+            # Only consider truly stuck if we've been stuck for at least 5 frames
+            # AND we're within reasonable mouth distance (not too far from shrimp)
+            truly_stuck_at_boundary = (self.stuck_frames >= 5 and stuck_at_boundary and mouth_distance < 50)
+            
+            if distance > 2 and not truly_stuck_at_boundary:
                 # Still moving to shrimp - reset eating timer since we're not stationary
                 self.state = "swimming"
                 self.eating_shrimp = False
