@@ -250,8 +250,51 @@ ASCII_PET_SPRITES = {
         "     _/         `---   ",
     ],
     
+    # Upside-down swimming sprites (for swimming to intercept boats)
+    'swim_flip1': [
+        "     _/         `---   ",
+        "  /    ___/  \\__       ",
+        "   ,-.___/ || \\__,-._  ",
+        "   \\____/ |||| \\____/ `",
+        "  _ \\___/||||||\\___/ _ ",
+        "   (    \\      /    |  ",
+        "    )  @        @   ?  ",
+        "       |        |      ",
+        "       \\        /      ",
+        "        \\______/       ",
+        "                       ",
+    ],
+    
+    'swim_flip2': [
+        "     _/         `---   ",
+        "  /    ___/  \\__       ",
+        "   ,-.___/ || \\__,-._  ",
+        "   \\____/ |||| \\____/ `",
+        "  _ \\___/||||||\\___/ _ ",
+        "   (    \\  ^   /    |  ",
+        "    )  O        O   ?  ",
+        "       |        |      ",
+        "       \\        /      ",
+        "        \\______/       ",
+        "                       ",
+    ],
+    
+    'swim_flip3': [
+        "     _/         `---   ",
+        "  /    ___/  \\__       ",
+        "   ,-.___/ || \\__,-._  ",
+        "   \\____/ |||| \\____/ `",
+        "  _ \\___/||||||\\___/ _ ",
+        "   (    \\  >   /    |  ",
+        "    )  @        @   ?  ",
+        "       |        |      ",
+        "       \\        /      ",
+        "        \\______/       ",
+        "                       ",
+    ],
+    
     # Upside-down attack sprites (for attacking boats)
-    'attack_flip1': [
+    'attack1': [
         "     _/         `---   ",
         "  /    ___/  \\__       ",
         "   ,-.___/ || \\__,-._  ",
@@ -265,7 +308,7 @@ ASCII_PET_SPRITES = {
         "                       ",
     ],
     
-    'attack_flip2': [
+    'attack2': [
         "     _/         `---   ",
         "  /    ___/  \\__       ",
         "   ,-.___/ || \\__,-._  ",
@@ -279,7 +322,7 @@ ASCII_PET_SPRITES = {
         "                       ",
     ],
     
-    'attack_flip3': [
+    'attack3': [
         "     _/         `---   ",
         "  /    ___/  \\__       ",
         "   ,-.___/ || \\__,-._  ",
@@ -299,7 +342,8 @@ ASCII_ANIMATIONS = {
     'idle': ['idle1', 'idle2'],
     'swimming': ['swim1', 'swim2', 'swim3'],
     'eating': ['eat1', 'eat2', 'eat3'],
-    'attacking': ['attack_flip1', 'attack_flip2', 'attack_flip3']
+    'swimming_flip': ['swim_flip1', 'swim_flip2', 'swim_flip3'],
+    'attacking': ['attack1', 'attack2', 'attack3']
 }
 
 # Ocean Cross-Section Environment ASCII Art

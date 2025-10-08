@@ -417,6 +417,13 @@ class ASCIIUnderwaterKraken:
 
     def update_position(self):
         """Smoothly move kraken towards target (shrimp or boat)"""
+        # Get current kraken position from canvas
+        kraken_coords = self.canvas.coords("kraken")
+        if not kraken_coords:
+            return  # Kraken not yet rendered
+        
+        current_kraken_x, current_kraken_y = kraken_coords[0], kraken_coords[1]
+        
         # If attacking boat, handle multi-phase attack sequence
         if self.attacking_boat:
             self.attack_frames += 1
@@ -424,18 +431,19 @@ class ASCIIUnderwaterKraken:
             # PHASE 1: Swimming upside-down to intercept (0-20 frames, 2 seconds)
             if self.attack_phase == 'swimming':
                 # Move quickly to intercept position
-                dx = self.target_x - self.kraken_x
-                dy = self.target_y - self.kraken_y
+                dx = self.target_x - current_kraken_x
+                dy = self.target_y - current_kraken_y
                 
                 # Fast movement during attack
-                speed_multiplier = 8
-                if abs(dx) > 2:
-                    self.kraken_x += (dx / abs(dx)) * speed_multiplier
-                if abs(dy) > 2:
-                    self.kraken_y += (dy / abs(dy)) * speed_multiplier
+                distance = math.sqrt(dx**2 + dy**2)
+                if distance > 5:
+                    step_size = min(8.0, distance / 2)
+                    new_x = current_kraken_x + (dx / distance) * step_size
+                    new_y = current_kraken_y + (dy / distance) * step_size
+                    self.move_kraken_to(new_x, new_y)
                 
                 # Once reached position, start attacking
-                if abs(dx) < 20 and abs(dy) < 20:
+                if distance < 30:
                     self.attack_phase = 'attacking'
                     self.attack_frames = 0  # Reset for attack phase timing
             
@@ -466,18 +474,19 @@ class ASCIIUnderwaterKraken:
             # PHASE 3: Returning and flipping right-side up (swim back)
             elif self.attack_phase == 'returning':
                 # Move back to resume position
-                dx = self.target_x - self.kraken_x
-                dy = self.target_y - self.kraken_y
+                dx = self.target_x - current_kraken_x
+                dy = self.target_y - current_kraken_y
                 
                 # Normal movement speed
-                speed_multiplier = 4
-                if abs(dx) > 2:
-                    self.kraken_x += (dx / abs(dx)) * speed_multiplier
-                if abs(dy) > 2:
-                    self.kraken_y += (dy / abs(dy)) * speed_multiplier
+                distance = math.sqrt(dx**2 + dy**2)
+                if distance > 5:
+                    step_size = min(6.0, distance / 3)
+                    new_x = current_kraken_x + (dx / distance) * step_size
+                    new_y = current_kraken_y + (dy / distance) * step_size
+                    self.move_kraken_to(new_x, new_y)
                 
                 # Once back in position, finish attack and flip right-side up
-                if abs(dx) < 20 and abs(dy) < 20:
+                if distance < 30:
                     self.attacking_boat = False
                     self.attack_phase = 'none'
                     self.attack_frames = 0
@@ -530,37 +539,33 @@ class ASCIIUnderwaterKraken:
             self.target_x = target_sprite_x
             self.target_y = target_sprite_y
             
-            kraken_coords = self.canvas.coords("kraken")
-            if kraken_coords:
-                current_kraken_x, current_kraken_y = kraken_coords[0], kraken_coords[1]
+            # Move towards target (using kraken position already obtained at start of function)
+            dx = self.target_x - current_kraken_x
+            dy = self.target_y - current_kraken_y
+            distance = math.sqrt(dx**2 + dy**2)
+            
+            if distance > 5:
+                # Swimming to shrimp
+                self.state = "swimming"
+                # Move step by step
+                step_size = min(8.0, distance / 3)
+                new_x = current_kraken_x + (dx / distance) * step_size
+                new_y = current_kraken_y + (dy / distance) * step_size
                 
-                # Move towards target
-                dx = self.target_x - current_kraken_x
-                dy = self.target_y - current_kraken_y
-                distance = math.sqrt(dx**2 + dy**2)
+                # Keep within water bounds
+                new_x = max(min_x, min(new_x, max_x))
+                new_y = max(min_y, min(new_y, max_y))
                 
-                if distance > 5:
-                    # Swimming to shrimp
-                    self.state = "swimming"
-                    # Move step by step
-                    step_size = min(8.0, distance / 3)
-                    new_x = current_kraken_x + (dx / distance) * step_size
-                    new_y = current_kraken_y + (dy / distance) * step_size
-                    
-                    # Keep within water bounds
-                    new_x = max(min_x, min(new_x, max_x))
-                    new_y = max(min_y, min(new_y, max_y))
-                    
-                    # Move kraken (already validated by boundary clamping above)
-                    self.move_kraken_to(new_x, new_y)
-                else:
-                    # Reached target - start eating animation
-                    if self.current_shrimp_target:
-                        self.state = "eating"
-                        self.eating_frames += 1
-                        # Eat shrimp after 15 frames (~0.75 seconds at 20fps)
-                        if self.eating_frames >= 15:
-                            self.eat_shrimp()
+                # Move kraken (already validated by boundary clamping above)
+                self.move_kraken_to(new_x, new_y)
+            else:
+                # Reached target - start eating animation
+                if self.current_shrimp_target:
+                    self.state = "eating"
+                    self.eating_frames += 1
+                    # Eat shrimp after 15 frames (~0.75 seconds at 20fps)
+                    if self.eating_frames >= 15:
+                        self.eat_shrimp()
         else:
             # No target, return to idle
             if self.state != "idle":
@@ -598,17 +603,19 @@ class ASCIIUnderwaterKraken:
         """Animate the kraken sprite"""
         # Determine state based on what kraken is doing
         if self.attacking_boat:
-            # Show upside-down sprites during swimming and attacking
-            # Show normal sprites during returning (flipped back)
-            if self.attack_phase == 'returning':
-                # Flipped back right-side up
+            # Show different upside-down sprites for swimming vs attacking
+            if self.attack_phase == 'swimming':
+                # Swimming upside-down to intercept boat
+                self.state = "swimming_flip"
+            elif self.attack_phase == 'attacking':
+                # Attacking the boat (upside-down)
+                self.state = "attacking"
+            elif self.attack_phase == 'returning':
+                # Flipped back right-side up, swimming back
                 if self.pre_attack_target:
                     self.state = "swimming"  # Swimming back to shrimp
                 else:
                     self.state = "swimming"  # Swimming back to idle position
-            else:
-                # Still upside down during swimming and attacking phases
-                self.state = "attacking"
         elif self.eating_shrimp:
             self.state = "eating"
         elif self.current_shrimp_target or len(self.shrimp_queue) > 0:
