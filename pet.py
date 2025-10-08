@@ -413,10 +413,10 @@ class ASCIIUnderwaterKraken:
         
         if self.boat_direction == 'rl':
             # Boat moving right-to-left, position kraken to the right side of boat
-            self.target_x = boat_pixel_x + 64
+            self.target_x = boat_pixel_x + 100
         else:
             # Boat moving left-to-right, position kraken to the left side of boat
-            self.target_x = boat_pixel_x + 8
+            self.target_x = boat_pixel_x + 30
         
         self.target_y = self.water_level - 20  # Just below the surface
         
@@ -489,49 +489,28 @@ class ASCIIUnderwaterKraken:
                         # Destroy boat immediately
                         self.boat_active = False
                         print("💥 Boat destroyed!")
-                        
-                        # Start returning phase immediately
-                        self.attack_phase = 'returning'
-                        self.attack_frames = 0
-                        
-                        # Set return position based on what kraken was doing
-                        if self.pre_attack_target and self.pre_attack_target in self.shrimp_queue:
-                            # Return to specific shrimp that was being hunted
-                            shrimp_x, shrimp_y, _ = self.pre_attack_target
-                            self.target_x = shrimp_x - self.mouth_offset_x
-                            self.target_y = shrimp_y - self.mouth_offset_y
-                        elif len(self.shrimp_queue) > 0:
-                            # Pre-attack shrimp is gone, but there are others - return to hunting position
-                            self.target_x = self.container_width // 2
-                            self.target_y = self.water_level + 150
-                        else:
-                            # No shrimp available, return to idle position
-                            self.target_x = self.container_width // 2
-                            self.target_y = self.water_level + 150
                     else:
-                        # Boat survives! Continue attacking animation until boat leaves screen
-                        if not self.boat_active:
-                            # Boat has naturally left the screen, stop attack
-                            print("⛵ Boat escaped!")
-                            
-                            # Start returning phase
-                            self.attack_phase = 'returning'
-                            self.attack_frames = 0
-                            
-                            # Set return position based on what kraken was doing
-                            if self.pre_attack_target and self.pre_attack_target in self.shrimp_queue:
-                                # Return to specific shrimp that was being hunted
-                                shrimp_x, shrimp_y, _ = self.pre_attack_target
-                                self.target_x = shrimp_x - self.mouth_offset_x
-                                self.target_y = shrimp_y - self.mouth_offset_y
-                            elif len(self.shrimp_queue) > 0:
-                                # Pre-attack shrimp is gone, but there are others - return to hunting position
-                                self.target_x = self.container_width // 2
-                                self.target_y = self.water_level + 150
-                            else:
-                                # No shrimp available, return to idle position
-                                self.target_x = self.container_width // 2
-                                self.target_y = self.water_level + 150
+                        # Boat survives!
+                        print("⛵ Boat escaped!")
+                    
+                    # Start returning phase (regardless of outcome)
+                    self.attack_phase = 'returning'
+                    self.attack_frames = 0
+                    
+                    # Set return position based on what kraken was doing
+                    if self.pre_attack_target and self.pre_attack_target in self.shrimp_queue:
+                        # Return to specific shrimp that was being hunted
+                        shrimp_x, shrimp_y, _ = self.pre_attack_target
+                        self.target_x = shrimp_x - self.mouth_offset_x
+                        self.target_y = shrimp_y - self.mouth_offset_y
+                    elif len(self.shrimp_queue) > 0:
+                        # Pre-attack shrimp is gone, but there are others - return to hunting position
+                        self.target_x = self.container_width // 2
+                        self.target_y = self.water_level + 150
+                    else:
+                        # No shrimp available, return to idle position
+                        self.target_x = self.container_width // 2
+                        self.target_y = self.water_level + 150
             
             # PHASE 3: Returning and flipping right-side up (swim back)
             elif self.attack_phase == 'returning':
