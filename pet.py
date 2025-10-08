@@ -400,8 +400,8 @@ class ASCIIUnderwaterKraken:
         self.attack_phase = 'swimming'  # Start with swimming phase (upside down)
         self.attack_frames = 0
         
-        # Determine if this attack will destroy the boat (50% chance)
-        self.attack_will_destroy = random.random() < 0.5
+        # Determine if this attack will destroy the boat (80% chance)
+        self.attack_will_destroy = random.random() < 0.8
         
         # Save current state to resume later
         self.pre_attack_state = self.state
@@ -413,10 +413,10 @@ class ASCIIUnderwaterKraken:
         
         if self.boat_direction == 'rl':
             # Boat moving right-to-left, position kraken ahead (to the left)
-            self.target_x = boat_pixel_x-2
+            self.target_x = boat_pixel_x
         else:
             # Boat moving left-to-right, position kraken ahead (to the right)
-            self.target_x = boat_pixel_x+2
+            self.target_x = boat_pixel_x
         
         self.target_y = self.water_level - 20  # Just below the surface
         
@@ -498,14 +498,17 @@ class ASCIIUnderwaterKraken:
                     self.attack_frames = 0
                     
                     # Set return position based on what kraken was doing
-                    if self.pre_attack_target:
-                        # Return to shrimp hunting
-                        self.current_shrimp_target = self.pre_attack_target
-                        shrimp_x, shrimp_y, _ = self.current_shrimp_target
+                    if self.pre_attack_target and self.pre_attack_target in self.shrimp_queue:
+                        # Return to specific shrimp that was being hunted
+                        shrimp_x, shrimp_y, _ = self.pre_attack_target
                         self.target_x = shrimp_x - self.mouth_offset_x
                         self.target_y = shrimp_y - self.mouth_offset_y
+                    elif len(self.shrimp_queue) > 0:
+                        # Pre-attack shrimp is gone, but there are others - return to hunting position
+                        self.target_x = self.container_width // 2
+                        self.target_y = self.water_level + 150
                     else:
-                        # Return to idle position
+                        # No shrimp available, return to idle position
                         self.target_x = self.container_width // 2
                         self.target_y = self.water_level + 150
             
@@ -529,13 +532,27 @@ class ASCIIUnderwaterKraken:
                     self.attack_phase = 'none'
                     self.attack_frames = 0
                     
-                    # Resume previous activity
+                    # Resume previous activity - check if shrimp still exists
                     if self.pre_attack_target:
-                        self.eating_shrimp = True
+                        # Check if this shrimp is still in the queue
+                        if self.pre_attack_target in self.shrimp_queue:
+                            # Resume hunting this specific shrimp
+                            self.current_shrimp_target = self.pre_attack_target
+                            self.eating_shrimp = False  # Will start eating when reached
+                            print("🐙 Back to hunting saved shrimp...")
+                        else:
+                            # Shrimp was removed, get next from queue
+                            self.current_shrimp_target = None
+                            self.eating_shrimp = False
+                            print("🐙 Back to hunting...")
+                    else:
+                        # Was idle before attack, return to idle
+                        self.current_shrimp_target = None
+                        self.eating_shrimp = False
+                        print("🐙 Back to idle...")
                     
                     self.pre_attack_state = None
                     self.pre_attack_target = None
-                    print("🐙 Back to hunting...")
             
             return
         
