@@ -424,7 +424,7 @@ class ASCIIUnderwaterKraken:
             boat_text = f"⛵: {self.boats_destroyed}"
             self.canvas.create_text(counter_x, counter_y,
                                    text=boat_text,
-                                   font=("Consolas", 18, "bold"),
+                                   font=("Consolas", 14, "bold"),
                                    fill="#FFFFFF",
                                    tags="boat_counter",
                                    anchor="ne")
@@ -509,8 +509,7 @@ class ASCIIUnderwaterKraken:
         
         # Determine if this attack will destroy the boat based on shrimp counter
         # Success rate = (shrimp_eaten_count / 100) * 0.2
-        #success_rate = (self.shrimp_eaten_count / 100) * 0.2
-        success_rate = 1
+        success_rate = (self.shrimp_eaten_count / 100) * 0.5
         self.attack_will_destroy = random.random() < success_rate
         
         # Save current state to resume later
