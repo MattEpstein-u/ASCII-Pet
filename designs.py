@@ -41,9 +41,9 @@ BOAT_SPRITE_LR = [
 # Each line is exactly 16 characters wide
 BOAT_SPRITE_RL = [
     "     |    |     ",  # Line 0: Masts
-    "    )_(  )_(    ",  # Line 1: Sails
-    "   )___((___(   ",  # Line 2: Sails lower
-    "  )_____(____(  ",  # Line 3: Hull top
+    "    (_(  (_(    ",  # Line 1: Sails
+    "   (___((___(   ",  # Line 2: Sails lower
+    "  (_____(____(  ",  # Line 3: Hull top
     "_____|____|_____",  # Line 4: Hull middle
     "\\______________/",  # Line 5: Hull bottom (overwrites top wave)
 ]
