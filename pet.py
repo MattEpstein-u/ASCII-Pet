@@ -43,6 +43,12 @@ class ASCIIUnderwaterKraken:
         self.mouth_offset_x = 0  # Centered horizontally
         self.mouth_offset_y = 5 * self.kraken_line_height  # 5 lines down from top
         
+        # Shrimp eaten counter system (initialize before setup_pet)
+        self.shrimp_eaten_count = 0  # How many shrimp the kraken has eaten (max 100)
+        self.decay_timer = 0  # Frames since last decay (decays every 11 seconds = 110 frames at 10fps)
+        self.counter_change_indicator = None  # "+1" or "-1" visual indicator
+        self.counter_change_frames = 0  # How long to show the indicator
+        
         self.setup_pet()
         self.setup_animations()
         
@@ -58,12 +64,6 @@ class ASCIIUnderwaterKraken:
         self.stuck_frames = 0  # Counter for how long kraken has been stuck at boundary
         self.last_kraken_x = 0  # Track last position to detect if stuck
         self.last_kraken_y = 0
-        
-        # Shrimp eaten counter system
-        self.shrimp_eaten_count = 0  # How many shrimp the kraken has eaten (max 100)
-        self.decay_timer = 0  # Frames since last decay (decays every 11 seconds = 110 frames at 10fps)
-        self.counter_change_indicator = None  # "+1" or "-1" visual indicator
-        self.counter_change_frames = 0  # How long to show the indicator
         
         # Boat system (spawns when clicking above water, can respawn after previous boat sails off)
         self.boat_active = False  # Whether a boat is currently on screen
@@ -345,7 +345,7 @@ class ASCIIUnderwaterKraken:
             if self.shrimp_eaten_count < 100:
                 self.shrimp_eaten_count += 1
                 self.counter_change_indicator = "+1"
-                self.counter_change_frames = 20  # Show indicator for 2 seconds
+                self.counter_change_frames = 5  # Show indicator for 0.5 seconds (5 frames at 10fps)
                 self.update_counter_display()
             
             print(f"🐙 Om nom nom! Shrimp eaten. Remaining: {len(self.shrimp_queue)}")
@@ -378,13 +378,13 @@ class ASCIIUnderwaterKraken:
             print(f"🐙 Kraken targeting shrimp at ({x}, {y})")
     
     def update_counter_display(self):
-        """Update the shrimp eaten counter display at the top of the window"""
+        """Update the shrimp eaten counter display at the top left of the window"""
         # Clear previous counter display
         self.canvas.delete("shrimp_counter")
         self.canvas.delete("counter_indicator")
         
-        # Display counter at top center
-        counter_x = self.container_width // 2
+        # Display counter at top left (simple number only)
+        counter_x = 20
         counter_y = 20
         
         # Show the count in shrimp color (#FFB6C1)
@@ -394,7 +394,7 @@ class ASCIIUnderwaterKraken:
                                fill="#FFB6C1",
                                tags="shrimp_counter")
         
-        # Show +1 or -1 indicator if active
+        # Show +1 or -1 indicator if active (to the right of the counter)
         if self.counter_change_indicator and self.counter_change_frames > 0:
             indicator_x = counter_x + 30
             self.canvas.create_text(indicator_x, counter_y,
@@ -799,7 +799,7 @@ class ASCIIUnderwaterKraken:
             if self.shrimp_eaten_count > 0:
                 self.shrimp_eaten_count -= 1
                 self.counter_change_indicator = "-1"
-                self.counter_change_frames = 20  # Show indicator for 2 seconds
+                self.counter_change_frames = 5  # Show indicator for 0.5 seconds (5 frames at 10fps)
                 self.update_counter_display()
         
         # Update counter change indicator
