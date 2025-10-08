@@ -442,9 +442,9 @@ class ASCIIUnderwaterKraken:
                 # Update target to track boat movement (stay on the side of boat)
                 boat_pixel_x = self.boat_char_pos * 8
                 if self.boat_direction == 'rl':
-                    self.target_x = boat_pixel_x
+                    self.target_x = boat_pixel_x + 25
                 else:
-                    self.target_x = boat_pixel_x + 50  # Right side of boat
+                    self.target_x = boat_pixel_x + 25
                 
                 # Move quickly to intercept position
                 dx = self.target_x - current_kraken_x
@@ -468,9 +468,9 @@ class ASCIIUnderwaterKraken:
                 # Track and move with the boat during attack
                 boat_pixel_x = self.boat_char_pos * 8
                 if self.boat_direction == 'rl':
-                    self.target_x = boat_pixel_x
+                    self.target_x = boat_pixel_x + 25
                 else:
-                    self.target_x = boat_pixel_x + 50  # Stay on right side
+                    self.target_x = boat_pixel_x + 25
                 
                 # Follow the boat smoothly
                 dx = self.target_x - current_kraken_x
