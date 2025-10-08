@@ -628,10 +628,19 @@ class ASCIIUnderwaterKraken:
             ideal_mouth_y = target_sprite_y + self.mouth_offset_y
             ideal_mouth_distance = math.sqrt((shrimp_x - ideal_mouth_x)**2 + (shrimp_y - ideal_mouth_y)**2)
             
+            # Check if kraken is stuck at a boundary (being actively clamped)
+            # This happens when we're trying to reach a position but boundaries won't let us
+            # Detect by checking if current position is AT the boundary and target is beyond it
+            stuck_at_top = (abs(current_kraken_y - min_y) < 1 and target_sprite_y < current_kraken_y)
+            stuck_at_bottom = (abs(current_kraken_y - max_y) < 1 and target_sprite_y > current_kraken_y)
+            stuck_at_left = (abs(current_kraken_x - min_x) < 1 and target_sprite_x < current_kraken_x)
+            stuck_at_right = (abs(current_kraken_x - max_x) < 1 and target_sprite_x > current_kraken_x)
+            stuck_at_boundary = stuck_at_top or stuck_at_bottom or stuck_at_left or stuck_at_right
+            
             # We're at boundary limit if:
-            # 1. We're close to the target position (within 3 pixels)
-            # 2. The ideal mouth position (at target) is still not at the shrimp (boundary preventing perfect alignment)
-            at_boundary_and_closest = (distance <= 3 and ideal_mouth_distance > 2)
+            # 1. We're stuck at a boundary, OR
+            # 2. We're close to the target position (within 3 pixels) and the ideal mouth still can't reach
+            at_boundary_and_closest = stuck_at_boundary or (distance <= 3 and ideal_mouth_distance > 2)
             
             if distance > 2 and not at_boundary_and_closest:
                 # Still moving to shrimp - reset eating timer since we're not stationary
