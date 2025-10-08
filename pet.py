@@ -49,6 +49,10 @@ class ASCIIUnderwaterKraken:
         self.counter_change_indicator = None  # "+1" or "-1" visual indicator
         self.counter_change_frames = 0  # How long to show the indicator
         
+        # Boat destruction counter
+        self.boats_destroyed = 0  # How many boats the kraken has destroyed
+        self.show_boat_counter = False  # Only show after first boat is destroyed
+        
         self.setup_pet()
         self.setup_animations()
         
@@ -383,25 +387,47 @@ class ASCIIUnderwaterKraken:
         self.canvas.delete("shrimp_counter")
         self.canvas.delete("counter_indicator")
         
-        # Display counter at top left (simple number only)
+        # Display shrimp counter at top left
         counter_x = 20
-        counter_y = 20
+        counter_y = 15
         
-        # Show the count in shrimp color (#FFB6C1)
+        # Show the count in shrimp color (#FFB6C1) - smaller Consolas font
         self.canvas.create_text(counter_x, counter_y, 
                                text=str(self.shrimp_eaten_count),
-                               font=("Georgia", 24, "bold"),
+                               font=("Consolas", 18, "bold"),
                                fill="#FFB6C1",
-                               tags="shrimp_counter")
+                               tags="shrimp_counter",
+                               anchor="nw")
         
         # Show +1 or -1 indicator if active (to the right of the counter)
         if self.counter_change_indicator and self.counter_change_frames > 0:
-            indicator_x = counter_x + 30
+            indicator_x = counter_x + 25
             self.canvas.create_text(indicator_x, counter_y,
                                    text=self.counter_change_indicator,
-                                   font=("Georgia", 16, "bold"),
+                                   font=("Consolas", 14, "bold"),
                                    fill="#FFB6C1",
-                                   tags="counter_indicator")
+                                   tags="counter_indicator",
+                                   anchor="nw")
+    
+    def update_boat_counter_display(self):
+        """Update the boat destruction counter display at the top right of the window"""
+        # Clear previous boat counter display
+        self.canvas.delete("boat_counter")
+        
+        # Only display if at least one boat has been destroyed
+        if self.show_boat_counter:
+            # Display boat counter at top right
+            counter_x = self.container_width - 20
+            counter_y = 15
+            
+            # Show "⛵: count" in white
+            boat_text = f"⛵: {self.boats_destroyed}"
+            self.canvas.create_text(counter_x, counter_y,
+                                   text=boat_text,
+                                   font=("Consolas", 18, "bold"),
+                                   fill="#FFFFFF",
+                                   tags="boat_counter",
+                                   anchor="ne")
 
     
     def spawn_boat(self, direction='lr'):
@@ -481,8 +507,11 @@ class ASCIIUnderwaterKraken:
         self.attack_phase = 'swimming'  # Start with swimming phase (upside down)
         self.attack_frames = 0
         
-        # Determine if this attack will destroy the boat (80% chance)
-        self.attack_will_destroy = random.random() < 0.8
+        # Determine if this attack will destroy the boat based on shrimp counter
+        # Success rate = (shrimp_eaten_count / 100) * 0.2
+        #success_rate = (self.shrimp_eaten_count / 100) * 0.2
+        success_rate = 1
+        self.attack_will_destroy = random.random() < success_rate
         
         # Save current state to resume later
         self.pre_attack_state = self.state
@@ -584,6 +613,10 @@ class ASCIIUnderwaterKraken:
                     # Boat is now gone from view, end attack
                     attack_should_end = True
                     self.boat_pending_destruction = False
+                    # Increment boat destruction counter
+                    self.boats_destroyed += 1
+                    self.show_boat_counter = True
+                    self.update_boat_counter_display()
                 
                 if attack_should_end:
                     # Start returning phase
