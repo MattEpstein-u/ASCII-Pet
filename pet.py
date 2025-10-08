@@ -59,6 +59,12 @@ class ASCIIUnderwaterKraken:
         self.last_kraken_x = 0  # Track last position to detect if stuck
         self.last_kraken_y = 0
         
+        # Shrimp eaten counter system
+        self.shrimp_eaten_count = 0  # How many shrimp the kraken has eaten (max 100)
+        self.decay_timer = 0  # Frames since last decay (decays every 11 seconds = 110 frames at 10fps)
+        self.counter_change_indicator = None  # "+1" or "-1" visual indicator
+        self.counter_change_frames = 0  # How long to show the indicator
+        
         # Boat system (spawns when clicking above water, can respawn after previous boat sails off)
         self.boat_active = False  # Whether a boat is currently on screen
         self.boat_char_pos = -get_boat_width()  # Current boat character position (starts off-screen left)
@@ -190,6 +196,9 @@ class ASCIIUnderwaterKraken:
         # Create the initial ASCII kraken art
         self.current_sprite = 'idle1'
         self.render_kraken()
+        
+        # Initialize shrimp counter display
+        self.update_counter_display()
         
         # Bubble system initialized (bubbles will spawn over time)
         # No initial bubbles needed - they'll appear naturally
@@ -331,6 +340,14 @@ class ASCIIUnderwaterKraken:
             self.current_shrimp_target = None
             self.eating_shrimp = False
             self.eating_frames = 0  # Reset eating timer
+            
+            # Increment shrimp eaten counter (max 100)
+            if self.shrimp_eaten_count < 100:
+                self.shrimp_eaten_count += 1
+                self.counter_change_indicator = "+1"
+                self.counter_change_frames = 20  # Show indicator for 2 seconds
+                self.update_counter_display()
+            
             print(f"🐙 Om nom nom! Shrimp eaten. Remaining: {len(self.shrimp_queue)}")
     
     def get_next_shrimp_target(self):
@@ -359,6 +376,33 @@ class ASCIIUnderwaterKraken:
             self.eating_shrimp = True
             x, y, tag = self.current_shrimp_target
             print(f"🐙 Kraken targeting shrimp at ({x}, {y})")
+    
+    def update_counter_display(self):
+        """Update the shrimp eaten counter display at the top of the window"""
+        # Clear previous counter display
+        self.canvas.delete("shrimp_counter")
+        self.canvas.delete("counter_indicator")
+        
+        # Display counter at top center
+        counter_x = self.container_width // 2
+        counter_y = 20
+        
+        # Show the count in shrimp color (#FFB6C1)
+        self.canvas.create_text(counter_x, counter_y, 
+                               text=str(self.shrimp_eaten_count),
+                               font=("Georgia", 24, "bold"),
+                               fill="#FFB6C1",
+                               tags="shrimp_counter")
+        
+        # Show +1 or -1 indicator if active
+        if self.counter_change_indicator and self.counter_change_frames > 0:
+            indicator_x = counter_x + 30
+            self.canvas.create_text(indicator_x, counter_y,
+                                   text=self.counter_change_indicator,
+                                   font=("Georgia", 16, "bold"),
+                                   fill="#FFB6C1",
+                                   tags="counter_indicator")
+
     
     def spawn_boat(self, direction='lr'):
         """Spawn a boat that moves across the water surface (can be called multiple times after previous boat sails off)
@@ -747,6 +791,23 @@ class ASCIIUnderwaterKraken:
         # Update bubble physics every frame (spawn, rise, remove at surface)
         update_bubbles(self.bubble_list, self.canvas, self.container_width, 
                       self.water_level, self.container_height, spawn_chance=0.05)
+        
+        # Update shrimp eaten counter decay (every 11 seconds = 110 frames at 10fps)
+        self.decay_timer += 1
+        if self.decay_timer >= 110:
+            self.decay_timer = 0
+            if self.shrimp_eaten_count > 0:
+                self.shrimp_eaten_count -= 1
+                self.counter_change_indicator = "-1"
+                self.counter_change_frames = 20  # Show indicator for 2 seconds
+                self.update_counter_display()
+        
+        # Update counter change indicator
+        if self.counter_change_frames > 0:
+            self.counter_change_frames -= 1
+            if self.counter_change_frames == 0:
+                self.counter_change_indicator = None
+                self.update_counter_display()
         
         # Update boat movement (boat rendering is integrated into wave rendering above)
         self.update_boat()
