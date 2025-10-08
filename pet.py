@@ -69,6 +69,7 @@ class ASCIIUnderwaterKraken:
         self.attack_frames = 0  # Counter for attack animation duration
         self.pre_attack_state = None  # Store what kraken was doing before attack
         self.pre_attack_target = None  # Store shrimp target before attack
+        self.boat_pending_destruction = False  # Flag to destroy boat at next sprite update
         
         # Start the main loops
         self.animate()
@@ -482,32 +483,26 @@ class ASCIIUnderwaterKraken:
                     new_x = current_kraken_x + (dx / distance_x) * step_size
                     self.move_kraken_to(new_x, current_kraken_y)
                 
-                # Determine when to end attack based on success/failure
-                screen_width_chars = self.container_width // 8
-                boat_completely_gone = False
-                
-                # Check if boat has sailed completely off screen
-                if self.boat_direction == 'rl':
-                    # Right-to-left: check if sailed off left edge
-                    boat_completely_gone = self.boat_char_pos < -get_boat_width() - 10
-                else:
-                    # Left-to-right: check if sailed off right edge
-                    boat_completely_gone = self.boat_char_pos > screen_width_chars + 10
-                
-                # Attack ending conditions
+                # Attack duration: 30 frames (3 seconds) to determine outcome
                 attack_should_end = False
                 
-                if self.attack_will_destroy:
-                    # Successful attack: continue until boat is completely gone from screen
-                    if boat_completely_gone:
-                        self.boat_active = False
+                if self.attack_frames >= 30:
+                    if self.attack_will_destroy:
+                        # Successful attack: mark boat for destruction at next sprite update
+                        # Don't end attack yet - wait for boat to disappear
+                        self.boat_pending_destruction = True
                         print("💥 Boat destroyed!")
-                        attack_should_end = True
-                else:
-                    # Unsuccessful attack: end after 30 frames (boat escapes)
-                    if self.attack_frames >= 30:
+                        # Continue attacking until boat disappears from view
+                    else:
+                        # Unsuccessful attack: boat escapes, end immediately
                         print("⛵ Boat escaped!")
                         attack_should_end = True
+                
+                # Check if boat has been destroyed (removed at sprite update)
+                if self.boat_pending_destruction and not self.boat_active:
+                    # Boat is now gone from view, end attack
+                    attack_should_end = True
+                    self.boat_pending_destruction = False
                 
                 if attack_should_end:
                     # Start returning phase
@@ -653,6 +648,11 @@ class ASCIIUnderwaterKraken:
         # Update wave animation (slower cycle - every 10 frames)
         # Pass boat position for integration into wave rendering
         if self.wave_animation_frame % 10 == 0:
+            # If boat is pending destruction, destroy it now at sprite update
+            if self.boat_pending_destruction and self.boat_active:
+                self.boat_active = False
+                # boat_pending_destruction flag will be cleared in attack logic
+            
             render_underwater_environment(
                 self.canvas, self.container_width, self.container_height, 
                 self.wave_animation_frame // 10,
